@@ -1,0 +1,333 @@
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper">
+        <div class="container-fluid">
+                <div class="row">
+                        <div class="col-md-12">
+                                <div class="card-block">
+
+                                        <h2>Conversion Rates</h2>
+
+                                        <div class="pull-right icons-list">
+                                                <a (click)="onConfiguringColumns($event)" class="add-column">
+                                                        <em class="fa fa-cog"></em>Columns</a>
+                                                <a *isAuthorized="['write','MCR']" (click)="showDialogToAdd()" title="Add">
+                                                        <em class="fa fa-plus-circle"></em>
+                                                </a>
+                                                <a (click)="showDialogToSearch()" title="Search">
+                                                        <em class="fa fa-search"></em>
+                                                </a>
+                                                <a *isAuthorized="['upload','MCR']" (click)="importFile()" title="Import">
+                                                        <em class="fa fa-upload"></em>
+                                                </a>
+                                                <a (click)="reset(dt)" title="Reset">
+                                                        <em class="fa fa-refresh"></em>
+                                                </a>
+                                                <a *isAuthorized="['write','MCR']" (click)="exportExcel()" title="Export">
+                                                        <em class="fa fa-external-link"></em>
+                                                </a>
+
+                                                <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                                                        <div class="user-popup">
+                                                                <div class="content overflow">
+                                                                        <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+                                                                        <label for="selectall">Select All</label>
+                                                                        <a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+                                                                        <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                                                                                <ng-template let-col let-index="index" pTemplate="item">
+                                                                                        <div *ngIf="col.drag">
+                                                                                                <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                                                                                                        <div class="drag">
+                                                                                                                <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+                                                                                                                <label>{{col.header}}</label>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                        <div *ngIf="!col.drag">
+                                                                                                <div class="ui-helper-clearfix">
+                                                                                                        <div>
+                                                                                                                <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+                                                                                                                />
+                                                                                                                <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                </ng-template>
+                                                                        </p-listbox>
+
+                                                                </div>
+
+                                                                <div class="pull-right">
+                                                                        <a class="configColBtn" (click)="saveColumns()">Save</a>
+                                                                        <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                                                                </div>
+
+                                                        </div>
+                                                </div>
+                                        </div>
+
+                                        <div class="x-scroll">
+
+                                                <p-table class="ui-datatable arrangementMgrTbl" #dt id="rmanConversion-dt" [loading]="loading" [value]="rmanConversionRatesList"
+                                                        selectionMode="single" (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanConversionRates($event)"
+                                                        [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"
+                                                        scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+
+
+                                                        <ng-template pTemplate="colgroup" let-columns>
+                                                                <colgroup>
+                                                                        <col *ngFor="let col of columns">
+                                                                </colgroup>
+                                                        </ng-template>
+
+
+                                                        <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                                                                <tr>
+                                                                        <ng-container *ngFor="let col of columns">
+                                                                                <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                                                                                <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+                                                                                        title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                                                                        </ng-container>
+                                                                </tr>
+                                                        </ng-template>
+
+                                                        <ng-template pTemplate="body" let-rowData let-rmanConversionRates let-columns="columns">
+                                                                <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex" *ngIf="rmanConversionRates != null">
+
+                                                                        <ng-container *ngFor="let col of columns">
+                                                                                <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                                                                                        {{rowData[col.field]}}
+                                                                                </td>
+
+                                                                                <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                                                                                        {{rowData[col.field]}}
+                                                                                </td>
+
+                                                                                <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                                                                                        {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                                                                                </td>
+
+                                                                                <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                                                                                        {{rowData[col.field] | round}}
+                                                                                </td>
+                                                                        </ng-container>
+
+                                                                </tr>
+                                                        </ng-template>
+                                                        <ng-template pTemplate="emptymessage" let-columns>
+                                                                <tr *ngIf="!columns">
+                                                                        <td class="no-data">{{noData}}</td>
+                                                                </tr>
+                                                        </ng-template>
+                                                </p-table>
+                                        </div>
+
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+<div class="lds-roller" style="top: 0px;" *ngIf="uploadLoading">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+</div>
+<p-dialog header="Upload  Conversion Rates " width="500" [(visible)]="_uploadService.uploadDialog" [draggable]="true" showEffect="fade"
+        [modal]="true" (onAfterHide)="cancelConversionRatesUpload()">
+        <p-fileUpload id="upload-bookings-input" name="file" customUpload="true" (uploadHandler)="fileUploadHandler($event, '/upload/fxRates')"
+                accept=".csv" invalidFileTypeMessageSummary="{0}:Invalid file Type">
+        </p-fileUpload>
+        <progress-bar></progress-bar>
+</p-dialog>
+<p-dialog header="Search" width="auto" [draggable]="true" [(visible)]="displaySearchDialog" showEffect="fade" [modal]="true" [blockScroll]="true"
+        (onHide)="cancelSearch()">
+        <form (ngSubmit)="search()">
+                <div class="ui-grid ui-grid-responsive ui-fluid">
+                        <div class="ui-g-12">
+                                <div class="ui-g-6">
+                                        <span class="selectSpan">
+                                                From Currency</span>
+                                        <p-dropdown [options]="rmanFromCurrencyList" name="fromCurrency" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanConversionRatesSearch.fromCurrency"
+                                                [filter]="true" appendTo="body"></p-dropdown>
+                                </div>
+                                <div class="ui-g-6 pull-right">
+                                        <span class="selectSpan">
+                                                To Currency</span>
+                                        <p-dropdown [options]="rmanToCurrencyList" name="toCurrency" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanConversionRatesSearch.toCurrency"
+                                                [filter]="true" appendTo="body"></p-dropdown>
+                                </div>
+                        </div>
+                        <div class="ui-g-12">
+                                <div class="ui-g-6">
+
+                                        <span class="selectSpan">Effective Date</span>
+                                        <p-calendar inputStyleClass="textbox" showAnim="slideDown" name="conversionDate" id="conversionDate" [monthNavigator]="true"
+                                                [yearNavigator]="true" yearRange="1950:2030" [ngModelOptions]="{standalone: true}"
+                                                [(ngModel)]="rmanConversionRatesSearch.conversionDate" dateFormat="yy-mm-dd" placeholder="Effective Date"
+                                                appendTo="body"></p-calendar>
+                                </div>
+                                <div class="ui-g-6 pull-right">
+                                        <span class="md-inputfield">
+                                                <span class="selectSpan">Status Code</span>
+                                                <input pInputText class="textbox" placeholder="Status Code" name="transLineId" id="releaseLinestransLineId" [ngModelOptions]="{standalone: true}"
+                                                        [(ngModel)]="rmanConversionRatesSearch.statusCode" />
+                                        </span>
+                                </div>
+
+                        </div>
+
+                </div>
+                <p-footer>
+                        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+                                <button type="submit" class="primary-btn" pButton label="Search"></button>
+                                <button type="button" class="secondary-btn" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+
+                        </div>
+                </p-footer>
+        </form>
+</p-dialog>
+<p-dialog header="{{(newRmanConversionRates) ? 'Create Conversion Rate' : 'Edit Conversion Rate'}}" width="700" [(visible)]="displayDialog"
+        showEffect="fade" [draggable]="true" [modal]="true" [blockScroll]="true" (onHide)="cancelAddEdit()">
+        <form (ngSubmit)="save()" [formGroup]="conversionRatesForm" novaldiate>
+
+                <div class="ui-g ui-fluid" *ngIf="rmanConversionRates">
+                        <div class="ui-g-12 form-group">
+                                <div class="ui-grid-row">
+                                        <div class="ui-g-12">
+
+                                                <div class="ui-g-6">
+
+                                                        <span class="selectSpan"> From Currency
+                                                                <span class="red-color">*</span>
+                                                        </span>
+                                                        <p-dropdown [options]="rmanFromCurrencyList" name="fromCurrency" id="fromCurrency" [(ngModel)]="rmanConversionRates.fromCurrency"
+                                                                [filter]="true" formControlName="fromCurrency">
+                                                        </p-dropdown>
+                                                        <div *ngIf="formErrors.fromCurrency" class="ui-message ui-messages-error ui-corner-all" appendTo="body">
+                                                                {{ formErrors.fromCurrency }}
+                                                        </div>
+
+                                                </div>
+                                                <div class="ui-g-6 pull-right">
+
+                                                        <span class="selectSpan"> To Currency
+                                                                <span class="red-color">*</span>
+                                                        </span>
+                                                        <p-dropdown [options]="rmanToCurrencyList" name="toCurrency" id="toCurrency" [(ngModel)]="rmanConversionRates.toCurrency"
+                                                                [filter]="true" formControlName="toCurrency" appendTo="body">
+                                                        </p-dropdown>
+                                                        <div *ngIf="formErrors.toCurrency" class="ui-message ui-messages-error ui-corner-all">
+                                                                {{ formErrors.toCurrency }}
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <div class="ui-g-12">
+
+                                                <div class="ui-g-6">
+                                                        <span class="md-inputfield">
+                                                                <span class="selectSpan">Conversion Type
+                                                                        <span class="red-color">*</span>
+                                                                </span>
+                                                                <p-dropdown [options]="rmanLookupsV2" name="conversionType" id="conversionType" [(ngModel)]="rmanConversionRates.conversionType"
+                                                                [filter]="true" formControlName="conversionType" appendTo="body" (onChange)="onConversionTypeChange($event)">
+                                                                </p-dropdown>
+                                                                <div *ngIf="formErrors.conversionType" class="ui-message ui-messages-error ui-corner-all">
+                                                                        {{ formErrors.conversionType }}
+                                                                </div>
+                                                        </span>
+                                                </div>
+                                                <div class="ui-g-6 pull-right">
+                                                        <span class="md-inputfield">
+                                                                <span class="selectSpan">Conversion Rate
+                                                                        <span class="red-color">*</span>
+                                                                </span>
+                                                                <input class="textbox" placeholder="Conversion Rate" pInputText id="conversionRate" name="conversionRate" [(ngModel)]="rmanConversionRates.conversionRate"
+                                                                        formControlName="conversionRate" />
+
+                                                                <div *ngIf="formErrors.conversionRate" class="ui-message ui-messages-error ui-corner-all">
+                                                                        {{ formErrors.conversionRate }}
+                                                                </div>
+
+                                                        </span>
+                                                </div>
+                                        </div>
+
+                                        <div class="ui-g-12">
+                                                <div class="ui-g-6">
+                                                        <span class="selectSpan">Start Date
+                                                                <span class="red-color" *ngIf="conversionRatesForm.controls['conversionStartDate'].validator != null">*</span>
+                                                        </span>
+                                                        <p-calendar inputStyleClass="textbox" showAnim="slideDown" name="conversionStartDate" id="conversionStartDate" [monthNavigator]="true"
+                                                                [yearNavigator]="true" yearRange="1950:2030" [(ngModel)]="rmanConversionRates.conversionStartDate"
+                                                                dateFormat="yy-mm-dd" placeholder="Start Date" formControlName="conversionStartDate"
+                                                                appendTo="body">
+                                                        </p-calendar>
+                                                        <div *ngIf="formErrors.conversionStartDate" class="ui-message ui-messages-error ui-corner-all">
+                                                                {{ formErrors.conversionStartDate }}
+                                                        </div>
+                                                </div>
+                                                <div class="ui-g-6 pull-right">
+                                                        <span class="selectSpan">End Date
+                                                                <span class="red-color" *ngIf="conversionRatesForm.controls['conversionEndDate'].validator != null">*</span>
+                                                        </span>
+                                                        <p-calendar inputStyleClass="textbox" showAnim="slideDown" name="conversionEndDate" id="conversionEndDate" [monthNavigator]="true"
+                                                                [yearNavigator]="true" yearRange="1950:2030" [(ngModel)]="rmanConversionRates.conversionEndDate"
+                                                                dateFormat="yy-mm-dd" placeholder="End Date" formControlName="conversionEndDate"
+                                                                appendTo="body">
+
+                                                        </p-calendar>
+                                                        <div *ngIf="formErrors.conversionEndDate" class="ui-message ui-messages-error ui-corner-all">
+                                                                {{ formErrors.conversionEndDate }}
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <div class="ui-g-12">
+                                                <div class="ui-g-6">
+                                                        <span class="selectSpan">Efective Date
+                                                                <span class="red-color" *ngIf="conversionRatesForm.controls['conversionDate'].validator != null">*</span>
+                                                        </span>
+                                                        <p-calendar inputStyleClass="textbox" showAnim="slideDown" name="conversionDate" id="conversionDate" [monthNavigator]="true"
+                                                                [yearNavigator]="true" yearRange="1950:2030" [(ngModel)]="rmanConversionRates.conversionDate"
+                                                                dateFormat="yy-mm-dd" placeholder="Effective Date" formControlName="conversionDate"
+                                                                appendTo="body">
+
+                                                        </p-calendar>
+                                                        <div *ngIf="formErrors.conversionDate" class="ui-message ui-messages-error ui-corner-all">
+                                                                {{ formErrors.conversionDate }}
+                                                        </div>
+                                                </div>
+                                                <div class="ui-g-6 pull-right">
+                                                        <span class="md-inputfield">
+                                                                <span class="selectSpan">Status Code
+                                                                        <span class="red-color">*</span>
+                                                                </span>
+                                                                <p-dropdown [options]="rmanLookupsV" name="statusCode" id="statusCode" [(ngModel)]="rmanConversionRates.statusCode" [filter]="true"
+                                                                        formControlName="statusCode" appendTo="body"></p-dropdown>
+                                                                <div *ngIf="formErrors.statusCode" class="ui-message ui-messages-error ui-corner-all">
+                                                                        {{ formErrors.statusCode }}
+                                                                </div>
+                                                        </span>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+
+
+
+
+
+        </form>
+        <p-footer>
+                <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                        <button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!conversionRatesForm.valid"></button>
+                        <button type="button" pButton class="secondary-btn" (click)="displayDialog=false" label="Cancel"></button>
+                </div>
+        </p-footer>
+</p-dialog>

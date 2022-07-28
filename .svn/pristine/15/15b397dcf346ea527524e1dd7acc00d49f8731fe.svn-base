@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <title>Ayara</title>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+      <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="../assets/css/google-api-fonts.css" rel="stylesheet">
+      <link rel="stylesheet" href="css/styles.css">      
+</head>
+
+<body>
+      <div>
+      <div class="container">
+
+            <div class="signup-content">
+            <div class="content">
+          <div class="inner-content">
+          <img src="../assets/images/revenue_intelligence.png" alt="Revenue Intelligence"><br><h2>Revenue Intelligence</h2>
+          <p>Revenue allocations, gross margin analysis and forecasting during the deal negotiation/quoting phase.</p>
+          </div>
+          <div class="inner-content">
+          <img src="../assets/images/revenue_accounting.png" alt="Revenue Accounting"><br><h2>Revenue Accounting</h2>
+          <p>Automated proccessing of revenue transactions &amp; revenue recognition/accounting based on delivered performance obligations.</p>
+          </div>
+        </div>
+            </div>
+    
+            <div class="signup-form">
+    
+                  <div class="form-header">
+                        <a class="logo" href="#">
+                              <img src="../assets/images/logo_login.png" alt="Ayara.png">
+                        </a>
+                  </div>
+    
+                  <h1>User Login</h1>
+    
+    
+                  <form id="loginForm" class="form" method="POST" action="/login" onsubmit="userLogin()" autocomplete="off">
+    
+                        <div class="form-group">
+
+                              <div class="form-group-item user-name">
+                                    <input id="httpd_username" type="text" autocomplete="off" name="username" value="" placeholder="Enter Username...">
+                              </div>
+    
+                              <div class="form-group-item password">
+                                    <input id="httpd_password" type="password" autocomplete="off" name="password" placeholder="Enter Password...">
+                              </div>
+						        <input id="csrfToken" type="hidden">
+                              <div class="form-group-item">
+                                    <div class="col-md-12 red" id="loginErrorMsg"></div>
+                              </div>
+    
+                        </div>
+    
+                        <div class="terms">
+                              <input id="login-remember" class="rememberCheckBox" type="checkbox" name="remember" value="1">  <label for="login-remember">Remember me</label>
+                             <a href="javascript:void(0)" data-toggle="modal" data-target="#forgotPassword" onClick="cancelForgotPwdForm()">
+                                    Forgot Password?</a>
+                        </div>
+                        <div class="actions-buttons">
+                        <button type="submit" name="button" id="loginbtn"><em class="fa fa-sign-in"></em> LOGIN</button>
+                        <button class="okta-login-btn" type="submit" id="oktaloginbtn" formaction="/oauth2/authorization/okta"><em class="fa fa-sign-in"></em> OKTA LOGIN</button>
+                        </div>
+                 </form>
+    
+    
+    
+            </div>
+    
+      </div>
+</div>
+      <!-- Forgot Password Modal -->
+      <div id="forgotPassword" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content for Forgot Password-->
+                  <div class="modal-content modal-content-c">
+                        <div class="modal-header modal-header-c">
+                            
+                              <h4 class="modal-title">Forgot Password?</h4>
+
+                              <button type="button" class="close close-c" data-dismiss="modal"> &times;</button>
+                        </div>
+                        <form name="forgotPasswordForm" class="form-horizontal" id="forgotPasswordForm" onsubmit="return forgotPassword()" novalidate>
+                              <div class="modal-body clearfix text-center">
+                                    <div class="modalText">Please enter your User Name.<br>You will recieve the link to set the password.</div>
+                                    <br />
+
+                                    <div class="pwd-form-group-item">
+                                          <input type="text" required name="userId" class="textbox" placeholder="Enter User Name" id="forgotuserId">
+                                    </div>
+                                    	<input id="csrfToken" type="hidden">
+                                    <div class="col-md-12">
+                                          <div class="alert alert-danger" id="forgotpwdErrorMsg"></div>
+                                          <div class="alert alert-success" id="forgotpwdSuccessMsg"></div>
+                                    </div>
+                              </div>
+                              <div class="modal-footer pt-0">
+                                    <button type="submit" name="button" class="forgotPwdSubmit">Submit</button>
+                                    <button type="reset" class="forgotPwdCancel" data-dismiss="modal">Cancel</button>
+                              </div>
+                        </form>
+                  </div>
+            </div>
+      </div>
+      <footer class="footer">
+            <div class="container-fluid">
+                  <span class="text-center text-white">&copy; 2021 - 2022 Ayara Inc. All Rights Reserved.</span>
+            </div>
+      </footer>
+
+	<script src='../assets/js/jquery.min.js'></script>
+      <script src="../assets/js/bootstrap.min.js"></script>
+      <script src='../assets/js/jquery.blockUI.js'></script>
+      <script src='../assets/js/login.js'> </script>
+</body>
+
+</html>

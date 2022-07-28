@@ -1,0 +1,401 @@
+
+     <div class="content-section implementation">
+     </div>
+
+     <p-panel header="Quotes Exceptions" [toggleable]="false" (onBeforeToggle)="onBeforeToggle($event)">
+          <p-header>
+               <div class="pull-right icons-list" *ngIf="collapsed">
+                    <a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+                    <a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+                    <a  *isAuthorized="['write','QUOTEEX']" (click)="deleteSelected(dt)" title="Delete Selected"><em class="fa fa-trash"></em></a>
+                    <a  *isAuthorized="['write','QUOTEEX']" (click)="exportExcel()" title="Export"><em class="fa fa-external-link"></em></a>
+               </div>
+          </p-header>
+         
+          <div class="x-scroll">
+          <p-table #dt class="ui-datatable arrangementMgrTbl" id="quotesExcepctions-dt" [value]="rmanIntfDealDetailsList" [(selection)]="selectedLines"  (onRowSelect)="onRowSelect($event)" scrollable="true" [paginator]="true" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements" (onLazyLoad)="getRmanIntfDealDetails($event)" >		
+               <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                    <tr>
+                         <th style="width: 50px"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                        <th style="width:100px;text-align:left"><a >{{columns['operationCode']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['salesNodeLevel1']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['salesNodeLevel2']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['salesNodeLevel3']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['salesNodeLevel4']}}</a></th>
+                         <th style="width:100px;text-align:center"><a >{{columns['currencyCode']}}</a></th>
+                         <th style="width:150px;text-align:left"><a >{{columns['customerName']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['arrangementNumber']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['arrangementName']}}</a></th>                         
+                         <th style="width:100px;text-align:left"><a >{{columns['agreementId']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['agreementName']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['dealNumber']}}</a></th>
+                         <th style="width:100px;text-align:right"><a >{{columns['dealLineNumber']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['dealName']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['additionalLineAttribute3']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['productName']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['additionalLineAttribute2']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['additionalLineAttribute1']}}</a></th>
+                         <th style="width:100px;text-align:center"><a >{{columns['startDate']}}</a></th>
+                         <th style="width:100px;text-align:center"><a >{{columns['endDate']}}</a></th>
+                         <th style="width:100px;text-align:center"><a >{{columns['duration']}}</a></th>
+                         <th style="width:100px;text-align:center"><a >{{columns['durationUom']}}</a></th>
+                         <th style="width:100px;text-align:right"><a >{{columns['quantity']}}</a></th>
+                         <th style="width:100px;text-align:center"><a >{{columns['fxRate']}}</a></th>
+                         <th style="width:100px;text-align:center"><a >{{columns['fxDate']}}</a></th>
+                         <th style="width:100px;text-align:right"><a >{{columns['unitSellingPrice']}}</a></th>
+                         <th style="width:100px;text-align:right"><a >{{columns['unitListPrice']}}</a></th>
+                         <th style="width:100px;text-align:center"><a >{{columns['contractUnitType']}}</a></th>
+                         <th style="width:100px;text-align:right"><a >{{columns['unitCost']}}</a></th>
+                         <th style="width:100px;text-align:left"><a >{{columns['billToCustomerName']}}</a></th>
+                         <th style="width:150px;text-align:left"><a >{{columns['entityName']}}</a></th>
+                         <th style="width:150px;text-align:left"><a >{{columns['priceList']}}</a></th>
+                         <th style="width:150px;text-align:left"><a >{{columns['msaNumber']}}</a></th>
+                         <th style="width:150px;text-align:left"><a >{{columns['msaName']}}</a></th>
+                         <th style="width:150px;text-align:right"><a >{{columns['parentLineId']}}</a></th>
+                         <th style="width:150px;text-align:center"><a >{{columns['fvPercent']}}</a></th>
+                         <th style="width:150px;text-align:left"><a >{{columns['accountingRuleName']}}</a></th>
+                         <th style="width:150px;text-align:left"><a >{{columns['eitfSop']}}</a></th>
+                         <th style="width:150px;text-align:right"><a >{{columns['bespPerUnit']}}</a></th>
+                         <th style="width:150px;text-align:left"><a >{{columns['arrgSource']}}</a></th>
+                         <th style="width:150px;text-align:left"><a >{{columns['arrgBasis']}}</a></th>
+                         <th style="width:250px;text-align:left"><a >{{columns['interfaceError']}}</a></th>
+                         
+                    </tr>
+               </ng-template>
+               <ng-template let-rowData let-rmanIntfDealDetails pTemplate="body">
+                    <tr [pSelectableRow]="rowData">
+                         <td style="width:50px">
+                              <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                          </td>
+                     	<td title="{{rmanIntfDealDetails.operationCode}}" style="width:100px;text-align:left">{{rmanIntfDealDetails.operationCode}}</td>
+                         <td title="{{rmanIntfDealDetails.salesNodeLevel1}}" style="width:100px;text-align:left">{{rmanIntfDealDetails.salesNodeLevel1}}</td>
+                         <td title="{{rmanIntfDealDetails.salesNodeLevel2}}" style="width:100px;text-align:left">{{rmanIntfDealDetails.salesNodeLevel2}}</td>
+                         <td title="{{rmanIntfDealDetails.salesNodeLevel3}}" style="width:100px;text-align:left">{{rmanIntfDealDetails.salesNodeLevel3}}</td>
+                         <td title="{{rmanIntfDealDetails.salesNodeLevel4}}" style="width:100px;text-align:left">{{rmanIntfDealDetails.salesNodeLevel4}}</td>
+                         <td title="{{rmanIntfDealDetails.currencyCode}}" style="width:100px;text-align:center">{{rmanIntfDealDetails.currencyCode}}</td>
+                         <td title="{{rmanIntfDealDetails.customerName}}" style="width:150px;text-align:left">{{rmanIntfDealDetails.customerName}}</td>
+                         <td title="{{rmanIntfDealDetails.arrangementNumber}}"  style="width:100px;text-align:left">{{rmanIntfDealDetails.arrangementNumber}}</td>
+                         <td title="{{rmanIntfDealDetails.arrangementName}}" style="width:100px;text-align:left">{{rmanIntfDealDetails.arrangementName}}</td>                         
+                         <td title="{{rmanIntfDealDetails.agreementId}}" style="width:100px;text-align:left">{{rmanIntfDealDetails.agreementId}}</td>
+                         <td title="{{rmanIntfDealDetails.agreementName}}"      style="width:100px;text-align:left">{{rmanIntfDealDetails.agreementName}}</td>
+                         <td title="{{rmanIntfDealDetails.dealNumber}}"  style="width:100px;text-align:left">{{rmanIntfDealDetails.dealNumber}}</td>
+                         <td title="{{rmanIntfDealDetails.dealLineNumber}}" style="width:100px;text-align:right">{{rmanIntfDealDetails.dealLineNumber}}</td>
+                         <td title="{{rmanIntfDealDetails.dealName}}"  style="width:100px;text-align:left">{{rmanIntfDealDetails.dealName}}</td>
+                         <td title="{{rmanIntfDealDetails.additionalLineAttribute3}}"  style="width:100px;text-align:left">{{rmanIntfDealDetails.additionalLineAttribute3}}</td>
+                         <td title="{{rmanIntfDealDetails.productName}}" style="width:100px;text-align:left">{{rmanIntfDealDetails.productName}}</td>
+                         <td title="{{rmanIntfDealDetails.additionalLineAttribute2}}"  style="width:100px;text-align:left">{{rmanIntfDealDetails.additionalLineAttribute2}}</td>
+                         <td title="{{rmanIntfDealDetails.additionalLineAttribute1}}"  style="width:100px;text-align:left">{{rmanIntfDealDetails.additionalLineAttribute1}}</td>
+                         <td title="{{rmanIntfDealDetails.startDate}}" style="width:100px;text-align:center">{{rmanIntfDealDetails.startDate}}</td>
+                         <td title="{{rmanIntfDealDetails.endDate}}"   style="width:100px;text-align:center">{{rmanIntfDealDetails.endDate}}</td>
+                         <td title="{{rmanIntfDealDetails.duration}}"  style="width:100px;text-align:center">{{rmanIntfDealDetails.duration}}</td>
+                         <td title="{{rmanIntfDealDetails.durationUom}}" style="width:100px;text-align:center">{{rmanIntfDealDetails.durationUom}}</td>
+                         <td title="{{rmanIntfDealDetails.quantity}}"  style="width:100px;text-align:right">{{rmanIntfDealDetails.quantity}}</td>
+                         <td title="{{rmanIntfDealDetails.fxRate}}"    style="width:100px;text-align:center">{{rmanIntfDealDetails.fxRate}}</td>
+                         <td title="{{rmanIntfDealDetails.fxDate}}"    style="width:100px;text-align:center">{{rmanIntfDealDetails.fxDate}}</td>
+                         <td title="{{rmanIntfDealDetails.unitSellingPrice}}"   style="width:100px;text-align:right">{{rmanIntfDealDetails.unitSellingPrice}}</td>
+                         <td title="{{rmanIntfDealDetails.unitListPrice}}"      style="width:100px;text-align:right">{{rmanIntfDealDetails.unitListPrice}}</td>
+                         <td title="{{rmanIntfDealDetails.contractUnitType}}"   style="width:100px;text-align:center">{{rmanIntfDealDetails.contractUnitType}}</td>
+                         <td title="{{rmanIntfDealDetails.unitCost}}"  style="width:100px;text-align:right">{{rmanIntfDealDetails.unitCost}}</td>
+                         <td title="{{rmanIntfDealDetails.billToCustomerName}}" style="width:100px;text-align:left">{{rmanIntfDealDetails.billToCustomerName}}</td>
+                         <td title="{{rmanIntfDealDetails.entityName}}"  style="width:150px;text-align:left">{{rmanIntfDealDetails.entityName}}</td>
+                         <td title="{{rmanIntfDealDetails.priceList}}" style="width:150px;text-align:left">{{rmanIntfDealDetails.priceList}}</td>
+                         <td title="{{rmanIntfDealDetails.msaNumber}}" style="width:150px;text-align:left">{{rmanIntfDealDetails.msaNumber}}</td>
+                         <td title="{{rmanIntfDealDetails.msaName}}"   style="width:150px;text-align:left">{{rmanIntfDealDetails.msaName}}</td>
+                         <td title="{{rmanIntfDealDetails.parentLineId}}" style="width:150px;text-align:right">{{rmanIntfDealDetails.parentLineId}}</td>
+                         <td title="{{rmanIntfDealDetails.fvPercent}}" style="width:150px;text-align:center">{{rmanIntfDealDetails.fvPercent}}</td>
+                         <td title="{{rmanIntfDealDetails.accountingRuleName}}" style="width:150px;text-align:left">{{rmanIntfDealDetails.accountingRuleName}}</td>
+                         <td title="{{rmanIntfDealDetails.eitfSop}}"   style="width:150px;text-align:left">{{rmanIntfDealDetails.eitfSop}}</td>
+                         <td title="{{rmanIntfDealDetails.bespPerUnit}}" style="width:150px;text-align:right">{{rmanIntfDealDetails.bespPerUnit}}</td>
+                         <td title="{{rmanIntfDealDetails.arrgSource}}"  style="width:150px;text-align:left">{{rmanIntfDealDetails.arrgSource}}</td>
+                         <td title="{{rmanIntfDealDetails.arrgBasis}}" style="width:150px;text-align:left">{{rmanIntfDealDetails.arrgBasis}}</td>
+                         <td title="{{rmanIntfDealDetails.interfaceError}}"     style="width:250px;text-align:left">{{rmanIntfDealDetails.interfaceError}}</td>    
+                    </tr>
+               </ng-template>              
+               <ng-template pTemplate="emptymessage" let-columns>
+               <tr *ngIf="!columns">
+                    <td class="no-data">{{noData}}</td>
+               </tr>
+          </ng-template>
+          </p-table>
+     </div>
+     </p-panel>
+ 
+
+	
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+		<form>
+               <div class="ui-grid ui-grid-responsive ui-fluid">
+                    <div class="ui-g-12">
+                         <div class="ui-g-6">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">{{columns['arrangementNumber']}}</span>
+                                   <input pInputText name="arrangementNumber" class="textbox" placeholder="Revenue Contract Number" id="arrangementNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanIntfDealDetailsSearch.arrangementNumber"
+                                   />
+                              </span>
+                         </div>
+                         <div class="ui-g-6 pull-right">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">{{columns['dealNumber']}}</span>
+                                   <input pInputText name="dealNumber" class="textbox" placeholder="Deal Number" id="name" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanIntfDealDetailsSearch.dealNumber" />
+                              </span>
+                         </div>
+                    </div>
+                    <div class="ui-g-12">
+                         <div class="ui-g-6">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">{{columns['dealLineNumber']}}</span>
+                                   <input pInputText name="dealLineNumber" class="textbox" placeholder="Deal Line Number" id="dealLineNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanIntfDealDetailsSearch.dealLineNumber"
+                                   />
+                              </span>
+                         </div>
+                         <div class="ui-g-6 pull-right">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">{{columns['entityName']}}</span>
+                                   <input pInputText name="entityName" class="textbox" placeholder="Entity Name" id="name" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanIntfDealDetailsSearch.entityName" />
+                              </span>
+                         </div>
+                    </div>
+               </div>			
+          </form>
+          <p-footer>
+               <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="submit" pButton class="primary-btn" (click)="search()" label="Search"></button>
+                    <button type="button" pButton class="secondary-btn" (click)="cancelSearch()" label="Cancel"></button>
+                  
+               </div>
+          </p-footer>
+	</p-dialog>
+	<p-dialog header="RmanIntfDealDetails" width="500" [(visible)]="displayDialog" [draggable]="true" showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanIntfDealDetails">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealNumber">{{columns['dealNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealNumber" name="dealNumber" required [(ngModel)]="rmanIntfDealDetails.dealNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealName">{{columns['dealName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealName" name="dealName" required [(ngModel)]="rmanIntfDealDetails.dealName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="entityName">{{columns['entityName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="entityName" name="entityName" required [(ngModel)]="rmanIntfDealDetails.entityName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="customerName">{{columns['customerName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="customerName" name="customerName" required [(ngModel)]="rmanIntfDealDetails.customerName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="billToCustomerName">{{columns['billToCustomerName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="billToCustomerName" name="billToCustomerName" required [(ngModel)]="rmanIntfDealDetails.billToCustomerName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="priceList">{{columns['priceList']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="priceList" name="priceList" required [(ngModel)]="rmanIntfDealDetails.priceList" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="agreementId">{{columns['agreementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="agreementId" name="agreementId" required [(ngModel)]="rmanIntfDealDetails.agreementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="agreementName">{{columns['agreementName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="agreementName" name="agreementName" required [(ngModel)]="rmanIntfDealDetails.agreementName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="currencyCode">{{columns['currencyCode']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="currencyCode" name="currencyCode" required [(ngModel)]="rmanIntfDealDetails.currencyCode" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrangementName">{{columns['arrangementName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="arrangementName" name="arrangementName" required [(ngModel)]="rmanIntfDealDetails.arrangementName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrangementNumber">{{columns['arrangementNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="arrangementNumber" name="arrangementNumber" required [(ngModel)]="rmanIntfDealDetails.arrangementNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrangementSource">{{columns['arrangementSource']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="arrangementSource" name="arrangementSource" required [(ngModel)]="rmanIntfDealDetails.arrangementSource" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrangementBasis">{{columns['arrangementBasis']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="arrangementBasis" name="arrangementBasis" required [(ngModel)]="rmanIntfDealDetails.arrangementBasis" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productName">{{columns['productName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productName" name="productName" required [(ngModel)]="rmanIntfDealDetails.productName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="quantity">{{columns['quantity']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="quantity" name="quantity" required [(ngModel)]="rmanIntfDealDetails.quantity" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel1">{{columns['salesNodeLevel1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="salesNodeLevel1" name="salesNodeLevel1" required [(ngModel)]="rmanIntfDealDetails.salesNodeLevel1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel2">{{columns['salesNodeLevel2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="salesNodeLevel2" name="salesNodeLevel2" required [(ngModel)]="rmanIntfDealDetails.salesNodeLevel2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel3">{{columns['salesNodeLevel3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="salesNodeLevel3" name="salesNodeLevel3" required [(ngModel)]="rmanIntfDealDetails.salesNodeLevel3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel4">{{columns['salesNodeLevel4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="salesNodeLevel4" name="salesNodeLevel4" required [(ngModel)]="rmanIntfDealDetails.salesNodeLevel4" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="startDate">{{columns['startDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="startDate" name="startDate" required [(ngModel)]="rmanIntfDealDetails.startDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="endDate">{{columns['endDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="endDate" name="endDate" required [(ngModel)]="rmanIntfDealDetails.endDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="duration">{{columns['duration']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="duration" name="duration" required [(ngModel)]="rmanIntfDealDetails.duration" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="durationUom">{{columns['durationUom']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="durationUom" name="durationUom" required [(ngModel)]="rmanIntfDealDetails.durationUom" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="unitCost">{{columns['unitCost']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="unitCost" name="unitCost" required [(ngModel)]="rmanIntfDealDetails.unitCost" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="unitSellingPrice">{{columns['unitSellingPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="unitSellingPrice" name="unitSellingPrice" required [(ngModel)]="rmanIntfDealDetails.unitSellingPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="unitListPrice">{{columns['unitListPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="unitListPrice" name="unitListPrice" required [(ngModel)]="rmanIntfDealDetails.unitListPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="contractUnitType">{{columns['contractUnitType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="contractUnitType" name="contractUnitType" required [(ngModel)]="rmanIntfDealDetails.contractUnitType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="allocationExcludeFlag">{{columns['allocationExcludeFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="allocationExcludeFlag" name="allocationExcludeFlag" required [(ngModel)]="rmanIntfDealDetails.allocationExcludeFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="additionalAttribute1">{{columns['additionalAttribute1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="additionalAttribute1" name="additionalAttribute1" required [(ngModel)]="rmanIntfDealDetails.additionalAttribute1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="additionalAttribute2">{{columns['additionalAttribute2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="additionalAttribute2" name="additionalAttribute2" required [(ngModel)]="rmanIntfDealDetails.additionalAttribute2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="additionalAttribute3">{{columns['additionalAttribute3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="additionalAttribute3" name="additionalAttribute3" required [(ngModel)]="rmanIntfDealDetails.additionalAttribute3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="additionalLineAttribute1">{{columns['additionalLineAttribute1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="additionalLineAttribute1" name="additionalLineAttribute1" required [(ngModel)]="rmanIntfDealDetails.additionalLineAttribute1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="additionalLineAttribute2">{{columns['additionalLineAttribute2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="additionalLineAttribute2" name="additionalLineAttribute2" required [(ngModel)]="rmanIntfDealDetails.additionalLineAttribute2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="interfaceStatus">{{columns['interfaceStatus']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="interfaceStatus" name="interfaceStatus" required [(ngModel)]="rmanIntfDealDetails.interfaceStatus" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="interfaceError">{{columns['interfaceError']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="interfaceError" name="interfaceError" required [(ngModel)]="rmanIntfDealDetails.interfaceError" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="msaNumber">{{columns['msaNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="msaNumber" name="msaNumber" required [(ngModel)]="rmanIntfDealDetails.msaNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="msaName">{{columns['msaName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="msaName" name="msaName" required [(ngModel)]="rmanIntfDealDetails.msaName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealLineNumber">{{columns['dealLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealLineNumber" name="dealLineNumber" required [(ngModel)]="rmanIntfDealDetails.dealLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="parentLineId">{{columns['parentLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="parentLineId" name="parentLineId" required [(ngModel)]="rmanIntfDealDetails.parentLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fvPercent">{{columns['fvPercent']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fvPercent" name="fvPercent" required [(ngModel)]="rmanIntfDealDetails.fvPercent" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="accountingRuleName">{{columns['accountingRuleName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="accountingRuleName" name="accountingRuleName" required [(ngModel)]="rmanIntfDealDetails.accountingRuleName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="additionalLineAttribute3">{{columns['additionalLineAttribute3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="additionalLineAttribute3" name="additionalLineAttribute3" required [(ngModel)]="rmanIntfDealDetails.additionalLineAttribute3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="eitfSop">{{columns['eitfSop']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="eitfSop" name="eitfSop" required [(ngModel)]="rmanIntfDealDetails.eitfSop" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="bespPerUnit">{{columns['bespPerUnit']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="bespPerUnit" name="bespPerUnit" required [(ngModel)]="rmanIntfDealDetails.bespPerUnit" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrgBasis">{{columns['arrgBasis']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="arrgBasis" name="arrgBasis" required [(ngModel)]="rmanIntfDealDetails.arrgBasis" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrgSource">{{columns['arrgSource']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="arrgSource" name="arrgSource" required [(ngModel)]="rmanIntfDealDetails.arrgSource" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fxDate">{{columns['fxDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fxDate" name="fxDate" required [(ngModel)]="rmanIntfDealDetails.fxDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fxRate">{{columns['fxRate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fxRate" name="fxRate" required [(ngModel)]="rmanIntfDealDetails.fxRate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="operationCode">{{columns['operationCode']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="operationCode" name="operationCode" required [(ngModel)]="rmanIntfDealDetails.operationCode" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="createdBy">{{columns['createdBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="createdBy" name="createdBy" required [(ngModel)]="rmanIntfDealDetails.createdBy" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="masterArrgFlag">{{columns['masterArrgFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="masterArrgFlag" name="masterArrgFlag" required [(ngModel)]="rmanIntfDealDetails.masterArrgFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="masterArrgName">{{columns['masterArrgName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="masterArrgName" name="masterArrgName" required [(ngModel)]="rmanIntfDealDetails.masterArrgName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="bundleFlag">{{columns['bundleFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="bundleFlag" name="bundleFlag" required [(ngModel)]="rmanIntfDealDetails.bundleFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceLineRefId">{{columns['sourceLineRefId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceLineRefId" name="sourceLineRefId" required [(ngModel)]="rmanIntfDealDetails.sourceLineRefId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="adjustmentAmount">{{columns['adjustmentAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="adjustmentAmount" name="adjustmentAmount" required [(ngModel)]="rmanIntfDealDetails.adjustmentAmount" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton label="Save" (click)="save()"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+

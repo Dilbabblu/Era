@@ -1,0 +1,31 @@
+export interface RmanFcBuckets {
+    attribute10: any;
+    attribute14: any;
+    attribute13: any;
+    createdDate: any;
+    attribute12: any;
+    attribute11: any;
+    bucketId: any;
+    endDate: any;
+    numberOfYears: any;
+    attribute3: any;
+    createdBy: any;
+    attribute2: any;
+    lastUpdatedBy: any;
+    attribute1: any;
+    numberOfBuckets: any;
+    startDate: any;
+    attribute9: any;
+    attribute8: any;
+    attribute7: any;
+    latestFlag: any;
+    attribute6: any;
+    attribute5: any;
+    name: any;
+    attribute4: any;
+    lastUpdatedDate: any;
+    numberOfQtrs: any;
+    version: any;
+    numberOfPeriods: any;
+    attribute15: any;
+}

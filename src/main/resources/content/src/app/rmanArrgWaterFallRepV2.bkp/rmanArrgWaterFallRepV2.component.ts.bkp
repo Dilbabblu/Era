@@ -1,0 +1,311 @@
+import {Component} from '@angular/core';
+import {RmanArrgWaterFallRepV2} from './rmanArrgWaterFallRepV2';
+import {RmanArrgWaterFallRepV2Service} from './rmanArrgWaterFallRepV2service';
+import {RmanArrgWaterFallRepV2Labels} from './rmanArrgWaterFallRepV2Labels';
+import { Table } from 'primeng/table';
+
+
+declare var $:any;
+
+@Component({
+    templateUrl: './rmanArrgWaterFallRepV2.component.html',
+    selector: 'rmanArrgWaterFallRepV2-data',
+    providers: [RmanArrgWaterFallRepV2Service ]
+})
+
+export class RmanArrgWaterFallRepV2Component{
+
+    displayDialog: boolean;
+
+    displaySearchDialog: boolean;
+
+    rmanArrgWaterFallRepV2: RmanArrgWaterFallRepV2 = new RmanArrgWaterFallRepV2Impl();
+
+    rmanArrgWaterFallRepV2Search: RmanArrgWaterFallRepV2 = new RmanArrgWaterFallRepV2Impl();
+
+	  isSerached:number=0;
+
+    selectedRmanArrgWaterFallRepV2: RmanArrgWaterFallRepV2;
+
+    newRmanArrgWaterFallRepV2: boolean;
+
+    rmanArrgWaterFallRepV2List: RmanArrgWaterFallRepV2[];
+
+    cols:any[];
+    columns:ILabels;
+
+    columnOptions: any[];
+
+    paginationOptions={};
+
+    pages:{};
+
+
+    datasource: any[];
+    pageSize:number;
+    totalElements:number;
+    collapsed:boolean=true;
+
+    //departmentsList:any[];
+    //departments:any[];
+
+
+
+    constructor(private rmanArrgWaterFallRepV2Service: RmanArrgWaterFallRepV2Service ) {
+
+        // generate list code
+        this.paginationOptions={'pageNumber':0,'pageSize':'10000'};
+
+
+
+    }
+
+    ngOnInit() {
+
+        this.getAllRmanArrgWaterFallRepV2();
+
+        this.cols = [];
+        let cols:any = [];
+                cols["period7"] = "period7";
+        cols["dealArrangementNumber"] = "dealArrangementNumber";
+        cols["period8"] = "period8";
+        cols["period5"] = "period5";
+        cols["revManagerId"] = "revManagerId";
+        cols["period6"] = "period6";
+        cols["currentPeriod"] = "currentPeriod";
+        cols["period3"] = "period3";
+        cols["period4"] = "period4";
+        cols["msaName"] = "msaName";
+        cols["period1"] = "period1";
+        cols["period2"] = "period2";
+        cols["elementType"] = "elementType";
+        cols["dealArrangementName"] = "dealArrangementName";
+        cols["contractQuantity"] = "contractQuantity";
+        cols["future"] = "future";
+        cols["period9"] = "period9";
+        cols["productDescription"] = "productDescription";
+        cols["sno"] = "sno";
+        cols["unitSellingPrice"] = "unitSellingPrice";
+        cols["dealName"] = "dealName";
+        cols["createdBy"] = "createdBy";
+        cols["period12"] = "period12";
+        cols["msaNumber"] = "msaNumber";
+        cols["period11"] = "period11";
+        cols["productGroup"] = "productGroup";
+        cols["dealLineNumber"] = "dealLineNumber";
+        cols["period10"] = "period10";
+        cols["sourceLineNumber"] = "sourceLineNumber";
+        cols["legalEntityId"] = "legalEntityId";
+        cols["revAccountantId"] = "revAccountantId";
+        cols["creationDate"] = "creationDate";
+        cols["invoiceNumber"] = "invoiceNumber";
+        cols["solution"] = "solution";
+        cols["productName"] = "productName";
+        cols["dealArrangementId"] = "dealArrangementId";
+        cols["productType"] = "productType";
+        cols["revenueStartDate"] = "revenueStartDate";
+        cols["legalEntityName"] = "legalEntityName";
+        cols["invoiceLineNumber"] = "invoiceLineNumber";
+        cols["orderNumber"] = "orderNumber";
+        cols["orderedQuantity"] = "orderedQuantity";
+        cols["distributionAmount"] = "distributionAmount";
+        cols["revenueEndDate"] = "revenueEndDate";
+
+
+
+        //this.columns=cols;
+         let rmanArrgWaterFallRepV2Labels = new RmanArrgWaterFallRepV2Labels();
+
+        this.columns=rmanArrgWaterFallRepV2Labels.fieldLabels;
+
+        this.columnOptions = [];
+
+        this.cols=[];
+
+		//for (let prop in cols) {
+	    for (let prop in this.columns) {
+			 this.cols.push({field: prop, header: this.columns[prop]});
+			 this.columnOptions.push({label: this.columns[prop], value: prop});
+		}
+
+
+    }
+
+    reset(dt:Table){
+      dt.reset();
+      this.paginationOptions={};
+      this.rmanArrgWaterFallRepV2 = new RmanArrgWaterFallRepV2Impl();
+      this.getAllRmanArrgWaterFallRepV2();
+    }
+
+    exportExcel() {
+      $.blockUI();
+      let serviceUrl = this.rmanArrgWaterFallRepV2Service.getServiceUrl(this.paginationOptions, this.rmanArrgWaterFallRepV2, 1);
+      $.unblockUI();
+      window.location.href = serviceUrl;
+    }
+
+
+    getAllRmanArrgWaterFallRepV2() {
+      $.blockUI();
+        this.rmanArrgWaterFallRepV2Service.getAllRmanArrgWaterFallRepV2(this.paginationOptions,this.rmanArrgWaterFallRepV2).then((rmanArrgWaterFallRepV2List:any) => {
+            //console.log(rmanArrgWaterFallRepV2List);
+            this.datasource = rmanArrgWaterFallRepV2List.content;
+            this.rmanArrgWaterFallRepV2List = rmanArrgWaterFallRepV2List.content;
+            this.totalElements=rmanArrgWaterFallRepV2List.totalElements;
+            this.pageSize=rmanArrgWaterFallRepV2List.size;
+            $.unblockUI();
+            this.displaySearchDialog = false;
+        });
+    }
+
+
+    getRmanArrgWaterFallRepV2(event:any) {
+
+        let first:number=event.first;
+        let rows:number=event.rows;
+        let pageNumber:number=first/rows;
+        this.paginationOptions={'pageNumber':pageNumber,'pageSize':this.pageSize,'sortField':event.sortField,'sortOrder':event.sortOrder};
+        $.blockUI();
+        this.rmanArrgWaterFallRepV2Service.getAllRmanArrgWaterFallRepV2(this.paginationOptions,this.rmanArrgWaterFallRepV2).then((rmanArrgWaterFallRepV2List:any) => {
+            this.datasource = rmanArrgWaterFallRepV2List.content;
+            this.rmanArrgWaterFallRepV2List = rmanArrgWaterFallRepV2List.content;
+            this.totalElements=rmanArrgWaterFallRepV2List.totalElements;
+            this.pageSize=rmanArrgWaterFallRepV2List.size;
+            $.unblockUI();
+        });
+
+    }
+
+
+    showDialogToAdd() {
+
+        this.newRmanArrgWaterFallRepV2 = true;
+        this.rmanArrgWaterFallRepV2 = new RmanArrgWaterFallRepV2Impl();
+        this.displayDialog = true;
+
+    }
+
+
+    save() {
+
+        if (this.newRmanArrgWaterFallRepV2) {
+          $.blockUI();
+            this.rmanArrgWaterFallRepV2Service.saveRmanArrgWaterFallRepV2(this.rmanArrgWaterFallRepV2).then((response:any) => {
+                 this.getAllRmanArrgWaterFallRepV2();
+            });
+        }
+        else {
+          $.blockUI();
+            this.rmanArrgWaterFallRepV2Service.updateRmanArrgWaterFallRepV2(this.rmanArrgWaterFallRepV2).then((response:any) => {
+                 this.getAllRmanArrgWaterFallRepV2();
+            });
+        }
+
+        this.rmanArrgWaterFallRepV2 = new RmanArrgWaterFallRepV2Impl();
+
+        this.displayDialog = false;
+
+    }
+
+
+    delete(rmanArrgWaterFallRepV2:any) {
+        this.rmanArrgWaterFallRepV2=rmanArrgWaterFallRepV2;
+
+        //this.rmanArrgWaterFallRepV2 = null;
+        this.displayDialog = false;
+
+        if (window.confirm('Are you sure you want to delete this record?')) {
+           this.rmanArrgWaterFallRepV2List.splice(this.findSelectedRmanArrgWaterFallRepV2Index(), 1);
+           this.rmanArrgWaterFallRepV2Service.deleteRmanArrgWaterFallRepV2(this.rmanArrgWaterFallRepV2).then(response => {
+               this.rmanArrgWaterFallRepV2 = new RmanArrgWaterFallRepV2Impl();
+               this.getAllRmanArrgWaterFallRepV2();
+               //this.rmanArrgWaterFallRepV2List.splice(this.findSelectedRmanArrgWaterFallRepV2Index(), 1);
+              //this.rmanArrgWaterFallRepV2 = null;
+              // this.displayDialog = false;
+           });
+        }
+
+    }
+
+    editRow(rmanArrgWaterFallRepV2:any) {
+        this.newRmanArrgWaterFallRepV2 = false;
+        this.rmanArrgWaterFallRepV2 = this.cloneRmanArrgWaterFallRepV2(rmanArrgWaterFallRepV2);
+        this.displayDialog = true;
+
+    }
+
+
+    findSelectedRmanArrgWaterFallRepV2Index(): number {
+        return this.rmanArrgWaterFallRepV2List.indexOf(this.selectedRmanArrgWaterFallRepV2);
+    }
+
+    onRowSelect(event:any) {
+
+    }
+
+    cloneRmanArrgWaterFallRepV2(c: RmanArrgWaterFallRepV2): RmanArrgWaterFallRepV2 {
+        let rmanArrgWaterFallRepV2 = new RmanArrgWaterFallRepV2Impl();
+        for(let prop in c) {
+            rmanArrgWaterFallRepV2[prop] = c[prop];
+        }
+        return rmanArrgWaterFallRepV2;
+    }
+
+    hideColumnMenu: boolean=true;
+
+    toggleColumnMenu(){
+        if(this.hideColumnMenu)
+        {
+            this.hideColumnMenu= false;
+        }else
+        {
+            this.hideColumnMenu=true;
+        }
+    }
+
+    showFilter: boolean= false;
+
+    toggleFilterBox(){
+        if(this.showFilter)
+        {
+            this.showFilter= false;
+        }else
+        {
+            this.showFilter=true;
+        }
+    }
+
+    showDialogToSearch() {
+
+        this.rmanArrgWaterFallRepV2Search=new RmanArrgWaterFallRepV2Impl();
+
+        if (this.isSerached==0) {
+            this.rmanArrgWaterFallRepV2Search=new RmanArrgWaterFallRepV2Impl();
+        }
+        this.displaySearchDialog = true;
+
+    }
+
+    search() {
+
+        this.isSerached=1;
+		this.rmanArrgWaterFallRepV2=this.rmanArrgWaterFallRepV2Search;
+		this.getAllRmanArrgWaterFallRepV2();
+    }
+
+    onBeforeToggle(evt: any) {
+      //console.log('event test', evt);
+      this.collapsed = evt.collapsed;
+    }
+
+}
+
+
+class RmanArrgWaterFallRepV2Impl implements RmanArrgWaterFallRepV2 {
+    constructor(public period7?:any,public dealArrangementNumber?:any,public period8?:any,public period5?:any,public revManagerId?:any,public period6?:any,public currentPeriod?:any,public period3?:any,public period4?:any,public msaName?:any,public period1?:any,public period2?:any,public elementType?:any,public dealArrangementName?:any,public contractQuantity?:any,public future?:any,public period9?:any,public productDescription?:any,public sno?:any,public unitSellingPrice?:any,public dealName?:any,public createdBy?:any,public period12?:any,public msaNumber?:any,public period11?:any,public productGroup?:any,public dealLineNumber?:any,public period10?:any,public sourceLineNumber?:any,public legalEntityId?:any,public revAccountantId?:any,public creationDate?:any,public invoiceNumber?:any,public solution?:any,public productName?:any,public dealArrangementId?:any,public productType?:any,public revenueStartDate?:any,public legalEntityName?:any,public invoiceLineNumber?:any,public orderNumber?:any,public orderedQuantity?:any,public distributionAmount?:any,public revenueEndDate?:any) {}
+}
+
+interface ILabels {
+     [index: string]: string;
+}

@@ -1,0 +1,836 @@
+<style type="text/css">
+.RevenueTab-buttons .ui-button:enabled:not(:focus):hover {
+    background-color: #175e95 !important;
+    color: #fff !IMPORTANT;
+}
+.RevenueTab-buttons button{
+	margin-right:3px;
+} 
+</style>
+
+<div class="content-section implementation">
+</div>
+
+<p-panel header="Deal Revenue Snapshot"  class="row-active"  class="mb-1em" (onBeforeToggle)=onBeforeToggle($event)>
+	<p-header>	  
+		<div class="pull-right icons-list">
+			<p-toggleButton class="ui-inputswitch" onLabel="Order" offLabel="Quote" onIcon="fa fa-toggle-on fa-sm" offIcon="fa fa-toggle-off fa-sm" [(ngModel)]="isRevType" (ngModelChange)="onQuoteOrderSwitch()"></p-toggleButton> 
+			<a  (click)="deliveryDetails(dd)" title="Delivery Details"><em class="fa fa-info-circle"></em> Delivery Details</a>
+			<a  (click)="revenueSchedules(ars)" title="Actual Revenue Schedules"><em class="fa fa-tasks"></em> Actual Revenue Schedules</a>
+			<a  (click)="contingencies(dt3)" title="View Holds & Events"><em class="fa fa-clock-o"></em> Holds & Events</a>
+			<a  (click)="accounting(dt1)" title="View Accounting"><em class="fa fa-file-text-o"></em> Accounting</a> &nbsp;
+			<a  (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+			<a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+			<a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+			<a  (click)="exportExcel()" title="Export" *ngIf="!disableExport"><em class="fa fa-external-link"></em></a>
+
+				<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                    <div class="user-popup">
+                      <div class="content overflow">
+                        <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+                        <label for="selectall">Select All</label>
+                        <a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+						<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+							<ng-template let-col let-index="index" pTemplate="item">
+							  <div *ngIf="col.drag">
+							  <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+							   (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+								<div class="drag">
+								  <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+								  <label>{{col.header}}</label>
+								</div>
+							  </div>
+							  </div>
+							  <div *ngIf="!col.drag">
+							  <div class="ui-helper-clearfix">
+								<div>
+								  <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+								  <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+								</div>
+							  </div>
+							  </div>
+							</ng-template>
+							</p-listbox>
+					</div>
+					<div class="pull-right">
+                        <a class="configColBtn" (click)="saveColumns()">Save</a>
+                        <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                      </div>
+				  </div>
+				</div>
+				
+		</div>
+		</p-header>
+
+<div class="x-scroll">
+
+	<p-table class="ui-datatable arrangementMgrTbl custom-datatable" #dt id="revenue-dt" [loading]="loading" [columns]="columns" [value]="rmanRevDetailsVList" selectionMode="single" [metaKeySelection]="false"
+                (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnSelect($event)" (onLazyLoad)="getRmanRevDetailsV($event)" [lazy]="true" [paginator]="showPaginator" [rows]="pageSize"
+                [totalRecords]="totalRevElements"  scrollable="true" [resizableColumns]="true" columnResizeMode="expand" >
+                
+              <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                       <col *ngFor="let col of columns">
+                  </colgroup>
+              </ng-template>
+               
+                <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                  <tr>
+					<ng-container *ngFor="let col of columns">
+						<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+						<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+				   </ng-container>
+
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-rmanRevDetailsV let-columns="columns">
+                  <tr [pSelectableRow]="rowData">
+                    <ng-container *ngFor="let col of columns" >
+                      <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                        {{rowData[col.field]}}
+                      </td>
+                    
+                      <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                        {{rowData[col.field]}}
+                      </td>
+                    
+                      <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                        {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                      </td>
+                    
+                      <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                        {{rowData[col.field] | round}}
+                      </td>
+					  
+					    <td *ngIf="col.type == 'link'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                        
+						<span *ngIf="rmanRevDetailsV.accountingRuleName == 'USAGE'" title="Show Usage Details" class="w-100_tr"><a class="cell-link" (click)="showUsages(rmanRevDetailsV.dealLineId)">{{rowData[col.field] | round}}</a></span>
+						<span *ngIf="rmanRevDetailsV.accountingRuleName != 'USAGE'" title="{{rowData[col.field] | round}}" class="w-100_tr">{{rowData[col.field] | round}}</span>
+					
+                      </td>
+                    </ng-container>
+                          
+                  </tr>                 
+                </ng-template>
+				
+				  <ng-template pTemplate="footer">
+					  <tr>
+						<ng-container *ngFor="let col of columns">
+							<td *ngIf="col.footer=='empty'"></td>
+							<td *ngIf="col.footer=='totals'" class="number">Totals: </td>
+							<td *ngIf="col.footer=='totalAllocAmountTotal'" class="number">{{totalAllocAmountTotal | round}}</td>
+							<td *ngIf="col.footer=='totalAllocAmountFcTotal'" class="number">{{totalAllocAmountFcTotal | round}}</td>
+							<td *ngIf="col.footer=='totalBookedAmount'" class="number">{{totalBookedAmount | round}}</td>
+							<td *ngIf="col.footer=='totalShippedAmount'" class="number">{{totalShippedAmount | round}}</td>
+							<td *ngIf="col.footer=='deliveredAllocRspTotal'" class="number">{{deliveredAllocRspTotal | round}}</td>
+							<td *ngIf="col.footer=='deliveredAllocRspFcTotal'" class="number">{{deliveredAllocRspFcTotal | round}}</td>
+							<td *ngIf="col.footer=='totalBilledAmount'" class="number">{{totalBilledAmount | round}}</td>
+							<td *ngIf="col.footer=='totalBilledAmountFc'" class="number">{{totalBilledAmountFc | round}}</td>
+							<td *ngIf="col.footer=='postBillingProvisionTotal'" class="number">{{postBillingProvisionTotal | round}}</td>
+							<td *ngIf="col.footer=='postBillingDeferralsTotal'" class="number">{{postBillingDeferralsTotal | round}}</td>
+							<td *ngIf="col.footer=='pbDeferralsFcTotal'" class="number">{{pbDeferralsFcTotal | round}}</td>
+							<td *ngIf="col.footer=='totalPbAllocAmountTc'" class="number">{{totalPbAllocAmountTc | round}}</td>
+							<td *ngIf="col.footer=='postBillingAllocationAmountTotal'" class="number">{{postBillingAllocationAmountTotal | round}}</td>
+							<td *ngIf="col.footer=='totalRevBegBalTc'" class="number">{{totalRevBegBalTc | round}}</td>
+							<td *ngIf="col.footer=='totalRevCurrBalTc'" class="number">{{totalRevCurrBalTc | round}}</td>
+							<td *ngIf="col.footer=='totalRevEndBalTc'" class="number">{{totalRevEndBalTc | round}}</td>
+							<td *ngIf="col.footer=='begBalanceTotal'" class="number">{{begBalanceTotal | round}}</td>
+							<td *ngIf="col.footer=='currentPeriodTotal'" class="number">{{currentPeriodTotal | round}}</td>
+							<td *ngIf="col.footer=='endingBalanceTotal'" class="number">{{endingBalanceTotal | round}}</td>
+							<td *ngIf="col.footer=='totalUnamortizedAmountTc'" class="number">{{totalUnamortizedAmountTc | round}}</td>
+							<td *ngIf="col.footer=='totalUnamortizedAmount'" class="number">{{totalUnamortizedAmount | round}}</td>
+							<td *ngIf="col.footer=='totalRevenueAdjustment'" class="number">{{totalRevenueAdjustment | round}}</td>
+					   </ng-container>
+					  </tr>
+					 
+                </ng-template>
+				
+                <ng-template pTemplate="emptymessage" let-columns>
+						<div class="no-results-data">
+								<p>{{noData}}</p>
+						</div>
+                </ng-template>
+			  </p-table>
+			  
+</div>
+
+</p-panel>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+	<form (ngSubmit)="search()">
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+				  	<span class="md-inputfield">
+						<span class="selectSpan">SO#</span>
+						<input pInputText class="textbox" placeholder="SO#" name="orderNumber" id="orderNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="so"/>
+					</span>
+				</div> 
+				<div class="ui-g-6 pull-right">
+				  	<span class="md-inputfield">
+						<span class="selectSpan">SO Line#</span>
+						<input pInputText name="dealLineNumber" class="textbox" placeholder="SO Line#" id="dealLineNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="soLine"/>
+					</span>
+				</div>   
+			</div>
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+			<button type="button" pButton class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+		
+		</div>
+	</p-footer>
+</p-dialog>
+<p-dialog header="RmanRevDetailsV" width="500" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanRevDetailsV">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="dealArrangementId">{{columns['dealArrangementId']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="dealArrangementId" id="dealArrangementId" required [(ngModel)]="rmanRevDetailsV.dealArrangementId"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="dealLineId">{{columns['dealLineId']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="dealLineId" id="dealLineId" required [(ngModel)]="rmanRevDetailsV.dealLineId" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="dealArrangementName">{{columns['dealArrangementName']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="dealArrangementName" id="dealArrangementName" required [(ngModel)]="rmanRevDetailsV.dealArrangementName"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="dealLineNumber">{{columns['dealLineNumber']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="dealLineNumber" id="dealLineNumber" required [(ngModel)]="rmanRevDetailsV.dealLineNumber" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="productName">{{columns['productName']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="productName" id="productName" required [(ngModel)]="rmanRevDetailsV.productName" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="element">{{columns['element']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="element" id="element" required [(ngModel)]="rmanRevDetailsV.element" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="productGroup">{{columns['productGroup']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="productGroup" id="productGroup" required [(ngModel)]="rmanRevDetailsV.productGroup" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="productType">{{columns['productType']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="productType" id="productType" required [(ngModel)]="rmanRevDetailsV.productType" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="arrgLineAmount">{{columns['arrgLineAmount']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="arrgLineAmount" id="arrgLineAmount" required [(ngModel)]="rmanRevDetailsV.arrgLineAmount" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="arrgLineCost">{{columns['arrgLineCost']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="arrgLineCost" id="arrgLineCost" required [(ngModel)]="rmanRevDetailsV.arrgLineCost" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="totalAllocation">{{columns['totalAllocation']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="totalAllocation" id="totalAllocation" required [(ngModel)]="rmanRevDetailsV.totalAllocation"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="bookedAmount">{{columns['bookedAmount']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="bookedAmount" id="bookedAmount" required [(ngModel)]="rmanRevDetailsV.bookedAmount" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="shippedAmount">{{columns['shippedAmount']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="shippedAmount" id="shippedAmount" required [(ngModel)]="rmanRevDetailsV.shippedAmount" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="deliveredAllocRsp">{{columns['deliveredAllocRsp']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="deliveredAllocRsp" id="deliveredAllocRsp" required [(ngModel)]="rmanRevDetailsV.deliveredAllocRsp"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="preBillingContAmount">{{columns['preBillingContAmount']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="preBillingContAmount" id="preBillingContAmount" required [(ngModel)]="rmanRevDetailsV.preBillingContAmount"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="billedAmount">{{columns['billedAmount']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="billedAmount" id="billedAmount" required [(ngModel)]="rmanRevDetailsV.billedAmount" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="postBillingContAmount">{{columns['postBillingContAmount']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="postBillingContAmount" id="postBillingContAmount" required [(ngModel)]="rmanRevDetailsV.postBillingContAmount"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="postBillingAllocationAmount">{{columns['postBillingAllocationAmount']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="postBillingAllocationAmount" id="postBillingAllocationAmount" required [(ngModel)]="rmanRevDetailsV.postBillingAllocationAmount"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="totalGaapRevneueBegBal">{{columns['totalGaapRevneueBegBal']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="totalGaapRevneueBegBal" id="totalGaapRevneueBegBal" required [(ngModel)]="rmanRevDetailsV.totalGaapRevneueBegBal"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="totalGaapRevenueCurrentMon">{{columns['totalGaapRevenueCurrentMon']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="totalGaapRevenueCurrentMon" id="totalGaapRevenueCurrentMon" required [(ngModel)]="rmanRevDetailsV.totalGaapRevenueCurrentMon"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="totalGaapRevenueEndingBal">{{columns['totalGaapRevenueEndingBal']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="totalGaapRevenueEndingBal" id="totalGaapRevenueEndingBal" required [(ngModel)]="rmanRevDetailsV.totalGaapRevenueEndingBal"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="accountingRuleName">{{columns['accountingRuleName']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="accountingRuleName" id="accountingRuleName" required [(ngModel)]="rmanRevDetailsV.accountingRuleName"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="duration">{{columns['duration']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="duration" id="duration" required [(ngModel)]="rmanRevDetailsV.duration" />
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="cumGaapBegBalance">{{columns['cumGaapBegBalance']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="cumGaapBegBalance" id="cumGaapBegBalance" required [(ngModel)]="rmanRevDetailsV.cumGaapBegBalance"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="netGappCurrMonth">{{columns['netGappCurrMonth']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="netGappCurrMonth" id="netGappCurrMonth" required [(ngModel)]="rmanRevDetailsV.netGappCurrMonth"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="cumGaapEndingBalance">{{columns['cumGaapEndingBalance']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="cumGaapEndingBalance" id="cumGaapEndingBalance" required [(ngModel)]="rmanRevDetailsV.cumGaapEndingBalance"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="gaapUnamortized">{{columns['gaapUnamortized']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="gaapUnamortized" id="gaapUnamortized" required [(ngModel)]="rmanRevDetailsV.gaapUnamortized"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="cogsBegiBalCogs">{{columns['cogsBegiBalCogs']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="cogsBegiBalCogs" id="cogsBegiBalCogs" required [(ngModel)]="rmanRevDetailsV.cogsBegiBalCogs"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="currentMonthCogs">{{columns['currentMonthCogs']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="currentMonthCogs" id="currentMonthCogs" required [(ngModel)]="rmanRevDetailsV.currentMonthCogs"
+					/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="endingBalance">{{columns['endingBalance']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="endingBalance" id="endingBalance" required [(ngModel)]="rmanRevDetailsV.endingBalance" />
+				</div>
+			</div>
+
+		</div>
+	</form>
+	<footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+			<button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+		</div>
+	</footer>
+</p-dialog>
+
+<p-dialog header="View Journals" class="accounting-dialog" id="journals" width="1300" [(visible)]="showAccountingDialog" [draggable]="true" 
+ showEffect="fade" [modal]="true" >
+
+	<form >
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{accColumns['orderNumber']}}</span>
+						<input pInputText name="orderNumber" class="textbox" placeholder="SO #" autocomplete="false" id="orderNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanGlAccountingVSearch.orderNumber"
+						/>
+					</span>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{accColumns['sourceLineNumber']}}</span>
+						<input pInputText name="sourceLineNumber" class="textbox" placeholder="SO Line #" autocomplete="false" id="sourceLineNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanGlAccountingVSearch.sourceLineNumber"
+						/>
+					</span>
+				</div>
+
+
+
+			</div>
+
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+				<button type="submit" pButton class="primary-btn" label="Search" (click)="searchAccounts()"></button>
+				<button type="button" pButton label="Reset" class="secondary-btn" (click)="resetAccounts(dt1)"></button>				
+				<button type="button" pButton label="Export" class="primary-btn" (click)="exportAccountsExcel()"></button>
+			</div>
+
+		</div>
+
+		<p-table class="ui-datatable viewjournal arrangementMgrTbl" #dt1 id="viewjournal-dt" [loading]="loading" [value]="rmanGlAccountingVList" selectionMode="single"
+		(onLazyLoad)="getRmanGlAccountingV($event)" [lazy]="true" [paginator]="true" [rows]="pageSize"
+		[totalRecords]="totalAccElements"  scrollable="true" scrollHeight="300px">
+		 <ng-template pTemplate="header" class="arrangementMgrTblHead">
+			 <tr>
+				<th><a >{{accColumns['accountClass']}}</a></th>
+				 <th><a >{{accColumns['orderNumber']}}</a></th>
+				 <th><a >{{accColumns['sourceLineNumber']}}</a></th>
+				 <th><a >{{accColumns['dealLineNumber']}}</a></th>
+				 <th><a >{{accColumns['lineStatus']}}</a></th>
+				 <th><a >{{accColumns['glDate']}}</a></th>
+				 <th><a >{{accColumns['periodName']}}</a></th>
+				 <th><a >{{accColumns['drCr']}}</a></th>
+				 <th><a >{{accColumns['account']}}</a></th>
+				 <th><a >{{accColumns['accountDescription']}}</a></th>
+				 <th><a >{{accColumns['currencyCode']}}</a></th>
+				 <th><a >{{accColumns['functionalCurrency']}}</a></th>
+				 <th><a >{{accColumns['amountTc']}}</a></th>
+				 <th><a >{{accColumns['amountFc']}}</a></th>
+				 <th><a >{{accColumns['postedFlag']}}</a></th>
+			 </tr>
+		 </ng-template>
+		 <ng-template pTemplate="body" let-rowData let-rmanGlAccountingV>
+			 <tr [pSelectableRow]="rowData">
+					<td title="{{rmanGlAccountingV.accountClass}}">{{rmanGlAccountingV.accountClass }}</td>
+				 <td title="{{rmanGlAccountingV.orderNumber}}">{{rmanGlAccountingV.orderNumber}}</td>
+				 <td title="{{rmanGlAccountingV.sourceLineNumber}}">{{rmanGlAccountingV.sourceLineNumber}}</td>
+				 <td title="{{rmanGlAccountingV.dealLineNumber}}">{{rmanGlAccountingV.dealLineNumber}}</td>
+				 <td title="{{rmanGlAccountingV.lineStatus}}">{{rmanGlAccountingV.lineStatus}}</td>
+				 <td title="{{rmanGlAccountingV.glDate | date: 'MM/dd/yyyy'}}">{{rmanGlAccountingV.glDate | date: 'MM/dd/yyyy'}}</td>
+				 <td title="{{rmanGlAccountingV.periodName}}">{{rmanGlAccountingV.periodName}}</td>
+				 <td title="{{rmanGlAccountingV.drCr}}">{{rmanGlAccountingV.drCr}}</td>
+				 <td title="{{rmanGlAccountingV.account}}">{{rmanGlAccountingV.account}}</td>
+				 <td title="{{rmanGlAccountingV.accountDescription}}">{{rmanGlAccountingV.accountDescription}}</td>
+				 <td title="{{rmanGlAccountingV.currencyCode}}">{{rmanGlAccountingV.currencyCode}}</td>
+				 <td title="{{rmanGlAccountingV.currencyCode}}">{{rmanGlAccountingV.functionalCurrency}}</td>
+				 <td title="{{rmanGlAccountingV.amountTc | round}}">{{rmanGlAccountingV.amountTc | round}}</td>
+				 <td title="{{rmanGlAccountingV.amountFc | round}}">{{rmanGlAccountingV.amountFc | round}}</td>
+				 <td title="{{rmanGlAccountingV.postedFlag}}">{{rmanGlAccountingV.postedFlag}}</td>
+				 
+			 </tr>
+		 </ng-template>
+
+		 <ng-template pTemplate="emptymessage" let-columns>
+			 <tr *ngIf="!columns">
+				 <td class="no-data">{{noData}}</td>
+			 </tr>
+		 </ng-template>
+	 </p-table>
+ 
+
+
+
+	</form>
+
+</p-dialog>
+
+
+
+<p-dialog header="View Holds & Events" width="1200" [(visible)]="showContingenciesDialog" [draggable]="true" 
+ showEffect="fade" [modal]="true">
+
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{contColumns['orderNumber']}}</span>
+						<input pInputText name="orderNumber" class="textbox" placeholder="SO #" autocomplete="false" id="orderNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContReleaseEventsVSearch.so"
+						/>
+					</span>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{contColumns['sourceLineNumber']}}</span>
+						<input pInputText name="sourceLineNumber" class="textbox" placeholder="SO Line #" autocomplete="false" id="sourceLineNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContReleaseEventsVSearch.sourceLineNumber"
+						/>
+					</span>
+				</div>
+			</div>
+
+
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+				<button type="submit" pButton class="primary-btn" label="Search" (click)="searchContigencies()"></button>
+				<button type="button" pButton label="Reset" class="secondary-btn" (click)="resetContingencies(dt3)"></button>
+				<button type="button" pButton label="Export" class="primary-btn" (click)="exportContingencies()"></button>
+			</div>
+
+
+
+
+		</div>
+
+
+		<p-table  #dt3  class="ui-datatable arrangementMgrTbl" id="releaseEventsList-dt" [loading]="loading" [value]="rmanContReleaseEventsVList"  (onLazyLoad)="getRmanContReleaseEventsV($event)" [lazy]="true" [paginator]="true"
+		[rows]="pageSize" [totalRecords]="totalContElements"  scrollable="true" >
+		<ng-template pTemplate="header" class="arrangementMgrTblHead">
+				<tr>
+						<th><a >{{contColumns['so']}}</a></th>
+						<th><a >{{contColumns['sourceLineNumber']}}</a></th>
+						<th><a >{{contColumns['dealNum']}}</a></th>
+						<th><a >{{contColumns['productName']}}</a></th>
+						<th><a >{{contColumns['trxCurrency']}}</a></th>
+						<th><a >{{contColumns['bookedAmount']}}</a></th>
+						<th><a >{{contColumns['deliveredAmount']}}</a></th>				
+						<th><a >{{contColumns['contingencyName']}}</a></th>
+						<th><a >{{contColumns['ruleCategory']}}</a></th>
+						<th><a >{{contColumns['templateName']}}</a></th>
+						<th><a >{{contColumns['deferredAmount']}}</a></th>
+						<th><a >{{contColumns['deferredReleaseAmount']}}</a></th>
+						<th><a >{{contColumns['undeferredAmount']}}</a></th>
+				</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-rowData>
+				<tr [pSelectableRow]="rowData">
+						
+						<td  title="{{rowData.so}}">{{rowData.so}}</td>
+						<td  title="{{rowData.sourceLineNumber}}">
+							{{rowData.sourceLineNumber}}</td>
+						<td  title="{{rowData.dealLineNumber}}">
+							{{rowData.dealLineNumber}}</td>
+						<td  title="{{sku}}">{{sku}}</td>
+						<td  title="{{rowData.trxCurrency}}">
+							{{rowData.trxCurrency}}</td>
+						<td  title="{{rowData.bookedAmount | number : '1.2-2'}}">
+							{{rowData.bookedAmount | number : '1.2-2'}}</td>
+						<td  title="{{rowData.deliveredAmount  | number : '1.2-2'}}">
+							{{rowData.deliveredAmount  | number : '1.2-2'}}</td>
+						<td  title="{{rowData.contingencyName}}">
+							{{rowData.contingencyName}}</td>
+						<td  title="{{rowData.ruleCategory}}">{{rowData.ruleCategory}}</td>
+						<td  title="{{rowData.templateName}}">{{rowData.templateName}}</td>
+						<td  title="{{rowData.deferredAmount | number : '1.2-2'}}">{{rowData.deferredAmount | number : '1.2-2'}}</td>
+						<td  title="{{rowData.deferredReleaseAmount | number : '1.2-2'}}">
+							{{rowData.deferredReleaseAmount | number : '1.2-2'}}</td>
+						<td  title="{{rowData.undeferredAmount | number : '1.2-2'}}">
+							{{rowData.undeferredAmount | number : '1.2-2'}}</td>
+					  
+						
+				</tr>
+		</ng-template>
+		<ng-template pTemplate="emptymessage" let-columns>
+				<tr *ngIf="!columns">
+						<td class="no-data">{{noData}}</td>
+				</tr>
+		</ng-template>
+</p-table>
+</form>
+</p-dialog>
+
+<p-dialog header="Usage Revenue Schedules" width="1200" [(visible)]="showUsageDialog" [draggable]="true" 
+ showEffect="fade" [modal]="true">
+
+	<form>
+	
+		<p-table *ngIf="showUsageDialog" #dt3  class="ui-datatable arrangementMgrTbl" [loading]="loading" [value]="rmanUsagesVList"  (onLazyLoad)="getRmanUsage($event)" [lazy]="true" [paginator]="true"
+		[rows]="pageSize" [totalRecords]="totalUsagesElements"  scrollable="true" scrollHeight="400px">
+		<ng-template pTemplate="header">
+				<tr>
+						<th style="width: 100px">SO Line#</th>
+						<th style="width: 100px">Usage Summary#</th>
+						<th style="width: 100px">Usage#</th>
+						<th style="width: 100px">Accounting Period</th>
+						<th style="width: 100px">Type</th>				
+						<th style="width: 100px">Usage Start Date</th>
+						<th style="width: 100px">Usage End Date</th>
+						<th style="width: 100px;text-align: right">Quantity</th>
+						<th style="width: 100px;text-align: right">Unit Price</th>
+						<th style="width: 100px;text-align: right">Sub Total</th>
+				</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-rowData>
+				<tr [pSelectableRow]="rowData">
+						
+						<td style="width: 100px" title="{{rowData.orderLineNumber}}">{{rowData.orderLineNumber}}</td>
+						<td style="width: 100px" title="{{rowData.attribute8}}">{{rowData.attribute8}}</td>
+						<td style="width: 100px" title="{{rowData.sfUsageSummaryNumber}}">{{rowData.sfUsageSummaryNumber}}</td>
+						<td style="width: 100px" title="{{rowData.attribute4}}">{{rowData.attribute4}}</td>
+						<td style="width: 100px" title="{{rowData.attribute6}}">{{rowData.attribute6}}</td>
+						<td style="width: 100px" title="{{rowData.summaryStartDate  | date : 'MM/dd/yyyy'}}">{{rowData.summaryStartDate  | date : 'MM/dd/yyyy'}}</td>
+						<td style="width: 100px" title="{{rowData.summaryEndDate  | date : 'MM/dd/yyyy'}}">{{rowData.summaryEndDate  | date : 'MM/dd/yyyy'}}</td>
+						<td style="width: 100px;text-align:right" title="{{rowData.totalQty}}">{{rowData.totalQty}}</td>
+						<td style="width: 100px;text-align: right" title="{{rowData.unitSellingPrice| round}}">{{rowData.unitSellingPrice| round}}</td>
+						<td style="width: 100px;text-align: right" title="{{rowData.unbilledSubTotal | round}}">{{rowData.unbilledSubTotal | round}}</td>
+						
+						
+				</tr>
+		</ng-template>
+		<ng-template pTemplate="emptymessage" let-columns>
+				<tr *ngIf="!columns">
+						<td>{{noData}}</td>
+				</tr>
+		</ng-template>
+</p-table>
+
+	</form>
+</p-dialog>
+
+<p-dialog header="Revenue Schedules" width="1200" [(visible)]="showRevSchedulesDialog" [draggable]="true" 
+ showEffect="fade" [modal]="true">
+
+	<form>
+		<p-table  #dt2  class="ui-datatable arrangementMgrTbl" [loading]="loading" id="rmanDealUsageSummary-dt" [value]="rmanDealUsageSummaryList"  (onLazyLoad)="getRmanDealUsageSummary($event)" [lazy]="true" [paginator]="true"
+		[rows]="pageSize" [totalRecords]="totalUsagesElements"  scrollable="true" >
+		<ng-template pTemplate="header" class="arrangementMgrTblHead">
+				<tr>
+						<th><a >SO#</a></th>
+						<th><a >Line#</a></th>
+						<th><a >Contract Start date</a></th>
+						<th><a >Contract End date</a></th>
+						<th><a >Delivery Period</a></th>
+						<th><a >Deliver info interface date</a></th>
+						<th><a >Delivery UOM</a></th>
+						<th><a >Delivery Value</a></th>
+						<th><a >Revenue Amount</a></th>				
+						<th><a >Rate Applied per TB</a></th>
+						<th><a >Delivery data start date</a></th>
+						<th><a >Delivery data end date</a></th>
+				</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-rowData>
+				<tr [pSelectableRow]="rowData">
+						
+						<td  title="{{rowData.orderNumber}}">{{rowData.orderNumber}}</td>
+						<td  title="{{rowData.sourceLineNumber}}">{{rowData.sourceLineNumber}}</td>
+						<td  title="{{rowData.serviceStartDate|date: 'MM/dd/yyyy'}}">{{rowData.serviceStartDate|date: 'MM/dd/yyyy'}}</td>
+						<td  title="{{rowData.serviceEndDate|date: 'MM/dd/yyyy'}}">{{rowData.serviceEndDate|date: 'MM/dd/yyyy'}}</td>
+						<td  title="{{rowData.deliveryPeriod}}">{{rowData.deliveryPeriod}}</td>
+						<td  title="{{rowData.deliveryIntfDate|date: 'MM/dd/yyyy'}}">{{rowData.deliveryIntfDate|date: 'MM/dd/yyyy'}}</td>
+						<td  title="{{rowData.deliveryUom}}">{{rowData.deliveryUom}}</td>
+						<td  title="{{rowData.usageQty}}">{{rowData.usageQty}}</td>
+						<td  title="{{rowData.usageAmount| round}}">{{rowData.usageAmount| round}}</td>
+						<td  title="{{rowData.usageRatePerUnit| round}}">{{rowData.usageRatePerUnit| round}}</td>
+						<td  title="{{rowData.usageStartDate|date: 'MM/dd/yyyy'}}">{{rowData.usageStartDate|date: 'MM/dd/yyyy'}}</td>
+						<td  title="{{rowData.usageEndDate|date: 'MM/dd/yyyy'}}">{{rowData.usageEndDate|date: 'MM/dd/yyyy'}}</td>
+						
+					  
+						
+				</tr>
+		</ng-template>
+		<ng-template pTemplate="emptymessage" let-columns>
+				<tr *ngIf="!columns">
+						<td class="no-data">{{noData}}</td>
+				</tr>
+		</ng-template>
+</p-table>
+</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton class="primary-btn" (click)="showRevSchedulesDialog=false" label="Ok"></button>
+			<button type="button" pButton class="secondary-btn" (click)="showRevSchedulesDialog=false" label="Cancel"></button>
+		</div>
+	</p-footer>
+
+</p-dialog>
+
+<p-dialog header="Delivery Details" class="accounting-dialog" id="delivery-details" width="1300" [(visible)]="showDeliveryDetailsDialog" [draggable]="true" 
+ showEffect="fade" [modal]="true" >
+		<p-table class="ui-datatable viewjournal arrangementMgrTbl" #dd id="delivery-dt" [loading]="loading" [value]="rmanDeliveryDetailsList"
+		(onLazyLoad)="getDeliveryDetails($event)" [lazy]="true" [paginator]="true" [rows]="pageSize"
+		[totalRecords]="totalDeliveryDetailsElements"  scrollable="true" scrollHeight="300px">
+		 <ng-template pTemplate="header" class="arrangementMgrTblHead">
+			 <tr>
+					<th class="number">Source Line#</th>
+					<th>Product Name</th>
+					<th class="number">Delivered Quantity</th>
+					<th class="number">Delivered Amount</th>
+					<th>Delivered Date</th>
+					<th>Booked Date</th>
+					<th>Delivery Event</th>
+					<th>Contract Start Date</th>
+					<th>Contract End Date</th>
+			 </tr>
+		 </ng-template>
+		 <ng-template pTemplate="body" let-rowData>
+			 <tr [pSelectableRow]="rowData">
+				<td class="number" title="{{rowData.sourceLineId}}">{{rowData.sourceLineId}} </td>
+				<td title="{{rowData.productName}}">{{rowData.productName}} </td>
+				<td class="number" title="{{rowData.deliveredQuantity}}">{{rowData.deliveredQuantity}} </td>
+				<td class="number" title="{{rowData.deliveredAmount| round}}">{{rowData.deliveredAmount| round}} </td>
+				<td title="{{rowData.deliveredDate|date: 'MM/dd/yyyy'}}">{{rowData.deliveredDate|date: 'MM/dd/yyyy'}} </td>
+				<td title="{{rowData.bookedDate|date: 'MM/dd/yyyy'}}">{{rowData.bookedDate|date: 'MM/dd/yyyy'}} </td>
+				<td title="{{rowData.deliveredStatus}}">{{rowData.deliveredStatus}} </td>
+				<td title="{{rowData.revrecStartDate|date: 'MM/dd/yyyy'}}">{{rowData.revrecStartDate|date: 'MM/dd/yyyy'}} </td>
+				<td title="{{rowData.revrecEndDate|date: 'MM/dd/yyyy'}}">{{rowData.revrecEndDate|date: 'MM/dd/yyyy'}} </td>
+			 </tr>
+		 </ng-template>
+
+		 <ng-template pTemplate="emptymessage" let-columns>
+			 <tr *ngIf="!columns">
+				 <td class="no-data">{{noData}}</td>
+			 </tr>
+		 </ng-template>
+	 </p-table>
+
+</p-dialog>
+
+<p-dialog header="Actual Revenue Schedules" width="1200" [(visible)]="showActualRevSchedulesDialog" [draggable]="true" 
+width="1300" showEffect="fade" [modal]="true" (onHide)="cancel()">
+
+	<form>
+		<p-table  #ars class="ui-datatable arrangementMgrTbl" [loading]="loading" id="actualRevSchedules-dt" [value]="rmanActualRevenueSchedulesList"
+		[rows]="revSchedulesRowSize" [totalRecords]="totalRevScheduleElements" [columns]="revcolumns"  scrollable="true" [lazy]="true" [paginator]="false">
+
+		<ng-template pTemplate="colgroup" let-revcolumns>
+				<colgroup>
+					<col *ngFor="let col of revcolumns">
+				</colgroup>
+			</ng-template>
+
+			<ng-template pTemplate="header" class="arrangementMgrTblHead">
+				<tr>
+					<th style="width:100px" *ngFor="let col of revcolumns" [ngStyle]="{'display': col.display, 'text-align':col.text}">
+						{{col.header}}
+					</th>
+
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-rowData let-rmanActualRevenueSchedules>
+				<tr [pSelectableRow]="rowData">
+					<td style="width:100px" *ngFor="let col of revcolumns" [ngStyle]="{'display': col.display, 'text-align':col.text}">
+						<span>{{fieldType(rmanActualRevenueSchedules[col.field])==
+								'number' ? (rmanActualRevenueSchedules[col.field]|number:'1.2-2') : rmanActualRevenueSchedules[col.field]}}</span>
+					</td>
+
+
+				</tr>
+			</ng-template>
+
+		<ng-template pTemplate="emptymessage" let-revcolumns>
+				<tr *ngIf="!revcolumns">
+						<td class="no-data">{{noData}}</td>
+				</tr>
+		</ng-template>
+</p-table>
+
+<p-paginator [rows]="9" id="paginator-c" [totalRecords]="totalRevScheduleElements" (onPageChange)="paginate($event)">
+	</p-paginator>
+
+</form>
+
+</p-dialog>
+
+
+
+<rmanContReleaseEventsV-data [pDealLineId]='pDealLineId'></rmanContReleaseEventsV-data>

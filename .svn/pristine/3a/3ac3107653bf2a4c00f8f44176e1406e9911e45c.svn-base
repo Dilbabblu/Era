@@ -1,0 +1,213 @@
+<div class="content-section implementation">
+</div>
+
+
+    <p-panel header="{{(otype == 'B')?'Bookings Exceptions':'Shipments Exceptions'}}" [toggleable]="false" (onBeforeToggle)="onBeforeToggle($event)">
+        <p-header>
+             <div class="pull-right icons-list" *ngIf="collapsed">
+                  <a  *isAuthorized="['write','BOOKEX'] || ['write','SHIPEX']" (click)="deleteSelected(dt)" title="Delete Selected"><em class="fa fa-trash"></em></a>
+                  <a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+                  <a  (click)="reset(dt)"  title="Reset"><em class="fa fa-refresh"></em></a>
+                  <a  *isAuthorized="['write','BOOKEX'] || ['write','SHIPEX']" (click)="exportExcel()" title="Export"><em class="fa fa-external-link"></em></a>
+             </div>
+        </p-header>
+
+     <div class="x-scroll">
+    <p-table class="ui-datatable arrangementMgrTbl" [loading]="loading" #dt [value]="rmanOrdersInterfaceList" id="rmanOrdersInt-dt" [(selection)]="selectedLines"  
+        (onRowSelect)="onRowSelect($event)" scrollable="true"  [paginator]="true" [lazy]="true" [rows]="pageSize"
+        [totalRecords]="totalElements" (onLazyLoad)="getRmanOrdersInterface($event)" >
+        <ng-template pTemplate="header" class="arrangementMgrTblHead">
+            <tr>
+                <th style="width: 50px"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                <th style="width:170px;text-align:left"><a >{{columns['sourceHeaderId']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['orderNumber']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['customerPoNum']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['orderType']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['bookingEntityId']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['shippingEntityId']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['soldToCustomer']}}</a></th>
+                <th style="width:180px;text-align:left"><a >{{columns['billToCustomerNumber']}}</a></th>
+                <th style="width:180px;text-align:left"><a >{{columns['billToCustomer']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['shipToCustomer']}}</a></th>
+                <th style="width:180px;text-align:left"><a >{{columns['shipToCustomerNumber']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['billToCountry']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['shipToCountry']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['shippingOrgCode']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['bookedDate']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['orderedDate']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['scheduleShipDate']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['orderStatus']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['priceList']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['bookingCurrency']}}</a></th>
+                <th style="width:150px;text-align:left"><a >{{columns['sourceLineId']}}</a></th>
+                <th style="width:150px;text-align:center"><a >{{columns['sourceLineNumber']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['productName']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['productOrgName']}}</a></th>
+                <th style="width:150px;text-align:right"><a >{{columns['orderedQuantity']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['shippedQuantity']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['fulfilledQuantity']}}</a></th>
+                <th style="width:150px;text-align:left"><a >{{columns['lineStatus']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['unitSellingPrice']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['unitListPrice']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['extendedListAmount']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['extendedSellingmount']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['discountPercent']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['orginalLineId']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['orginalLineNumber']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['orginalOrderNumber']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['serviceStartDate']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['serviceEndDate']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['serviceDuration']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['servicePeriod']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['actualFulfilledDate']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['lineCost']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['domesticInternational']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['region']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['territory']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['revrecHoldType']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['cancelledQty']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['cancelledDate']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['lineCategoryCode']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['customerNumber']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['extWarrantySku']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['extServStartDate']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['extServEndDate']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['extPeriod']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['extDuration']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['extListPrice']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['extDiscount']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['supportSku']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['supportServStartDate']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['supportServEndDate']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['supportPeriod']}}</a></th>
+                <th style="width:170px;text-align:center"><a >{{columns['supportDuration']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['supportListPrice']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['supportDiscount']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['trainingSku']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['percentageSplit']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['salesrep']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['dealNumber']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['dealLineNumber']}}</a></th>
+                <th style="width:300px;text-align:center" ><a >{{columns['errorMessage']}}</a></th>
+            </tr>
+        </ng-template>
+        <ng-template let-rmanOrdersInterface let-rowData pTemplate="body">
+            <tr [pSelectableRow]="rowData">
+                <td style="width:50px">
+                    <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                </td>
+                <td title="{{rmanOrdersInterface.sourceHeaderId}}" style="width:170px;text-align:left">{{rmanOrdersInterface.sourceHeaderId}}</td>
+                <td title="{{rmanOrdersInterface.orderNumber}}" style="width:170px;text-align:left">{{rmanOrdersInterface.orderNumber}}</td>
+                <td title="{{rmanOrdersInterface.customerPoNum}}" style="width:170px;text-align:left">{{rmanOrdersInterface.customerPoNum}}</td>
+                <td title="{{rmanOrdersInterface.orderType}}" style="width:170px;text-align:left">{{rmanOrdersInterface.orderType}}</td>
+                <td title="{{rmanOrdersInterface.bookingEntityId}}" style="width:170px;text-align:left">{{rmanOrdersInterface.bookingEntityId}}</td>
+                <td title="{{rmanOrdersInterface.shippingEntityId}}" style="width:170px;text-align:left">{{rmanOrdersInterface.shippingEntityId}}</td>
+                <td title="{{rmanOrdersInterface.soldToCustomer}}" style="width:170px;text-align:left">{{rmanOrdersInterface.soldToCustomer}}</td>
+                <td title="{{rmanOrdersInterface.billToCustomerNumber}}" style="width:180px;text-align:left">{{rmanOrdersInterface.billToCustomerNumber}}</td>
+                <td title="{{rmanOrdersInterface.billToCustomer}}" style="width:180px;text-align:left">{{rmanOrdersInterface.billToCustomer}}</td>
+                <td title="{{rmanOrdersInterface.shipToCustomer}}" style="width:170px;text-align:left">{{rmanOrdersInterface.shipToCustomer}}</td>
+                <td title="{{rmanOrdersInterface.shipToCustomerNumber}}" style="width:180px;text-align:left">{{rmanOrdersInterface.shipToCustomerNumber}}</td>
+                <td title="{{rmanOrdersInterface.billToCountry}}" style="width:170px;text-align:left">{{rmanOrdersInterface.billToCountry}}</td>
+                <td title="{{rmanOrdersInterface.shipToCountry}}" style="width:170px;text-align:left">{{rmanOrdersInterface.shipToCountry}}</td>
+                <td title="{{rmanOrdersInterface.shippingOrgCode}}" style="width:170px;text-align:left">{{rmanOrdersInterface.shippingOrgCode}}</td>
+                <td title="{{rmanOrdersInterface.bookedDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.bookedDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.orderedDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.orderedDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.scheduleShipDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.scheduleShipDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.orderStatus}}" style="width:170px;text-align:left">{{rmanOrdersInterface.orderStatus}}</td>
+                <td title="{{rmanOrdersInterface.priceList}}" style="width:170px;text-align:left">{{rmanOrdersInterface.priceList}}</td>
+                <td title="{{rmanOrdersInterface.bookingCurrency}}" style="width:170px;text-align:center">{{rmanOrdersInterface.bookingCurrency}}</td>
+                <td title="{{rmanOrdersInterface.sourceLineId}}" style="width:150px;text-align:left">{{rmanOrdersInterface.sourceLineId}}</td>
+                <td title="{{rmanOrdersInterface.sourceLineNumber}}" style="width:150px;text-align:center">{{rmanOrdersInterface.sourceLineNumber}}</td>
+                <td title="{{rmanOrdersInterface.productName}}" style="width:170px;text-align:left">{{rmanOrdersInterface.productName}}</td>
+                <td title="{{rmanOrdersInterface.productOrgName}}" style="width:170px;text-align:left">{{rmanOrdersInterface.productOrgName}}</td>
+                <td title="{{rmanOrdersInterface.orderedQuantity}}" style="width:150px;text-align:right">{{rmanOrdersInterface.orderedQuantity}}</td>
+                <td title="{{rmanOrdersInterface.shippedQuantity}}" style="width:170px;text-align:right">{{rmanOrdersInterface.shippedQuantity}}</td>
+                <td title="{{rmanOrdersInterface.fulfilledQuantity}}" style="width:170px;text-align:right">{{rmanOrdersInterface.fulfilledQuantity}}</td>
+                <td title="{{rmanOrdersInterface.lineStatus}}" style="width:150px;text-align:left">{{rmanOrdersInterface.lineStatus}}</td>
+                <td title="{{rmanOrdersInterface.unitSellingPrice}}" style="width:170px;text-align:right">{{rmanOrdersInterface.unitSellingPrice | round}}</td>
+                <td title="{{rmanOrdersInterface.unitListPrice}}" style="width:170px;text-align:right">{{rmanOrdersInterface.unitListPrice | round}}</td>
+                <td title="{{rmanOrdersInterface.extendedListAmount}}" style="width:170px;text-align:right">{{rmanOrdersInterface.extendedListAmount | round}}</td>
+                <td title="{{rmanOrdersInterface.extendedSellingmount}}" style="width:170px;text-align:right">{{rmanOrdersInterface.extendedSellingmount | round}}</td>
+                <td title="{{rmanOrdersInterface.discountPercent}}" style="width:170px;text-align:right">{{rmanOrdersInterface.discountPercent | round}}</td>
+                <td title="{{rmanOrdersInterface.orginalLineId}}" style="width:170px;text-align:left">{{rmanOrdersInterface.orginalLineId}}</td>
+                <td title="{{rmanOrdersInterface.orginalLineNumber}}" style="width:170px;text-align:center">{{rmanOrdersInterface.orginalLineNumber}}</td>
+                <td title="{{rmanOrdersInterface.orginalOrderNumber}}" style="width:170px;text-align:left">{{rmanOrdersInterface.orginalOrderNumber}}</td>
+                <td title="{{rmanOrdersInterface.serviceStartDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.serviceStartDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.serviceEndDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.serviceEndDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.serviceDuration}}" style="width:170px;text-align:center">{{rmanOrdersInterface.serviceDuration}}</td>
+                <td title="{{rmanOrdersInterface.servicePeriod}}" style="width:170px;text-align:center">{{rmanOrdersInterface.servicePeriod}}</td>
+                <td title="{{rmanOrdersInterface.actualFulfilledDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.actualFulfilledDate| date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.lineCost}}" style="width:170px;text-align:right">{{rmanOrdersInterface.lineCost | round}}</td>
+                <td title="{{rmanOrdersInterface.domesticInternational}}" style="width:170px;text-align:left">{{rmanOrdersInterface.domesticInternational}}</td>
+                <td title="{{rmanOrdersInterface.region}}" style="width:170px;text-align:left">{{rmanOrdersInterface.region}}</td>
+                <td title="{{rmanOrdersInterface.territory}}" style="width:170px;text-align:left">{{rmanOrdersInterface.territory}}</td>
+                <td title="{{rmanOrdersInterface.revrecHoldType}}" style="width:170px;text-align:left">{{rmanOrdersInterface.revrecHoldType}}</td>
+                <td title="{{rmanOrdersInterface.cancelledQty}}" style="width:170px;text-align:right">{{rmanOrdersInterface.cancelledQty}}</td>
+                <td title="{{rmanOrdersInterface.cancelledDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.cancelledDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.lineCategoryCode}}" style="width:170px;text-align:left">{{rmanOrdersInterface.lineCategoryCode}}</td>
+                <td title="{{rmanOrdersInterface.customerNumber}}" style="width:170px;text-align:left">{{rmanOrdersInterface.customerNumber}}</td>
+                <td title="{{rmanOrdersInterface.extWarrantySku}}" style="width:170px;text-align:left">{{rmanOrdersInterface.extWarrantySku}}</td>
+                <td title="{{rmanOrdersInterface.extServStartDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.extServStartDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.extServEndDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.extServEndDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.extPeriod}}" style="width:170px;text-align:left">{{rmanOrdersInterface.extPeriod}}</td>
+                <td title="{{rmanOrdersInterface.extDuration}}" style="width:170px;text-align:right">{{rmanOrdersInterface.extDuration}}</td>
+                <td title="{{rmanOrdersInterface.extListPrice}}" style="width:170px;text-align:right">{{rmanOrdersInterface.extListPrice | round}}</td>
+                <td title="{{rmanOrdersInterface.extDiscount}}" style="width:170px;text-align:right">{{rmanOrdersInterface.extDiscount | round}}</td>
+                <td title="{{rmanOrdersInterface.supportSku}}" style="width:170px;text-align:left">{{rmanOrdersInterface.supportSku}}</td>
+                <td title="{{rmanOrdersInterface.supportServStartDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.supportServStartDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.supportServEndDate}}" style="width:170px;text-align:center">{{rmanOrdersInterface.supportServEndDate | date: 'MM/dd/yyyy'}}</td>
+                <td title="{{rmanOrdersInterface.supportPeriod}}" style="width:170px;text-align:center">{{rmanOrdersInterface.supportPeriod}}</td>
+                <td title="{{rmanOrdersInterface.supportDuration}}" style="width:170px;text-align:center">{{rmanOrdersInterface.supportDuration}}</td>
+                <td title="{{rmanOrdersInterface.supportListPrice}}" style="width:170px;text-align:right">{{rmanOrdersInterface.supportListPrice | round}}</td>
+                <td title="{{rmanOrdersInterface.supportDiscount}}" style="width:170px;text-align:right">{{rmanOrdersInterface.supportDiscount | round}}</td>
+                <td title="{{rmanOrdersInterface.trainingSku}}" style="width:170px;text-align:left">{{rmanOrdersInterface.trainingSku}}</td>
+                <td title="{{rmanOrdersInterface.percentageSplit}}" style="width:170px;text-align:right">{{rmanOrdersInterface.percentageSplit | round}}</td>
+                <td title="{{rmanOrdersInterface.salesrep}}" style="width:170px;text-align:left">{{rmanOrdersInterface.salesrep}}</td>
+                <td title="{{rmanOrdersInterface.dealNumber}}" style="width:170px;text-align:left">{{rmanOrdersInterface.dealNumber}}</td>
+                <td title="{{rmanOrdersInterface.dealLineNumber}}" style="width:170px;text-align:left">{{rmanOrdersInterface.dealLineNumber}}</td>
+                <td title="{{rmanOrdersInterface.errorMessage}}" style="width:300px;text-align:center">{{rmanOrdersInterface.errorMessage}}</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr *ngIf="!columns">
+                <td class="no-data">{{noData}}</td>
+            </tr>
+        </ng-template>
+        
+    </p-table>
+    </div>
+    </p-panel>
+ 
+
+    <p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade"
+    [modal]="true" [blockScroll]="true">
+          <form>
+               <div class="ui-grid ui-grid-responsive ui-fluid">
+                    <div class="ui-g-12">
+                         <div class="ui-g-6">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">{{columns['orderNumber']}}</span>
+                                   <input pInputText name="orderNumber" class="textbox" placeholder="Order Number" id="orderNumber"
+                                        [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanOrdersInterfaceSearch.orderNumber" />
+                              </span>
+                         </div>
+                         <div class="ui-g-6 pull-right">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">{{columns['sourceLineNumber']}}</span>
+                                   <input pInputText name="sourceLineNumber" id="sourceLineNumber" class="textbox" placeholder="Source Line Number"
+                                        [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanOrdersInterfaceSearch.sourceLineNumber" />
+                              </span>
+                         </div>
+                    </div>
+               </div>
+          </form>
+          <p-footer>
+               <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+                    <button type="button" pButton class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+               </div>
+          </p-footer>
+
+     </p-dialog>

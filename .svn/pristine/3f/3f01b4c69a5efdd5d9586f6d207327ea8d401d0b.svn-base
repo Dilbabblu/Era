@@ -1,0 +1,306 @@
+<div class="content-section implementation">
+</div>
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+
+					<h2>Approval Rules</h2>
+
+					<div class="pull-right icons-list">
+						<a (click)="onConfiguringColumns($event)" class="add-column">
+							<em class="fa fa-cog"></em>Columns</a>
+						<a *isAuthorized="['write','APRULES']" (click)="showDialogToAdd()" title="Add">
+							<em class="fa fa-plus-circle"></em>
+						</a>
+						<a (click)="showDialogToSearch()" title="Search">
+							<em class="fa fa-search"></em>
+						</a>
+						<a (click)="reset(dt)" title="Reset">
+							<em class="fa fa-refresh"></em>
+						</a>
+						
+						<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+							<div class="user-popup">
+								<div class="content overflow">
+									<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+									<label for="selectall">Select All</label>
+									<a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+									<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+										<ng-template let-col let-index="index" pTemplate="item">
+											<div *ngIf="col.drag">
+												<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+													<div class="drag">
+														<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+														<label>{{col.header}}</label>
+													</div>
+												</div>
+											</div>
+											<div *ngIf="!col.drag">
+												<div class="ui-helper-clearfix">
+													<div>
+														<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+														/>
+														<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+													</div>
+												</div>
+											</div>
+										</ng-template>
+									</p-listbox>
+
+								</div>
+
+								<div class="pull-right">
+									<a class="configColBtn" (click)="saveColumns()">Save</a>
+									<a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+					<div class="x-scroll">
+						<p-table #dt class="ui-datatable arrangementMgrTbl" id="rmanApprovalRules-dt" [loading]="loading" [value]="rmanApprovalRulesList"
+						 selectionMode="single" (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanApprovalRules($event)" [lazy]="true" [paginator]="true"
+						 [rows]="pageSize" [totalRecords]="totalElements" scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+							<ng-template pTemplate="colgroup" let-columns>
+								<colgroup>
+									<col>
+									<col *ngFor="let col of columns">
+								</colgroup>
+							</ng-template>
+							<ng-template pTemplate="header" class="arrangementMgrTblHead">
+								<tr>
+									<th></th>
+									<ng-container *ngFor="let col of columns">
+										<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+										<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+										 title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+									</ng-container>
+								</tr>
+							</ng-template>
+							<ng-template pTemplate="body" let-rowData let-rmanApprovalRule let-columns="columns">
+								<tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+									<td>
+										<a *isAuthorized="['write','APRULES']" (click)="editRow(rmanApprovalRule)" class="icon-edit"> </a>
+										<a *isAuthorized="['write','APRULES']" (click)="delete(rmanApprovalRule)" class="icon-delete"> </a>
+									</td>
+									<ng-container *ngFor="let col of columns">
+
+										<td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+											{{rowData[col.field]}}
+										</td>
+
+										<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+											{{rowData[col.field]}}
+										</td>
+
+										<td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+											{{rowData[col.field] | date: 'MM/dd/yyyy'}}
+										</td>
+
+										<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+											{{rowData[col.field] | round}}
+										</td>
+									</ng-container>
+
+								</tr>
+							</ng-template>
+							<ng-template pTemplate="emptymessage" let-columns>
+								<tr *ngIf="!columns">
+									<td class="no-data">{{noData}}</td>
+								</tr>
+							</ng-template>
+						</p-table>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p-dialog header="{{(isCreate) ? 'Create Approval Rule' : 'Edit Approval Rule'}}" width="700" [(visible)]="displayDialog"
+	 [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancel()">
+		<form (ngSubmit)="save()" [formGroup]="rmanApprovalRuleForm" novalidate>
+			<div class="ui-g ui-fluid" *ngIf="rmanApprovalRule">
+				<div class="ui-g-12 form-group">
+					<div class="ui-grid-row">
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="selectSpan">Ranking<span class="red-color">*</span></span>
+								<input pInputText class="textbox" placeholder="Ranking" name="ranking" id="ranking" [(ngModel)]="rmanApprovalRule.ranking"
+								formControlName="ranking" [attr.disabled]="disableRanking? true : null"/>
+							   <div *ngIf="formErrors.ranking" class="ui-message ui-messages-error ui-corner-all">
+								   {{ formErrors.ranking }}
+							   </div>
+							</div>
+							
+							 <div class="ui-g-6 pull-right">
+								<span class="selectSpan">Legal Entity<span class="red-color">*</span></span>
+								<p-dropdown [options]="rmanLegalEntitiesLookup" name="legalEntity" id="legalEntity" [(ngModel)]="rmanApprovalRule.entityId" appendTo="body"
+								 formControlName="legalEntity"></p-dropdown>
+								<div *ngIf="formErrors.legalEntity" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.legalEntity }}
+								</div>
+							</div>
+							
+						</div>
+						
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="md-inputfield">
+									<span class="selectSpan">Role<span class="red-color">*</span></span>
+									<p-dropdown [options]="rolesLookup" name="role" id="role" [(ngModel)]="rmanApprovalRule.userRole" appendTo="body"
+									 formControlName="role" (onChange)="onSelectUserRole($event.value)"></p-dropdown>
+									<div *ngIf="formErrors.role" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.role }}
+									</div>
+
+								</span>
+							</div>
+
+
+								<div class="ui-g-6 pull-right">
+									<span class="md-inputfield">
+										<span class="selectSpan">Approval Criteria
+											<span class="red-color">*</span>
+										</span>
+										<p-dropdown [options]="approvalCriteriaLookup" name="approvalCriteria" id="approvalCriteria" [(ngModel)]="rmanApprovalRule.approvalcriteria" appendTo="body"
+									 	formControlName="approvalCriteria"></p-dropdown>
+										<div *ngIf="formErrors.approvalCriteria" class="ui-message ui-messages-error ui-corner-all">
+											{{ formErrors.approvalCriteria }}
+										</div>
+									
+									</span>
+								</div>
+						</div>
+						
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="selectSpan">Min
+									<span class="red-color">*</span>
+								</span>
+								<input pInputText class="textbox" placeholder="Enter Min Value" id="min" [(ngModel)]="rmanApprovalRule.minValue" name="min" formControlName="min">
+								<div *ngIf="formErrors.min" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.min }}
+								</div>
+							</div>
+
+							<div class="ui-g-6 pull-right">
+								<span class="md-inputfield">
+									<span class="selectSpan">Max
+									</span>
+									<input pInputText class="textbox" placeholder="Enter Max Value" id="max" [(ngModel)]="rmanApprovalRule.maxValue" name="max" formControlName="max">
+									
+								</span>
+							</div>
+						</div>
+
+
+
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="selectSpan">Assignee Type <span class="red-color">*</span></span>
+								<p-dropdown [options]="assigneeTypesLookup" name="assigneeType" id="assigneeType" [(ngModel)]="rmanApprovalRule.assigneeType" appendTo="body"
+								 formControlName="assigneeType"></p-dropdown>
+								<div *ngIf="formErrors.assigneeType" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.assigneeType }}
+								</div>
+							</div>
+
+							<div class="ui-g-6 pull-right">
+								<span class="selectSpan">Geo</span>
+								<p-dropdown [options]="geoLookup" name="geo" id="geo" [(ngModel)]="rmanApprovalRule.geo" appendTo="body"
+								formControlName="geo"></p-dropdown>
+							</div>
+						</div>
+
+						<div class="ui-g-12">
+
+
+							<div class="ui-g-6">
+								<span class="md-inputfield">
+									<span class="selectSpan">Active<span class="red-color">*</span></span>
+									<p-dropdown [options]="activeFlagLookup" name="active" id="active" [(ngModel)]="rmanApprovalRule.activeFlag" appendTo="body"
+									 formControlName="active"></p-dropdown>
+									<div *ngIf="formErrors.active" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.active }}
+									</div>
+								</span>
+							</div>
+
+						</div>
+						
+						
+						
+					</div>
+
+				</div>
+			</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!rmanApprovalRuleForm.valid"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancel()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+
+
+	<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true"
+ [blockScroll]="true">
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan">Legal Entity</span>
+					<p-dropdown [options]="rmanLegalEntitiesLookup" name="legalEntity" id="legalEntity" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanApprovalRuleSearch.entityId"
+					 appendTo="body" [filter]="true"></p-dropdown>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Role</span>
+						<p-dropdown [options]="rolesLookup" name="searchRole" id="searchRole" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanApprovalRuleSearch.userRole"
+						appendTo="body" [filter]="true"></p-dropdown>
+					</span>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">Geo</span>
+						<p-dropdown [options]="geoLookup" name="searchGeo" id="searchGeo" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanApprovalRuleSearch.geo"
+						appendTo="body" [filter]="true"></p-dropdown>
+					</span>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Active</span>
+						<p-dropdown [options]="activeFlagLookup" name="searchActive" id="searchActive" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanApprovalRuleSearch.activeFlag"
+						appendTo="body" [filter]="true"></p-dropdown>
+					</span>
+				</div>
+
+			</div>
+
+		</div>
+
+	</form>
+
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" class="primary-btn" pButton (click)="search()" label="Search"></button>
+			<button type="button" class="secondary-btn" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

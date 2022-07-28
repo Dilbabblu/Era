@@ -1,0 +1,38 @@
+
+	<div class="content-section implementation">
+	</div>
+
+	
+				<p-panel header="Approvals History">
+					
+					<div class="x-scroll">
+					<p-table class="ui-datatable arrangementMgrTbl" #dt id="rmanApprovalHistory-dt" [loading]="loading" [value]="rmanApprovalHistoryList"
+					(onLazyLoad)="getRmanApprovalHistory($event)" selectionMode="single" [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"
+					 scrollable="true" >
+					<ng-template pTemplate="header" class="arrangementMgrTblHead">
+						<tr>
+							<th><a>Approval Status</a></th>
+							<th><a>Action By</a></th>
+							<th><a>Action Date</a></th>
+							<th><a>Comments</a></th>
+					</tr>
+					</ng-template>
+					<ng-template pTemplate="body" let-rowData let-rmanApprovalHistory>
+						<tr [pSelectableRow]="rowData">
+							<td title="{{rmanApprovalHistory.taskStatus}}">{{rmanApprovalHistory.taskStatus}}</td>
+							<td title="{{rmanApprovalHistory.userId}}">{{rmanApprovalHistory.userId}}</td>
+							<td title="{{rmanApprovalHistory.commentDate | date:'dd/MM/yyyy'}}">{{rmanApprovalHistory.commentDate| date:'dd/MM/yyyy'}}</td>
+							<td title="{{rmanApprovalHistory.userComment}}">{{rmanApprovalHistory.userComment}}</td>
+							
+					</tr>
+					</ng-template>
+					<ng-template pTemplate="emptymessage" let-columns>
+							<div class="no-results-data">
+									<p>{{noData}}</p>
+							</div>
+					</ng-template>
+					</p-table>
+				</div>
+				</p-panel>
+
+

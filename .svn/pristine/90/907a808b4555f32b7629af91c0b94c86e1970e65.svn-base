@@ -1,0 +1,62 @@
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<p-panel header="SSP Logs" [toggleable]="false" [style]="{'margin-bottom':'20px'}">
+						<p-header>
+							<div class="pull-right icons-list">
+                                <a [routerLink]="['/fairValues','sspBooks']" title="Go to SSP Books"><em class="fa fa-reply"></em></a>
+                               </div>
+						</p-header>
+						<div class="x-scroll">
+							<p-table #dt class="ui-datatable arrangementMgrTbl" [value]="sspActionLogs" [loading]="loading" (onLazyLoad)="getAllSspActionLogs($event)" 
+							 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th>
+											<a>Action on</a>
+										</th>
+										<th>
+											<a>Action Item</a>
+										</th>
+										<th>
+											<a>Column</a>
+										</th>
+										<th>
+											<a>Operation</a>
+										</th>
+										<th>
+											<a>Performed By</a>
+										</th>
+										<th>
+											<a>Performed Date</a>
+										</th>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-sspActionsLog>
+									<tr [pSelectableRow]="rowData">
+										<td title="{{sspActionsLog.entityName}}">{{sspActionsLog.entityName}}</td>
+										<td title="{{sspActionsLog.recname}}">{{sspActionsLog.recname}}</td>
+										<td title="{{sspActionsLog.columnName}}"> {{sspActionsLog.columnName}} </td>
+										<td title="{{sspActionsLog.operation}}">{{sspActionsLog.operation}}</td>
+										<td title="{{sspActionsLog.username}}"> {{sspActionsLog.username}} </td>
+                                        <td title="{{sspActionsLog.modifiedDate | date: 'MM/dd/yyyy'}}"> {{sspActionsLog.modifiedDate| date: 'MM/dd/yyyy'}} </td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage" let-columns>
+									<tr *ngIf="!columns">
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+
+					</p-panel>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

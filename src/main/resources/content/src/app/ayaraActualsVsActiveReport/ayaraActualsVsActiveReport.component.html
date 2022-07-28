@@ -1,0 +1,213 @@
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper waterfall-detail-report">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+
+					<p-panel header="Quoted Vs Actuals Report" [toggleable]="false" (onBeforeToggle)=onBeforeToggle($event)>
+						<p-header>
+							<div class="pull-right icons-list">
+
+								<a (click)="goToOperationReports()" class="add-column">
+									<em class="fa fa-reply"></em>Back</a>
+									<p-toggleButton class="ui-inputswitch" onLabel="Line View" offLabel="Revenue Contract View" onIcon="fa fa-toggle-on fa-sm" offIcon="fa fa-toggle-off fa-sm" [(ngModel)]="arrgLevelSwitch" (ngModelChange)="onSwitch()"></p-toggleButton> 
+								<a (click)="onConfiguringColumns($event)" class="add-column">
+									<em class="fa fa-cog"></em>Columns</a>
+
+								<a (click)="showDialogToSearch()" title="Search">
+									<em class="fa fa-search"></em>
+								</a>
+								<a (click)="reset(dt)" title="Reset">
+									<em class="fa fa-refresh"></em>
+								</a>
+
+								<a (click)="displayCharts()" title="Analytics" *ngIf="!disableExport">
+									<em class="fa fa-pie-chart"></em></a>
+
+								<a (click)="exportCSVfile()" title="Export" *ngIf="!disableExport">
+									<em class="fa fa-external-link"></em>
+								</a>
+
+								<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+									<div class="user-popup">
+										<div class="content overflow">
+											<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+											<label for="selectall">Select All</label>
+											<a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+											<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+												<ng-template let-col let-index="index" pTemplate="item">
+													<div *ngIf="col.drag">
+														<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+															<div class="drag">
+																<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+																<label>{{col.header}}</label>
+															</div>
+														</div>
+													</div>
+													<div *ngIf="!col.drag">
+														<div class="ui-helper-clearfix">
+															<div>
+																<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+																/>
+																<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+															</div>
+														</div>
+													</div>
+												</ng-template>
+											</p-listbox>
+										</div>
+										<div class="pull-right">
+											<a class="configColBtn" (click)="saveColumns()">Save</a>
+											<a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</p-header>
+
+						<div class="x-scroll mb-2">
+							
+							<p-table class="ui-datatable arrangementMgrTbl" [loading]="loading" #dt id="actualsARM-dt" [value]="actualsActiveARMRepList"
+							 selectionMode="single" (onRowSelect)="onRowSelect($event)" [lazy]="true" [paginator]="false" [rows]="rowCount" [totalRecords]="totalRecords"
+							 scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+
+								<ng-template pTemplate="colgroup" let-columns>
+									<colgroup>
+										<col *ngFor="let col of columns">
+									</colgroup>
+								</ng-template>
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th style="width:100px" *ngFor="let col of columns" pResizableColumn [ngStyle]="{'display': col.display, 'text-align':col.text}">
+											{{col.header}}
+										</th>
+
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-actualsActiveARMRep>
+									<tr [pSelectableRow]="rowData">
+										<td style="width:100px" *ngFor="let col of columns" [ngStyle]="{'display': col.display, 'text-align': col.text}">
+											<span title="{{actualsActiveARMRep[col.field]}}">{{isDateField(col.field) ? (actualsActiveARMRep[col.field]|date:'MM/dd/yyyy') : ([col.type]==
+												'number' ? (actualsActiveARMRep[col.field]|number:'1.2-2') : actualsActiveARMRep[col.field])}}</span>
+										</td>
+
+
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage">
+									<tr>
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+
+
+
+
+
+							</p-table>
+						</div>
+
+						<p-paginator [rows]="9" id="paginator-c" [totalRecords]="totalRecords" (onPageChange)="paginate($event)">
+						</p-paginator>
+
+						
+					
+
+					</p-panel>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<p-dialog header="Search" width="800" [visible]="displayDialog" [closable]="false" [draggable]="true" showEffect="fade"
+ [modal]="true">
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			
+			<div class="ui-g-12">
+				<div class="ui-g-12">
+					<span class="md-inputfield">
+						<span class="selectSpan">Document Type</span>
+						<!-- <input pInputText name="quoteStatus" id="quoteStatus" class="textbox" placeholder="Quote Status" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="quoteStatus" />  -->
+						 <p-dropdown [options]="documentTypes"  appendTo="body" [(ngModel)]="documentType" [ngModelOptions]="{standalone: true}"  name="documentType" (onChange)="onSelectingDocumentType($event.value)" ></p-dropdown>
+					</span>
+				</div>
+			</div>
+			
+			<div class="ui-g-12" *ngIf="displayDocumentParams && !orderDocument">
+				<div class="ui-g-12">
+					<span class="md-inputfield">
+						<span class="selectSpan">Quote Status</span>
+						 <p-dropdown [options]="quoteStatuses"  appendTo="body" [(ngModel)]="quoteStatus" [ngModelOptions]="{standalone: true}"  name="quoteStatus" ></p-dropdown>
+					</span>
+				</div>
+			</div>
+			<div class="ui-g-12" *ngIf="displayDocumentParams && orderDocument">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">From Booked Date</span>
+						<p-calendar showAnim="slideDown" name="fromDate" inputStyleClass="textbox" id="fromDate" [monthNavigator]="true" [yearNavigator]="true"
+						 yearRange="2000:2030"  [(ngModel)]="fromDate" dateFormat="yy-mm-dd"
+						 placeholder="From Date" appendTo="body" dataType="string"></p-calendar>
+		
+					</span>
+
+				</div>
+
+
+				<div class="ui-g-6 pull-right" *ngIf="displayDocumentParams && orderDocument">
+					<span class="md-inputfield">
+							<span class="selectSpan">To Booked Date</span>
+						<p-calendar showAnim="slideDown" name="toDate" inputStyleClass="textbox" id="toDate" [monthNavigator]="true" [yearNavigator]="true"
+						 yearRange="2000:2030"  [(ngModel)]="toDate" dateFormat="yy-mm-dd"
+						 placeholder="To Date" appendTo="body" dataType="string"></p-calendar>
+					</span>
+				</div>
+			</div>
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+			<button type="reset" pButton class="secondary-btn" (click)="reset(dt)" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+<p-dialog header="Quoted Vs Actuals Report" width="800" [visible]="showCharts" [closable]="false" [draggable]="true" showEffect="fade"
+ [modal]="true">
+	
+ <div style="display: block;" *ngIf="!isbarChart">
+	<canvas *ngIf="chartReady && doughnutChartLabels.length!=0" baseChart 
+	  [data]="doughnutChartData"
+	  [labels]="doughnutChartLabels"
+	  [options] = "doughnutChartOptions"
+	  [chartType]="doughnutChartType">
+	</canvas>
+  </div>
+
+  <div style="display: block;" *ngIf="isbarChart">
+	<canvas *ngIf="chartReady && barChartLabels.length!=0" baseChart 
+	  [datasets]="barChartData"
+	  [labels]="barChartLabels"
+	  [options]="barChartOptions"
+	  [plugins]="barChartPlugins"
+	  [legend]="barChartLegend"
+	  [chartType]="barChartType">
+	</canvas>
+  </div>
+
+		
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="reset" pButton class="secondary-btn" (click)="closeCharts()" label="Close"></button>
+		</div>
+	</p-footer>
+</p-dialog>

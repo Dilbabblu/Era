@@ -1,0 +1,29 @@
+<div class="card-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card-block">
+
+          <p-tabView (onChange)="handleChange($event)">
+            <ng-container *ngIf="exceptionType=='all'">
+              <all-exceptions></all-exceptions>
+            </ng-container>
+            <ng-container *ngIf="exceptionType=='quotes'">
+              <rmanIntfDealDetails-data></rmanIntfDealDetails-data>
+            </ng-container>
+            <ng-container *ngIf="exceptionType=='bookings'">
+              <rmanOrdersInterface-data [otype]="orderType"></rmanOrdersInterface-data>
+            </ng-container>
+            <ng-container *ngIf="exceptionType=='shipments'">
+              <rmanOrdersInterface-data [otype]="orderType"></rmanOrdersInterface-data>
+            </ng-container>
+            <ng-container *ngIf="exceptionType=='billings'">
+              <rmanInvoiceLinesInterface-data></rmanInvoiceLinesInterface-data>
+            </ng-container>
+          </p-tabView>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,197 @@
+	<div class="content-section implementation">
+	</div>
+	<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+	<div class="card-wrapper">
+		<div class="container-fluid">
+		  <div class="row">
+			<div class="col-md-12">
+			  <div class="card-block">
+	<p-panel header="Manage Permissions Modules" [style]="{'margin-bottom':'20px'}" (onBeforeToggle)="onBeforeToggle($event)">
+
+		<p-header>
+		<div class="pull-right icons-list" *ngIf="collapsed">
+			<a (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+			<a  *isAuthorized="['write','MPM']" (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+			<a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+			<a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+			<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+				<div class="user-popup">
+					<div class="content overflow">
+						<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+						<label for="selectall">Select All</label>
+						<a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+						<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+							<ng-template let-col let-index="index" pTemplate="item">
+								<div *ngIf="col.drag">
+									<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+										<div class="drag">
+											<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+											<label>{{col.header}}</label>
+										</div>
+									</div>
+								</div>
+								<div *ngIf="!col.drag">
+									<div class="ui-helper-clearfix">
+										<div>
+											<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+											/>
+											<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+										</div>
+									</div>
+								</div>
+							</ng-template>
+						</p-listbox>
+					</div>
+					<div class="pull-right">
+						<a class="configColBtn" (click)="saveColumns()">Save</a>
+						<a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		</p-header>
+		<div class="x-scroll">
+		<p-table #dt [loading]="loading" class="ui-datatable arrangementMgrTbl" id="rmanFuncs-dt" [value]="rmanFunctionsList" selectionMode="single"
+		 (onLazyLoad)="getRmanFunctions($event)" [lazy]="true" 
+		[paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"  
+		scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+
+		<ng-template pTemplate="colgroup" let-columns>
+			<colgroup>
+				<col>
+				<col *ngFor="let col of columns">
+			</colgroup>
+		</ng-template>
+
+
+		<ng-template pTemplate="header" class="arrangementMgrTblHead">
+			<tr>
+				<th></th>
+				<ng-container *ngFor="let col of columns">
+					<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+					<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" [ngStyle]="{'display': col.display}"
+						title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+				</ng-container>
+			</tr>
+		</ng-template>
+
+		<ng-template pTemplate="body" let-rowData let-rmanFunctions let-columns="columns">
+			<tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+				<td>
+					<a  *isAuthorized="['write','MPM']" (click)="editRow(rmanFunctions)" class="icon-edit"> </a>
+					<a  *isAuthorized="['write','MPM']" (click)="delete(rmanFunctions)" class="icon-delete"> </a> 
+				</td>
+				<ng-container *ngFor="let col of columns">
+					<td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field]}}
+					</td>
+
+					<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field]}}
+					</td>
+
+					<td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field] | date: 'MM/dd/yyyy'}}
+					</td>
+
+					<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field] | round}}
+					</td>
+				</ng-container>
+
+			</tr>
+		</ng-template>
+
+		<ng-template pTemplate="emptymessage" let-columns>
+			<tr *ngIf="!columns">
+				<td class="no-data">{{noData}}</td>
+			</tr>
+		</ng-template>
+
+		</p-table>
+	</div>
+	</p-panel>
+</div>
+</div>
+</div>
+</div>
+	</div>
+
+	<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true">
+		<form >
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+                         <span class="md-inputfield">
+							 <span class="selectSpan">{{functionColumns['name']}}</span>
+							 	<input pInputText  name="name"  id="name" class="textbox" placeholder="Function Name" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanFunctionsSearch.name" />
+							</span>
+                    </div>
+				</div>
+
+			</div>
+
+		</form>
+		<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton  class="secondary-btn" (click)="search()" label="Search"></button>
+			<button type="button" pButton  class="primary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+		</div>
+		</p-footer>
+	</p-dialog>
+	<p-dialog header="{{(newRmanFunctions) ? 'Create New Permission' : 'Edit Permission'}}" width="800" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true"  [blockScroll]="true" (onHide)="cancelAddEdit()">
+            <form (ngSubmit)="save()" [formGroup]="permissionsForm" novaldiate>
+			<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanFunctions">
+
+					<div class="ui-g-12">
+						<div class="ui-g-6">
+							<span [ngClass]="{'noPointer': !newRmanFunctions}" class="md-inputfield">
+								<span class="selectSpan">{{functionColumns['module']}}<span class="red-color">*</span></span>
+								<input pInputText type="text" name="module" class="textbox" id="module" placeholder="Module" [(ngModel)]="rmanFunctions.module" formControlName="module"/>
+								<div *ngIf="formErrors.module" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.module }}
+								</div>
+							</span>
+						</div>
+						<div class="ui-g-6 pull-right">
+							<span [ngClass]="{'noPointer': !newRmanFunctions}" class="md-inputfield">
+								<span class="selectSpan">{{functionColumns['fcode']}}<span class="red-color">*</span></span>
+								<input pInputText type="text" name="fcode"  class="textbox"
+									id="fcode" placeholder="Function Code" [(ngModel)]="rmanFunctions.fcode" formControlName="fcode"/>
+									<div *ngIf="formErrors.fcode" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.fcode }}
+									</div>
+								</span>
+						</div>
+					</div>
+
+					<div class="ui-g-12">
+							<div class="ui-g-6">
+									<span class="md-inputfield">
+										<span class="selectSpan">{{functionColumns['name']}}<span class="red-color">*</span></span>
+										<input pInputText type="text" name="name"  class="textbox" id="name" placeholder="Function name"
+											[(ngModel)]="rmanFunctions.name" formControlName="name"/>
+											<div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+												{{ formErrors.name }}
+											</div>
+									</span>
+								</div>
+						<div class="ui-g-6  pull-right">
+							<span class="selectSpan"> Enabled Flag <span class="red-color">*</span> </span>
+							<p-dropdown  #dropdownRef [options]="rmanLookupsV" appendTo="body" [(ngModel)]="rmanFunctions.enabledFlag" name="enabledFlag"  [filter]="true" formControlName="enabledFlag"></p-dropdown>
+							<div *ngIf="formErrors.enabledFlag" class="ui-message ui-messages-error ui-corner-all">
+								{{ formErrors.enabledFlag }}
+							</div>
+
+						</div>
+					</div>
+			</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton label="Save" class="primary-btn" (click)="save()" [disabled]="!permissionsForm.valid"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancelAddEdit()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	
+        </p-dialog>

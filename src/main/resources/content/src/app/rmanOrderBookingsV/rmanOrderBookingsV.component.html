@@ -1,0 +1,265 @@
+<div class="content-section implementation">
+</div>
+
+<p-panel header="Bookings"  class="row-active"  class="mb-1em" (onBeforeToggle)=onBeforeToggle($event)>
+	<p-header>	  
+			
+			
+		<div class="pull-right icons-list">
+			<a  (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>	
+			<a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+			<a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+			<a  (click)="exportExcel()" title="Export" *ngIf="!disableExport"><em class="fa fa-external-link"></em></a>
+			
+			
+			<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+				<div class="user-popup">
+				  <div class="content overflow">
+					<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+					<label for="selectall">Select All</label>
+					<a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+					<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+						<ng-template let-col let-index="index" pTemplate="item">
+						  <div *ngIf="col.drag">
+						  <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+						   (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+							<div class="drag">
+							  <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+							  <label>{{col.header}}</label>
+							</div>
+						  </div>
+						  </div>
+						  <div *ngIf="!col.drag">
+						  <div class="ui-helper-clearfix">
+							<div>
+							  <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+							  <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+							</div>
+						  </div>
+						  </div>
+						</ng-template>
+						</p-listbox>
+					</div>
+					<div class="pull-right">
+                        <a class="configColBtn" (click)="saveColumns()">Save</a>
+                        <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                      </div>
+				</div>
+			</div>
+		</div>
+	</p-header>
+	
+		<div class="x-scroll">
+	<p-table class="ui-datatable arrangementMgrTbl" id="rmanOrderBookings-dt" selectionMode="single" [(selection)]="selectedRmanOrderBookingsV" [loading]= "loading" #dt [value]="rmanOrderBookingsVList" [lazy]="true" 
+	(onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" (onLazyLoad)="getRmanOrderBookingsV($event)"  [paginator]="showPaginator" [rows]="pageSize" [totalRecords]="totalElements"
+	   scrollable="true"  [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+		
+	  <ng-template pTemplate="colgroup" let-columns>
+		<colgroup>
+			<col *ngFor="let col of columns">
+		</colgroup>
+	</ng-template>
+	 
+	  <ng-template pTemplate="header" class="arrangementMgrTblHead">
+			<tr>
+				<ng-container *ngFor="let col of columns">
+					<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+					<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+			   </ng-container>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-rowData let-rmanOrderBookingsV>
+			<tr [pSelectableRow]="rowData">
+						<ng-container *ngFor="let col of columns" >
+							<td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+								{{rowData[col.field]}}
+							</td>
+						
+							<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+								{{rowData[col.field]}}
+							</td>
+						
+							<td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+								{{rowData[col.field] | date: 'MM/dd/yyyy'}}
+							</td>
+						
+							<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+								{{rowData[col.field] | round}}
+							</td>
+						</ng-container>
+			  		    
+						  </tr>
+					</ng-template>
+					<ng-template pTemplate="emptymessage" let-columns>
+							<div class="no-results-data">
+									<p>{{noData}}</p>
+							</div>
+					</ng-template>
+			  </p-table>
+			</div>
+			</p-panel>
+
+
+<rmanOrderLinesBookingsV-data (getBookings)="getAllRmanOrderBookingsV()"></rmanOrderLinesBookingsV-data>
+
+ <p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade"
+ [modal]="true">
+	<form (ngSubmit)="search()">
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">Order Number</span>
+						<input pInputText class="textbox" placeholder="Order Number" name="so" id="so" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanOrderBookingsVSearch.so"
+						/>
+					</span>
+				</div>
+			</div>
+
+		</div>
+
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" class="primary-btn" pButton label="Search" (click)="search()"></button>
+			<button type="button" class="secondary-btn" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog> 
+<p-dialog header="RmanOrderBookingsV" width="500" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanOrderBookingsV">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="arrangementId">{{columns['arrangementId']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="arrangementId" id="arrangementId" required [(ngModel)]="rmanOrderBookingsV.arrangementId" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="so">{{columns['so']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="so" id="so" required [(ngModel)]="rmanOrderBookingsV.so" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="ouName">{{columns['ouName']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="ouName" id="ouName" required [(ngModel)]="rmanOrderBookingsV.ouName" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="endCustomer">{{columns['endCustomer']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="endCustomer" id="endCustomer" required [(ngModel)]="rmanOrderBookingsV.endCustomer" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="customerNumber">{{columns['customerNumber']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="customerNumber" id="customerNumber" required [(ngModel)]="rmanOrderBookingsV.customerNumber" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="billToLocation">{{columns['billToLocation']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="billToLocation" id="billToLocation" required [(ngModel)]="rmanOrderBookingsV.billToLocation" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="shipToLocation">{{columns['shipToLocation']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="shipToLocation" id="shipToLocation" required [(ngModel)]="rmanOrderBookingsV.shipToLocation" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="orderBookedDate">{{columns['orderBookedDate']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="orderBookedDate" id="orderBookedDate" required [(ngModel)]="rmanOrderBookingsV.orderBookedDate" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="priceList">{{columns['priceList']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="priceList" id="priceList" required [(ngModel)]="rmanOrderBookingsV.priceList" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="customerPoNum">{{columns['customerPoNum']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="customerPoNum" id="customerPoNum" required [(ngModel)]="rmanOrderBookingsV.customerPoNum" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="bookingCurrency">{{columns['bookingCurrency']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="bookingCurrency" id="bookingCurrency" required [(ngModel)]="rmanOrderBookingsV.bookingCurrency" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="funcCurrencyCode">{{columns['funcCurrencyCode']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="funcCurrencyCode" id="funcCurrencyCode" required [(ngModel)]="rmanOrderBookingsV.funcCurrencyCode" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="orderAcctdAmount">{{columns['orderAcctdAmount']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="orderAcctdAmount" id="orderAcctdAmount" required [(ngModel)]="rmanOrderBookingsV.orderAcctdAmount" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="orderTrxAmount">{{columns['orderTrxAmount']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="orderTrxAmount" id="orderTrxAmount" required [(ngModel)]="rmanOrderBookingsV.orderTrxAmount" /></div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="linkedDate">{{columns['linkedDate']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="linkedDate" id="linkedDate" required [(ngModel)]="rmanOrderBookingsV.linkedDate" /></div>
+			</div>
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+			<button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+<p-dialog header="Relink PO`s List" width="800" [(visible)]="displayMergeDialog" [draggable]="true"  showEffect="fade" [modal]="true">
+	<form  >
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield" class="mt-20">
+						<span class="selectSpan">{{arrangementColumns['dealArrangementNumber']}}</span>
+						<input pInputText class="textbox" placeholder="Deal Arrangement Number" name="dealArrangementNumber" id="dealArrangementNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealArrangementsSearch.dealArrangementNumber"
+						/>
+					</span>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield" class="mt-20">
+						<span class="selectSpan">{{arrangementColumns['poNumber']}}</span>
+						<input pInputText class="textbox" placeholder="PO Number" name="poNumber" id="poNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealArrangementsSearch.poNumber"
+						/>
+					</span>
+				</div>
+			</div>
+	  
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+				<button type="submit" pButton class="primary-btn" label="Search" (click)="searchArrangements()"></button>
+				<button type="button" pButton class="secondary-btn" label="Reset" (click)="resetArrangements()"></button>
+			</div>
+		</div>
+
+		<div>
+			<p-table class="ui-datatable arrangementMgrTbl" [loading]="loading" [value]="rmanDealArrangementsList" selectionMode="single" [(selection)]="selectedArrangement" (onRowSelect)="onRowArrgSelect($event)"
+			(onLazyLoad)="getRmanDealArrangements($event)" [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalArrgElements"
+			  scrollable="true" scrollHeight="200px" >
+				<ng-template pTemplate="header" class="arrangementMgrTblHead">
+					<tr>
+						<th></th>
+						<th>{{arrangementColumns['poNumber']}}</th>
+						<th>{{arrangementColumns['dealArrangementNumber']}}</th>
+						
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-rowData let-rmanDealArrangements>
+					<tr [pSelectableRow]="rowData">
+						<td><p-tableRadioButton [value]="rowData"  name="groupname"></p-tableRadioButton></td>
+						<td title="{{rmanDealArrangements?.poNumber}}">{{rmanDealArrangements?.poNumber}}</td>
+						<td title="{{rmanDealArrangements?.dealArrangementNumber}}">{{rmanDealArrangements?.dealArrangementNumber}}</td>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="emptymessage" let-columns>
+					<tr *ngIf="!columns">
+						<td class="no-data">{{noData}}</td>
+					</tr>
+				</ng-template>
+			</p-table>
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton class="primary-btn" (click)="getPolink()" label="Submit"></button>
+			<button type="button" pButton class="secondary-btn" (click)="displayMergeDialog=false" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

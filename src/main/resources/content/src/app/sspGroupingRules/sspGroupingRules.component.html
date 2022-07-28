@@ -1,0 +1,174 @@
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<p-panel header="SSP Grouping Rules" [toggleable]="false" [style]="{'margin-bottom':'20px'}">
+						<p-header>
+							<div class="pull-right icons-list">
+                                <a (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+                                <a (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+								<a (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+								<a [routerLink]="['/fairValues','sspBooks']" title="Go to SSP Books"><em class="fa fa-reply"></em></a>
+                               </div>
+						</p-header>
+						<div class="x-scroll">
+							<p-table #dt class="ui-datatable arrangementMgrTbl" [value]="sspGroupingRulesList" [loading]="loading" (onLazyLoad)="getAllSspGroupingRules($event)" 
+                            (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnSelect()" selectionMode="single" [(selection)]="selectedGroupingRule"
+							 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th></th>
+										<th>
+											<a>Rule Name</a>
+										</th>
+										<th>
+											<a>Start Date</a>
+										</th>
+										<th>
+											<a>End Date</a>
+										</th>
+										<th>
+											<a>Enabled Flag</a>
+										</th>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-sspGroupingRule>
+									<tr [pSelectableRow]="rowData">
+										<td>
+                                            <a (click)="editRow(sspGroupingRule)" class="icon-edit"> </a>
+											<a (click)="delete(sspGroupingRule)" class="icon-delete"> </a>
+										</td>
+										<td title="{{sspGroupingRule.ruleName}}">{{sspGroupingRule.ruleName}}</td>
+										<td title="{{sspGroupingRule.startDate | date: 'MM/dd/yyyy'}}"> {{sspGroupingRule.startDate | date: 'MM/dd/yyyy'}} </td>
+										<td title="{{sspGroupingRule.endDate | date: 'MM/dd/yyyy'}}"> {{sspGroupingRule.endDate | date: 'MM/dd/yyyy'}} </td>
+										<td title="{{sspGroupingRule.enabledFlag}}"> {{sspGroupingRule.enabledFlag}} </td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage" let-columns>
+									<tr *ngIf="!columns">
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+
+					</p-panel>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<sspGroupingRuleDimensions-data>Loading...</sspGroupingRuleDimensions-data>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade"
+	 [modal]="true" [blockScroll]="true">
+		<form novalidate>
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+						<span class="md-inputfield">
+							<span class="selectSpan">Rule Name</span>
+							<input pInputText name="ruleName" class="textbox" placeholder="Rule Name" id="ruleName" 
+							[ngModelOptions]="{standalone: true}" [(ngModel)]="sspGroupingRulesSearch.ruleName"/>
+						</span>
+					</div>
+					<div class="ui-g-6 pull-right">
+						<span class="selectSpan">Enabled Flag</span>
+						<p-dropdown [options]="enabledFlagValues" name="flag" placeholder="Select Enabled Flag" 
+						 [filter]="true" appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="sspGroupingRulesSearch.enabledFlag"></p-dropdown>
+					</div>
+				</div>
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+							<span class="selectSpan">Start Date</span>
+						<p-calendar showAnim="slideDown" name="startDate" inputStyleClass="textbox" id="startDate" [monthNavigator]="true" [yearNavigator]="true"
+						 yearRange="1950:2030"   dateFormat="yy-mm-dd"
+						 placeholder="Start Date" appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="sspGroupingRulesSearch.startDate"></p-calendar>
+					</div>
+					<div class="ui-g-6 pull-right">
+							<span class="selectSpan">End Date</span>
+						<p-calendar showAnim="slideDown" name="endDate" inputStyleClass="textbox" id="endDate" [monthNavigator]="true" [yearNavigator]="true"
+						 yearRange="1950:2030" dateFormat="yy-mm-dd"
+						 placeholder="End Date" appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="sspGroupingRulesSearch.endDate"></p-calendar>
+					</div>
+				</div>
+			</div>
+
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancelSearch()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+
+	<p-dialog header="{{(isCreate) ? 'Create SSP Grouping Rule' : 'Edit SSP Grouping Rule'}}" width="700" [(visible)]="displayDialog"
+	 [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancel()">
+		<form (ngSubmit)="save()" [formGroup]="sspGroupingRuleForm" novalidate>
+			<div class="ui-g ui-fluid">
+				<div class="ui-g-12 form-group">
+					<div class="ui-grid-row">
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="md-inputfield">
+									<span class="selectSpan">Rule Name<span class="red-color">*</span></span>
+									<input pInputText type="text" class="textbox" placeholder="Rule Name" name="sspRuleName" id="sspRuleName" 
+									formControlName="sspRuleName" [(ngModel)]="sspGroupingRules.ruleName"/>
+									<div *ngIf="formErrors.sspRuleName" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.sspRuleName }}
+									</div>
+								</span>
+							</div>
+							
+							<div class="ui-g-6 pull-right">
+								<span class="selectSpan">Enabled Flag<span class="red-color">*</span></span>
+								<p-dropdown [options]="enabledFlagValues" name="sspFlag" id="sspFlag" placeholder="Select Enabled Flag" 
+									[filter]="true" appendTo="body" formControlName="sspFlag" [(ngModel)]="sspGroupingRules.enabledFlag"></p-dropdown>
+									<div *ngIf="formErrors.sspFlag" class="ui-message ui-messages-error ui-corner-all">
+											{{ formErrors.sspFlag }}
+										</div>
+								</div>
+							
+						</div>
+						
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="selectSpan">Start Date <span class="red-color">*</span></span>
+								<p-calendar showAnim="slideDown" name="sspStartDate" inputStyleClass="textbox" id="sspStartDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+								 appendTo="body" dateFormat="mm/dd/yy" placeholder="Start Date" formControlName="sspStartDate" [(ngModel)]="sspGroupingRules.startDate"></p-calendar>
+								<div *ngIf="formErrors.sspStartDate" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.sspStartDate }}
+								</div>
+
+							</div>
+
+
+							<div class="ui-g-6 pull-right">
+									<span class="selectSpan">End Date<span class="red-color">*</span></span>
+									<p-calendar showAnim="slideDown" name="sspEndDate" inputStyleClass="textbox" id="sspEndDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+									 appendTo="body" dateFormat="mm/dd/yy" placeholder="End Date" formControlName="sspEndDate" [(ngModel)]="sspGroupingRules.endDate"></p-calendar>
+									<div *ngIf="formErrors.sspEndDate" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.sspEndDate }}
+							</div>
+							</div>
+						</div>
+						
+					</div>
+
+				</div>
+			</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!sspGroupingRuleForm.valid"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancel()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+
+	<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

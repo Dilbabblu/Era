@@ -1,0 +1,192 @@
+<div class="content-section implementation">
+</div>
+
+<p-panel header="Deal Forecasting View" (onBeforeToggle)=onBeforeToggle($event)>
+        <p-header>
+                <div class="pull-right icons-list" *ngIf="collapsed">
+                        <a (click)="reset(dt)" title="Reset">
+                                <em class="fa fa-refresh"></em>
+                        </a>
+                        <a (click)="exportExcel()" title="Export">
+                                <em class="fa fa-external-link"></em>
+                        </a>
+                </div>
+        </p-header>
+
+        <div class="x-scroll">
+                <p-table class="ui-datatable arrangementMgrTbl" #dt id="forecasting2-dt" [loading]="loading" [value]="rmanDealRfcstVList"
+                        selectionMode="single" (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanDealRfcstV($event)" [paginator]="true"
+                        [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+                        <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                                <tr>
+                                        <th>
+                                                <a>Arrangement Name</a>
+                                        </th>
+                                        <th>
+                                                <a>SKU</a>
+                                        </th>
+                                        <th>
+                                                <a>QTY</a>
+                                        </th>
+                                        <th>
+                                                <a>Element Type</a>
+                                        </th>
+                                        <th>
+                                                <a>Net Price</a>
+                                        </th>
+                                        <th>
+                                                <a>Expected Booking Amount</a>
+                                        </th>
+                                        <th>
+                                                <a>Amount</a>
+                                        </th>
+                                        <th>
+                                                <a>Period</a>
+                                        </th>
+                                </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-rmanDealRfcst>
+                                <tr [pSelectableRow]="rowData">
+                                        <td title="{{rmanDealRfcst.arrangementName}}">{{rmanDealRfcst.arrangementName}}</td>
+                                        <td title="{{rmanDealRfcst.sku}}">{{rmanDealRfcst.sku}}</td>
+                                        <td title="{{rmanDealRfcst.qty}}">{{rmanDealRfcst.qty}}</td>
+                                        <td title="{{rmanDealRfcst.elementType}}">{{rmanDealRfcst.elementType}}</td>
+                                        <td title="{{rmanDealRfcst.netPrice  | number :'1.2-2'}}">{{rmanDealRfcst.netPrice | number :'1.2-2'}}</td>
+                                        <td title="{{rmanDealRfcst.expectedBookingAmount | number :'1.2-2'}}">{{rmanDealRfcst.expectedBookingAmount | number :'1.2-2'}}</td>
+                                        <td title="{{rmanDealRfcst.amount | number :'1.2-2'}}">{{rmanDealRfcst.amount | number :'1.2-2'}}</td>
+                                        <td title="{{rmanDealRfcst.glPeriod}}">{{rmanDealRfcst.glPeriod}}</td>
+                                </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage" let-columns>
+                                <div class="no-results-data">
+                                        <p>{{noData}}</p>
+                                </div>
+                        </ng-template>
+                </p-table>
+        </div>
+
+</p-panel>
+<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+        <form (ngSubmit)="search()">
+                <div class="ui-grid ui-grid-responsive ui-fluid">
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="arrangementId">{{columns['arrangementId']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="arrangementId" name="arrangementId" [(ngModel)]="rmanDealRfcstVSearch.arrangementId" />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="dealArrangementName">{{columns['dealArrangementName']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="dealArrangementName" name="dealArrangementName" [(ngModel)]="rmanDealRfcstVSearch.dealArrangementName"
+                                        />
+                                </div>
+                        </div>
+
+                </div>
+                <footer>
+                        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                                <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                                <button type="submit" pButton icon="fa-check" label="Search"></button>
+                        </div>
+                </footer>
+        </form>
+</p-dialog>
+<p-dialog header="RmanDealRfcstV" width="500" [(visible)]="displayDialog" [draggable]="true" showEffect="fade" [modal]="true">
+        <form (ngSubmit)="save()">
+                <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanDealRfcstV">
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="arrangementId">{{columns['arrangementId']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="arrangementId" name="arrangementId" required [(ngModel)]="rmanDealRfcstV.arrangementId" />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="arrangementName">{{columns['arrangementName']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="arrangementName" name="arrangementName" required [(ngModel)]="rmanDealRfcstV.arrangementName" />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="sku">{{columns['sku']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="sku" name="sku" required [(ngModel)]="rmanDealRfcstV.sku" />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="qty">{{columns['qty']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="qty" name="qty" required [(ngModel)]="rmanDealRfcstV.qty" />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="elementType">{{columns['elementType']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="elementType" name="elementType" required [(ngModel)]="rmanDealRfcstV.elementType" />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="netPrice">{{columns['netPrice']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="netPrice" name="netPrice" required [(ngModel)]="rmanDealRfcstV.netPrice" />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="expectedBookingAmount">{{columns['expectedBookingAmount']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="expectedBookingAmount" name="expectedBookingAmount" required [(ngModel)]="rmanDealRfcstV.expectedBookingAmount"
+                                        />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="amount">{{columns['amount']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="amount" name="amount" required [(ngModel)]="rmanDealRfcstV.amount" />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="glPeriod">{{columns['glPeriod']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="glPeriod" name="glPeriod" required [(ngModel)]="rmanDealRfcstV.glPeriod" />
+                                </div>
+                        </div>
+                        <div class="ui-grid-row">
+                                <div class="ui-grid-col-4">
+                                        <label for="startDate">{{columns['startDate']}}</label>
+                                </div>
+                                <div class="ui-grid-col-8">
+                                        <input pInputText id="startDate" name="startDate" required [(ngModel)]="rmanDealRfcstV.startDate" />
+                                </div>
+                        </div>
+
+                </div>
+        </form>
+        <footer>
+                <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                        <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                        <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+                </div>
+        </footer>
+</p-dialog>

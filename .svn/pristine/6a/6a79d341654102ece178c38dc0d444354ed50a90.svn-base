@@ -1,0 +1,112 @@
+<div class="card-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-block">
+
+    <div class="tableRowDateContainer">
+        <a style="text-decoration: none;" class="tableRowDate iconsAction" [routerLink]="['/reports/analytical']" title="Back to Dashboard">
+            <em class="fa fa-chevron-left"></em>
+        </a>
+        <div class="tableRowDate nameAction">
+            <smart-input #reportName class="underlined" [placeholder]='"Report name"'></smart-input>
+        </div>
+        <div class="tableRowDate">
+            Start Date &nbsp;
+            <smart-date-time-picker (change)="getReport()" drop-down-position='overlay-bottom' auto-close [nullable]="true"
+                [value]="null" format-string='dd-MMM-yyyy' #datetimepickerto class="demoDateTimePickerWide"
+                [calendarButton]="true" [enableMouseWheelAction]="true" drop-down-display-mode="calendar"
+                [spinButtons]="true" [spinButtonsPosition]="'right'"></smart-date-time-picker>
+        </div>
+        <div class="tableRowDate">
+            End Date &nbsp;
+            <smart-date-time-picker (change)="getReport()" drop-down-position='overlay-bottom' auto-close [nullable]="true"
+            [value]="null" format-string='dd-MMM-yyyy' #datetimepickerfrom class="demoDateTimePickerWide"
+            [calendarButton]="true" [enableMouseWheelAction]="true" drop-down-display-mode="calendar"
+            [spinButtons]="true" [spinButtonsPosition]="'right'"></smart-date-time-picker>
+        </div>
+        <div class="tableRowDate iconsAction" (click)="flipChart()" *ngIf="drillDownService.showChart">
+            <em [ngClass]="pieChart ? 'fa fa-bar-chart' : 'fa fa-pie-chart'"></em>
+        </div> 
+        <div class="tableRowDate iconsAction" (click)="getColumnAndShowChart()" *ngIf="drillDownService.arrangementsData.length && showTable">
+            <em class="fa fa-bar-chart"></em>
+        </div>    
+        <div class="tableRowDate iconsAction" (click)="toggle()" *ngIf="drillDownService.showChart">
+            <em class="fa fa-table"></em>
+        </div>
+        <div class="tableRowDate iconsAction"
+            *ngIf="drillDownService.arrangementsData.length && !drillDownService.showChart">
+            <em class="fa fa-download"></em>
+            <div class="downloadTypeContainer">
+                <div (click)="downloadReport('xlsx')">SpreadSheet (XLSX)</div>
+                <div (click)="downloadReport('pdf')">Document (PDF)</div>
+                <div (click)="downloadReport('csv')">Comma-separated (CSV)</div>
+            </div>
+        </div>
+        <div class="tableRowDate iconsAction" *ngIf="drillDownService.arrangementsData.length && drillDownService.showChart">
+            <em class="fa fa-download"></em>
+            <div class="downloadTypeContainer">
+                <div (click)="downloadChart('PNG', pieChart)">Save As PNG</div>
+                <div (click)="downloadChart('PDF', pieChart)">Save As PDF</div>
+            </div>
+        </div>
+        <div class="tableRowDate iconsAction" *ngIf="drillDownService.arrangementsData.length && showTable">
+            <em class="fa fa-save"></em>
+            <div class="saveTypeContainer downloadTypeContainer">
+                <div (click)="saveReport()">Save</div>
+                <div *ngIf="reportId" (click)="saveReportAs()">Save As</div>
+            </div>
+        </div>
+        <p-progressSpinner *ngIf="saveReportLoading" class="datasave-load-spinner" styleClass="custom-spinner" strokeWidth="4"></p-progressSpinner>
+
+    </div>
+
+
+<div class="data">
+<ng-container *ngIf="showTable">
+    <data-table [columnData]="columnData" #dataTable></data-table>
+</ng-container>
+<ng-container *ngIf="drillDownService.showChart && drillDownService.verticalBarChart">
+    <div class="chart-container">
+        <data-chart [columnData]="columnData" [title]="reportName" [desc]="" style="display:block; width: 75%; margin: 0 auto;" #dataChart></data-chart>
+    </div>
+</ng-container>
+<ng-container *ngIf="drillDownService.showChart && pieChart">
+    <div class="chart-container">
+         <pie-data-chart [columnData]="columnData" [title]="reportName" [desc]="" style="display: block; width: 50%; margin: 0 auto;" #pieDataChart></pie-data-chart>
+   </div>
+</ng-container>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<p-progressSpinner *ngIf="showLoading" class="datatable-load-spinner" styleClass="custom-spinner" strokeWidth="4"></p-progressSpinner>
+
+<p-dialog header="Save As" width="400" class="save-as-dialog" [(visible)]="displaySaveAsDialog" [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true">
+    <form>
+      <div class="ui-grid ui-grid-responsive ui-fluid">
+        <div class="ui-g-12">
+          <div class="ui-g-5">
+            <span class="md-inputfield save-as-input">
+                <span class="selectSpan">Report Name</span>
+                <input pInputText class="textbox" placeholder="Report Name" name="saveAsreportName"  id="saveAsreportName" [(ngModel)]="saveAsReportName" />
+            </span>
+          </div>
+        </div>
+      </div>
+    </form>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="submit" class="primary-btn" pButton (click)="saveAs()" label="Save"></button>
+        <button type="button" class="secondary-btn" pButton (click)="cancel()" label="Cancel"></button>
+
+      </div>
+    </p-footer>
+  </p-dialog>
+  <div id="tablePdf" style="visibility: hidden;"></div>

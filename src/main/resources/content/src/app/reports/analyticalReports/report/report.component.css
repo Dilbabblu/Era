@@ -1,0 +1,74 @@
+.tableRowDate {
+    display: flex;
+    padding: 16px;
+    /* border: 1px solid #e0e0e0; */
+    border-right: none;
+    color: rgb(90,90,90);
+    font-size: 13px;
+    flex: 1;
+    margin-bottom: -1px;
+    /* justify-content: center; */
+    align-items: center;
+    position: relative;
+    z-index: 1;
+
+}
+.tableRowDateContainer {
+    display: flex;
+    background-color: white;
+    margin-top: 15px;
+}
+.tableRowDate.iconsAction {
+    /* width: 10px; */
+    flex: none;
+    cursor: pointer;
+    position: relative;
+    padding: 18px;
+}
+.tableRowDate.nameAction {
+    flex: none;
+}
+.tableRowDate.iconsAction:hover .fa{
+    color: rgb(150,150,150);
+}
+.lds-spinner{
+    padding: 0px;
+    /*position: absolute; */
+    padding-left: 650px;
+}
+.downloadTypeContainer {
+    position: absolute;
+    z-index: 1020;
+    top: 100%;
+    right: 0px;
+    padding: 8px 0px;
+    display: none;
+    background: white;
+    box-shadow: 4px 4px 8px rgba(0,0,0,.2);
+}
+.downloadTypeContainer > div {
+    padding: 4px 10px;
+    width: 150px;
+    cursor: pointer;
+}
+.saveTypeContainer > div {
+    padding: 4px 10px;
+    width: 75px;
+    cursor: pointer;
+}
+.saveTypeContainer>div:hover {
+    background: #eee;
+}
+.downloadTypeContainer>div:hover {
+    background: #eee;
+}
+.iconsAction:hover .downloadTypeContainer{
+    display: block;
+}
+.iconsAction:hover .saveTypeContainer{
+    display: block;
+}
+.smart-date-time-picker[spin-buttons][calendar-button] {
+    width: 75% !important;
+}
+

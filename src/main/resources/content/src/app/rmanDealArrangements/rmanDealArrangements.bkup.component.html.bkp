@@ -1,0 +1,430 @@
+<div class="ContentSideSections Implementation">
+<div class="ui-datatable ui-widget ui-datatable-reflow">
+<div class="ui-datatable-header ui-widget-header">
+<header>RmanDealArrangements</header>
+</div>
+</div>
+
+	<p-menubar [model]="items"></p-menubar>
+	<div class="ui-widget-header ui-helper-clearfix" [hidden]='!showFilter'  style="padding:4px 10px;border-bottom: 0 none">
+    <em class="fa fa-search" style="float:left;margin:4px 4px 0 0"></em>
+		<input #gb type="text" pInputText size="50" style="float:left" placeholder="Global Filter">
+	</div>
+
+	<p-dataTable [value]="rmanDealArrangementsList" selectionMode="single"     (onRowSelect)="onRowSelect($event)"  [paginator]="true" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements" (onLazyLoad)="getRmanDealArrangements($event)"   [globalFilter]="gb">
+           [paginator]="true" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements" (onLazyLoad)="getRmanDealArrangements($event)"   [globalFilter]="gb">
+		<header style="display:{{(hideColumnMenu==true)?none:block}}">
+		
+			<div style="text-align:left;">
+				<p-multiSelect [options]="columnOptions" [(ngModel)]="cols" [hidden]='hideColumnMenu'></p-multiSelect>
+			</div>
+		</header>
+		<p-column styleClass="col-button" styleClass="w-100">
+                        <ng-template let-rmanDealArrangements="rowData" pTemplate="body">
+                                <button type="button" pButton (click)="editRow(rmanDealArrangements)" icon="fa-edit"></button>
+                                <button type="button" pButton (click)="delete(rmanDealArrangements)" icon="fa-trash"></button>
+                        </ng-template>
+         </p-column>
+		        <p-column field=dealArrangementKey header="{{columns['dealArrangementKey']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="false"></p-column>
+        <p-column field=dealArrangementId header="{{columns['dealArrangementId']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="false"></p-column>
+        <p-column field=dealArrangementName header="{{columns['dealArrangementName']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="false"></p-column>
+        <p-column field=dealArrangementSaMe header="{{columns['dealArrangementSaMe']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealArrangementQtr header="{{columns['dealArrangementQtr']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealArrangementStatus header="{{columns['dealArrangementStatus']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="false"></p-column>
+        <p-column field=attribute1 header="{{columns['attribute1']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute2 header="{{columns['attribute2']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute3 header="{{columns['attribute3']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute4 header="{{columns['attribute4']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute5 header="{{columns['attribute5']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute6 header="{{columns['attribute6']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute7 header="{{columns['attribute7']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute8 header="{{columns['attribute8']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute9 header="{{columns['attribute9']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute10 header="{{columns['attribute10']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute11 header="{{columns['attribute11']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute12 header="{{columns['attribute12']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute13 header="{{columns['attribute13']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute14 header="{{columns['attribute14']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute15 header="{{columns['attribute15']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute16 header="{{columns['attribute16']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute17 header="{{columns['attribute17']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute18 header="{{columns['attribute18']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute19 header="{{columns['attribute19']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute20 header="{{columns['attribute20']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute21 header="{{columns['attribute21']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute22 header="{{columns['attribute22']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute23 header="{{columns['attribute23']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute24 header="{{columns['attribute24']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute25 header="{{columns['attribute25']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute26 header="{{columns['attribute26']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute27 header="{{columns['attribute27']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute28 header="{{columns['attribute28']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute29 header="{{columns['attribute29']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=attribute30 header="{{columns['attribute30']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=creationDate header="{{columns['creationDate']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="false"></p-column>
+        <p-column field=createdBy header="{{columns['createdBy']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="false"></p-column>
+        <p-column field=lastUpdateDate header="{{columns['lastUpdateDate']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="false"></p-column>
+        <p-column field=lastUpdatedBy header="{{columns['lastUpdatedBy']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="false"></p-column>
+        <p-column field=dealArrangementType header="{{columns['dealArrangementType']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=legalEntityName header="{{columns['legalEntityName']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=legalEntityId header="{{columns['legalEntityId']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealArrangementTotal header="{{columns['dealArrangementTotal']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=endCustomerName header="{{columns['endCustomerName']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=endCustomerNumber header="{{columns['endCustomerNumber']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealArrangementBasis header="{{columns['dealArrangementBasis']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealArrangementSource header="{{columns['dealArrangementSource']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealAgreementId header="{{columns['dealAgreementId']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealId header="{{columns['dealId']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealNumber header="{{columns['dealNumber']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealCosedDate header="{{columns['dealCosedDate']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealApprovalDate header="{{columns['dealApprovalDate']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealApprovedBy header="{{columns['dealApprovedBy']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=msaNumber header="{{columns['msaNumber']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=salesNodeLevel1 header="{{columns['salesNodeLevel1']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=salesNodeLevel2 header="{{columns['salesNodeLevel2']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=salesNodeLevel3 header="{{columns['salesNodeLevel3']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=salesNodeLevel4 header="{{columns['salesNodeLevel4']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=arrangementCurrency header="{{columns['arrangementCurrency']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=revAccountantId header="{{columns['revAccountantId']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=revManagerId header="{{columns['revManagerId']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=salesContact header="{{columns['salesContact']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=customerContact header="{{columns['customerContact']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealAgreementName header="{{columns['dealAgreementName']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=reasonCode header="{{columns['reasonCode']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=allocationEligible header="{{columns['allocationEligible']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=msaName header="{{columns['msaName']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealArrangementNumber header="{{columns['dealArrangementNumber']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=dealName header="{{columns['dealName']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=changeReason header="{{columns['changeReason']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=masterArrgFlag header="{{columns['masterArrgFlag']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=masterArrgId header="{{columns['masterArrgId']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+        <p-column field=masterArrgName header="{{columns['masterArrgName']}}"  styleClass="w-100" [hidden]="false" [sortable]="true" required="true"></p-column>
+  
+	</p-dataTable>
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog"  showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="dealArrangementId">{{columns['dealArrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText name="dealArrangementId"  id="dealArrangementId" [(ngModel)]="rmanDealArrangementsSearch.dealArrangementId" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanDealArrangements" width="500" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanDealArrangements">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementKey">{{columns['dealArrangementKey']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementKey"  id="dealArrangementKey" required [(ngModel)]="rmanDealArrangements.dealArrangementKey" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementId">{{columns['dealArrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementId"  id="dealArrangementId" required [(ngModel)]="rmanDealArrangements.dealArrangementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementName">{{columns['dealArrangementName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementName"  id="dealArrangementName" required [(ngModel)]="rmanDealArrangements.dealArrangementName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementSaMe">{{columns['dealArrangementSaMe']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementSaMe"  id="dealArrangementSaMe" required [(ngModel)]="rmanDealArrangements.dealArrangementSaMe" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementQtr">{{columns['dealArrangementQtr']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementQtr"  id="dealArrangementQtr" required [(ngModel)]="rmanDealArrangements.dealArrangementQtr" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementStatus">{{columns['dealArrangementStatus']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementStatus"  id="dealArrangementStatus" required [(ngModel)]="rmanDealArrangements.dealArrangementStatus" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute1">{{columns['attribute1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute1"  id="attribute1" required [(ngModel)]="rmanDealArrangements.attribute1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute2">{{columns['attribute2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute2"  id="attribute2" required [(ngModel)]="rmanDealArrangements.attribute2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute3">{{columns['attribute3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute3"  id="attribute3" required [(ngModel)]="rmanDealArrangements.attribute3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute4">{{columns['attribute4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute4"  id="attribute4" required [(ngModel)]="rmanDealArrangements.attribute4" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute5">{{columns['attribute5']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute5"  id="attribute5" required [(ngModel)]="rmanDealArrangements.attribute5" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute6">{{columns['attribute6']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute6"  id="attribute6" required [(ngModel)]="rmanDealArrangements.attribute6" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute7">{{columns['attribute7']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute7"  id="attribute7" required [(ngModel)]="rmanDealArrangements.attribute7" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute8">{{columns['attribute8']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute8"  id="attribute8" required [(ngModel)]="rmanDealArrangements.attribute8" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute9">{{columns['attribute9']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute9"  id="attribute9" required [(ngModel)]="rmanDealArrangements.attribute9" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute10">{{columns['attribute10']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute10"  id="attribute10" required [(ngModel)]="rmanDealArrangements.attribute10" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute11">{{columns['attribute11']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute11"  id="attribute11" required [(ngModel)]="rmanDealArrangements.attribute11" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute12">{{columns['attribute12']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute12"  id="attribute12" required [(ngModel)]="rmanDealArrangements.attribute12" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute13">{{columns['attribute13']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute13"  id="attribute13" required [(ngModel)]="rmanDealArrangements.attribute13" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute14">{{columns['attribute14']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute14"  id="attribute14" required [(ngModel)]="rmanDealArrangements.attribute14" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute15">{{columns['attribute15']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute15"  id="attribute15" required [(ngModel)]="rmanDealArrangements.attribute15" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute16">{{columns['attribute16']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute16"  id="attribute16" required [(ngModel)]="rmanDealArrangements.attribute16" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute17">{{columns['attribute17']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute17"  id="attribute17" required [(ngModel)]="rmanDealArrangements.attribute17" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute18">{{columns['attribute18']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute18"  id="attribute18" required [(ngModel)]="rmanDealArrangements.attribute18" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute19">{{columns['attribute19']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute19"  id="attribute19" required [(ngModel)]="rmanDealArrangements.attribute19" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute20">{{columns['attribute20']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute20"  id="attribute20" required [(ngModel)]="rmanDealArrangements.attribute20" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute21">{{columns['attribute21']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute21"  id="attribute21" required [(ngModel)]="rmanDealArrangements.attribute21" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute22">{{columns['attribute22']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute22"  id="attribute22" required [(ngModel)]="rmanDealArrangements.attribute22" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute23">{{columns['attribute23']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute23"  id="attribute23" required [(ngModel)]="rmanDealArrangements.attribute23" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute24">{{columns['attribute24']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute24"  id="attribute24" required [(ngModel)]="rmanDealArrangements.attribute24" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute25">{{columns['attribute25']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute25"  id="attribute25" required [(ngModel)]="rmanDealArrangements.attribute25" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute26">{{columns['attribute26']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute26"  id="attribute26" required [(ngModel)]="rmanDealArrangements.attribute26" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute27">{{columns['attribute27']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute27"  id="attribute27" required [(ngModel)]="rmanDealArrangements.attribute27" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute28">{{columns['attribute28']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute28"  id="attribute28" required [(ngModel)]="rmanDealArrangements.attribute28" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute29">{{columns['attribute29']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute29"  id="attribute29" required [(ngModel)]="rmanDealArrangements.attribute29" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute30">{{columns['attribute30']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute30"  id="attribute30" required [(ngModel)]="rmanDealArrangements.attribute30" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="creationDate">{{columns['creationDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="creationDate"  id="creationDate" required [(ngModel)]="rmanDealArrangements.creationDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="createdBy">{{columns['createdBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="createdBy"  id="createdBy" required [(ngModel)]="rmanDealArrangements.createdBy" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lastUpdateDate">{{columns['lastUpdateDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lastUpdateDate"  id="lastUpdateDate" required [(ngModel)]="rmanDealArrangements.lastUpdateDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lastUpdatedBy">{{columns['lastUpdatedBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lastUpdatedBy"  id="lastUpdatedBy" required [(ngModel)]="rmanDealArrangements.lastUpdatedBy" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementType">{{columns['dealArrangementType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementType"  id="dealArrangementType" required [(ngModel)]="rmanDealArrangements.dealArrangementType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="legalEntityName">{{columns['legalEntityName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="legalEntityName"  id="legalEntityName" required [(ngModel)]="rmanDealArrangements.legalEntityName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="legalEntityId">{{columns['legalEntityId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="legalEntityId"  id="legalEntityId" required [(ngModel)]="rmanDealArrangements.legalEntityId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementTotal">{{columns['dealArrangementTotal']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementTotal"  id="dealArrangementTotal" required [(ngModel)]="rmanDealArrangements.dealArrangementTotal" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="endCustomerName">{{columns['endCustomerName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="endCustomerName"  id="endCustomerName" required [(ngModel)]="rmanDealArrangements.endCustomerName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="endCustomerNumber">{{columns['endCustomerNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="endCustomerNumber"  id="endCustomerNumber" required [(ngModel)]="rmanDealArrangements.endCustomerNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementBasis">{{columns['dealArrangementBasis']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementBasis"  id="dealArrangementBasis" required [(ngModel)]="rmanDealArrangements.dealArrangementBasis" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementSource">{{columns['dealArrangementSource']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementSource"  id="dealArrangementSource" required [(ngModel)]="rmanDealArrangements.dealArrangementSource" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealAgreementId">{{columns['dealAgreementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealAgreementId"  id="dealAgreementId" required [(ngModel)]="rmanDealArrangements.dealAgreementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealId">{{columns['dealId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealId"  id="dealId" required [(ngModel)]="rmanDealArrangements.dealId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealNumber">{{columns['dealNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealNumber"  id="dealNumber" required [(ngModel)]="rmanDealArrangements.dealNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealCosedDate">{{columns['dealCosedDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealCosedDate"  id="dealCosedDate" required [(ngModel)]="rmanDealArrangements.dealCosedDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealApprovalDate">{{columns['dealApprovalDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealApprovalDate"  id="dealApprovalDate" required [(ngModel)]="rmanDealArrangements.dealApprovalDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealApprovedBy">{{columns['dealApprovedBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealApprovedBy"  id="dealApprovedBy" required [(ngModel)]="rmanDealArrangements.dealApprovedBy" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="msaNumber">{{columns['msaNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="msaNumber"  id="msaNumber" required [(ngModel)]="rmanDealArrangements.msaNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel1">{{columns['salesNodeLevel1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="salesNodeLevel1"  id="salesNodeLevel1" required [(ngModel)]="rmanDealArrangements.salesNodeLevel1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel2">{{columns['salesNodeLevel2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="salesNodeLevel2"  id="salesNodeLevel2" required [(ngModel)]="rmanDealArrangements.salesNodeLevel2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel3">{{columns['salesNodeLevel3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="salesNodeLevel3"  id="salesNodeLevel3" required [(ngModel)]="rmanDealArrangements.salesNodeLevel3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel4">{{columns['salesNodeLevel4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="salesNodeLevel4"  id="salesNodeLevel4" required [(ngModel)]="rmanDealArrangements.salesNodeLevel4" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrangementCurrency">{{columns['arrangementCurrency']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="arrangementCurrency"  id="arrangementCurrency" required [(ngModel)]="rmanDealArrangements.arrangementCurrency" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revAccountantId">{{columns['revAccountantId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="revAccountantId"  id="revAccountantId" required [(ngModel)]="rmanDealArrangements.revAccountantId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revManagerId">{{columns['revManagerId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="revManagerId"  id="revManagerId" required [(ngModel)]="rmanDealArrangements.revManagerId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesContact">{{columns['salesContact']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="salesContact"  id="salesContact" required [(ngModel)]="rmanDealArrangements.salesContact" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="customerContact">{{columns['customerContact']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="customerContact"  id="customerContact" required [(ngModel)]="rmanDealArrangements.customerContact" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealAgreementName">{{columns['dealAgreementName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealAgreementName"  id="dealAgreementName" required [(ngModel)]="rmanDealArrangements.dealAgreementName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="reasonCode">{{columns['reasonCode']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="reasonCode"  id="reasonCode" required [(ngModel)]="rmanDealArrangements.reasonCode" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="allocationEligible">{{columns['allocationEligible']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="allocationEligible"  id="allocationEligible" required [(ngModel)]="rmanDealArrangements.allocationEligible" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="msaName">{{columns['msaName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="msaName"  id="msaName" required [(ngModel)]="rmanDealArrangements.msaName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementNumber">{{columns['dealArrangementNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealArrangementNumber"  id="dealArrangementNumber" required [(ngModel)]="rmanDealArrangements.dealArrangementNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealName">{{columns['dealName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealName"  id="dealName" required [(ngModel)]="rmanDealArrangements.dealName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="changeReason">{{columns['changeReason']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="changeReason"  id="changeReason" required [(ngModel)]="rmanDealArrangements.changeReason" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="masterArrgFlag">{{columns['masterArrgFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="masterArrgFlag"  id="masterArrgFlag" required [(ngModel)]="rmanDealArrangements.masterArrgFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="masterArrgId">{{columns['masterArrgId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="masterArrgId"  id="masterArrgId" required [(ngModel)]="rmanDealArrangements.masterArrgId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="masterArrgName">{{columns['masterArrgName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="masterArrgName"  id="masterArrgName" required [(ngModel)]="rmanDealArrangements.masterArrgName" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>
+</div>

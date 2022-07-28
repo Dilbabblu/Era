@@ -1,0 +1,488 @@
+<div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all" style="margin-top: 15px;border:0px solid #ffffff"></div>
+<div class="content-section implementation">
+	<!-- <p-growl [(value)]="growlMsgs" [sticky]="true"></p-growl> -->
+</div>
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+
+	<p-panel header="Release Lines" [toggleable]="true" (onBeforeToggle)="onBeforeToggle($event)">
+		<p-header>
+			<div class="pull-right" *ngIf="collapsed">
+				<a  (click)="reset(dt)" class="icon-reset" title="Reset"></a>
+				<a  *isAuthorized="['write','RELCONT']" (click)="exportExcel()" class="icon-export" title="Export"></a>
+			</div>
+		</p-header>
+	<p-dataTable #dt [value]="rmanContReleaseLinesList" selectionMode="single"     (onRowSelect)="onRowSelect($event)" scrollable="true"  [paginator]="true" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements" (onLazyLoad)="getRmanContReleaseLines($event)" [responsive]="true">
+
+		<!-- <p-column styleClass="col-button" styleClass="w-100">
+                        <ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+													<a  (click)="editRow(rmanContReleaseLines)" class="icon-edit" title="Edit"></a>
+													<a  (click)="delete(rmanContReleaseLines)" class="icon-delete" title="Delete"></a>
+                        </ng-template>
+         </p-column> -->
+				<p-column field=releaseLineId header="{{columns['releaseLineId']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.releaseLineId}}">{{rmanContReleaseLines.releaseLineId}}</span>
+					</ng-template>
+				</p-column>
+		    <p-column field=transHeaderId header="{{columns['transHeaderId']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.transHeaderId}}">{{rmanContReleaseLines.transHeaderId}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=transLineId header="{{columns['transLineId']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.transLineId}}">{{rmanContReleaseLines.transLineId}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=sourceHeaderId header="{{columns['sourceHeaderId']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.sourceHeaderId}}">{{rmanContReleaseLines.sourceHeaderId}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=sourceLineId header="{{columns['sourceLineId']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.sourceLineId}}">{{rmanContReleaseLines.sourceLineId}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=ruleHeaderId header="{{columns['ruleHeaderId']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.ruleHeaderId}}">{{rmanContReleaseLines.ruleHeaderId}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=templateId header="{{columns['templateId']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.templateId}}">{{rmanContReleaseLines.templateId}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=applyType header="{{columns['applyType']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.applyType}}">{{rmanContReleaseLines.applyType}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=ranking header="{{columns['ranking']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.ranking}}">{{rmanContReleaseLines.ranking}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=ruleCategory header="{{columns['ruleCategory']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.ruleCategory}}">{{rmanContReleaseLines.ruleCategory}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=revenue header="{{columns['revenue']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.revenue}}">{{rmanContReleaseLines.revenue}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=cogs header="{{columns['cogs']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.cogs}}">{{rmanContReleaseLines.cogs}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=releaseRevenue header="{{columns['releaseRevenue']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.releaseRevenue}}">{{rmanContReleaseLines.releaseRevenue}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=releaseCogs header="{{columns['releaseCogs']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.releaseCogs}}">{{rmanContReleaseLines.releaseCogs}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=completeFlag header="{{columns['completeFlag']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.completeFlag}}">{{rmanContReleaseLines.completeFlag}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=event header="{{columns['event']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.event}}">{{rmanContReleaseLines.event}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=event header="{{columns['customerPayment']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanContReleaseLines="rowData" pTemplate="body">
+							<span title="{{rmanContReleaseLines.customerPayment}}">{{rmanContReleaseLines.customerPayment}}</span>
+					</ng-template>
+				</p-column>
+			  <p-column field=description header="{{columns['description']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=comments header="{{columns['comments']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=contEventType header="{{columns['contEventType']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=maxDuration header="{{columns['maxDuration']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=percentage header="{{columns['percentage']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=application header="{{columns['application']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute1 header="{{columns['attribute1']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute2 header="{{columns['attribute2']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute3 header="{{columns['attribute3']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute4 header="{{columns['attribute4']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute5 header="{{columns['attribute5']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute6 header="{{columns['attribute6']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute7 header="{{columns['attribute7']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute8 header="{{columns['attribute8']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute9 header="{{columns['attribute9']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute10 header="{{columns['attribute10']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute11 header="{{columns['attribute11']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute12 header="{{columns['attribute12']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute13 header="{{columns['attribute13']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute14 header="{{columns['attribute14']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute15 header="{{columns['attribute15']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute16 header="{{columns['attribute16']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute17 header="{{columns['attribute17']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute18 header="{{columns['attribute18']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute19 header="{{columns['attribute19']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute20 header="{{columns['attribute20']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute21 header="{{columns['attribute21']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute22 header="{{columns['attribute22']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute23 header="{{columns['attribute23']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute24 header="{{columns['attribute24']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute25 header="{{columns['attribute25']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute26 header="{{columns['attribute26']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute27 header="{{columns['attribute27']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute28 header="{{columns['attribute28']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute29 header="{{columns['attribute29']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute30 header="{{columns['attribute30']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=creationDate header="{{columns['creationDate']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="false"></p-column>
+        <p-column field=createdBy header="{{columns['createdBy']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=lastUpdateDate header="{{columns['lastUpdateDate']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=lastUpdatedBy header="{{columns['lastUpdatedBy']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=applicationLevel header="{{columns['applicationLevel']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=dealNum header="{{columns['dealNum']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=soHeaderId header="{{columns['soHeaderId']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=soLineId header="{{columns['soLineId']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=element header="{{columns['element']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=deferredMethod header="{{columns['deferredMethod']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=releaseType header="{{columns['releaseType']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=invoiceHold header="{{columns['invoiceHold']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=avgContAcceptDur header="{{columns['avgContAcceptDur']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=status header="{{columns['status']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=productName header="{{columns['productName']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=autoReleaseDays header="{{columns['autoReleaseDays']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=deferredRelease header="{{columns['deferredRelease']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=rebate header="{{columns['rebate']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=poLineId header="{{columns['poLineId']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=poHeaderId header="{{columns['poHeaderId']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=dealArrangementId header="{{columns['dealArrangementId']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+
+	</p-dataTable>
+</p-panel>
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [responsive]="true" showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="transLineId">{{columns['transLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasestransLineId"  name="transLineId" [(ngModel)]="rmanContReleaseLinesSearch.transLineId" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanContReleaseLines" width="500" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanContReleaseLines">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="transHeaderId">{{columns['transHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasestransHeaderId" name="transHeaderId" required [(ngModel)]="rmanContReleaseLines.transHeaderId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="transLineId">{{columns['transLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasestransLineId" name="transLineId" required [(ngModel)]="rmanContReleaseLines.transLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="ruleHeaderId">{{columns['ruleHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesruleHeaderId" name="ruleHeaderId" required [(ngModel)]="rmanContReleaseLines.ruleHeaderId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="description">{{columns['description']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesdescription" name="description" required [(ngModel)]="rmanContReleaseLines.description" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="comments">{{columns['comments']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasescomments" name="comments" required [(ngModel)]="rmanContReleaseLines.comments" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="contEventType">{{columns['contEventType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasescontEventType" name="contEventType" required [(ngModel)]="rmanContReleaseLines.contEventType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="maxDuration">{{columns['maxDuration']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesmaxDuration" name="maxDuration" required [(ngModel)]="rmanContReleaseLines.maxDuration" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="event">{{columns['event']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesevent" name="event" required [(ngModel)]="rmanContReleaseLines.event" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="percentage">{{columns['percentage']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasespercentage" name="percentage" required [(ngModel)]="rmanContReleaseLines.percentage" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="application">{{columns['application']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesapplication" name="application" required [(ngModel)]="rmanContReleaseLines.application" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="ranking">{{columns['ranking']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesranking" name="ranking" required [(ngModel)]="rmanContReleaseLines.ranking" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute1">{{columns['attribute1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute1" name="attribute1" required [(ngModel)]="rmanContReleaseLines.attribute1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute2">{{columns['attribute2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute2" name="attribute2" required [(ngModel)]="rmanContReleaseLines.attribute2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute3">{{columns['attribute3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute3" name="attribute3" required [(ngModel)]="rmanContReleaseLines.attribute3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute4">{{columns['attribute4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute4" name="attribute4" required [(ngModel)]="rmanContReleaseLines.attribute4" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute5">{{columns['attribute5']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute5" name="attribute5" required [(ngModel)]="rmanContReleaseLines.attribute5" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute6">{{columns['attribute6']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute6" name="attribute6" required [(ngModel)]="rmanContReleaseLines.attribute6" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute7">{{columns['attribute7']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute7" name="attribute7" required [(ngModel)]="rmanContReleaseLines.attribute7" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute8">{{columns['attribute8']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute8" name="attribute8" required [(ngModel)]="rmanContReleaseLines.attribute8" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute9">{{columns['attribute9']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute9" name="attribute9" required [(ngModel)]="rmanContReleaseLines.attribute9" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute10">{{columns['attribute10']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute10" name="attribute10" required [(ngModel)]="rmanContReleaseLines.attribute10" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute11">{{columns['attribute11']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute11" name="attribute11" required [(ngModel)]="rmanContReleaseLines.attribute11" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute12">{{columns['attribute12']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute12" name="attribute12" required [(ngModel)]="rmanContReleaseLines.attribute12" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute13">{{columns['attribute13']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute13" name="attribute13" required [(ngModel)]="rmanContReleaseLines.attribute13" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute14">{{columns['attribute14']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute14" name="attribute14" required [(ngModel)]="rmanContReleaseLines.attribute14" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute15">{{columns['attribute15']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute15" name="attribute15" required [(ngModel)]="rmanContReleaseLines.attribute15" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute16">{{columns['attribute16']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute16" name="attribute16" required [(ngModel)]="rmanContReleaseLines.attribute16" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute17">{{columns['attribute17']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute17" name="attribute17" required [(ngModel)]="rmanContReleaseLines.attribute17" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute18">{{columns['attribute18']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute18" name="attribute18" required [(ngModel)]="rmanContReleaseLines.attribute18" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute19">{{columns['attribute19']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute19" name="attribute19" required [(ngModel)]="rmanContReleaseLines.attribute19" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute20">{{columns['attribute20']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute20" name="attribute20" required [(ngModel)]="rmanContReleaseLines.attribute20" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute21">{{columns['attribute21']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute21" name="attribute21" required [(ngModel)]="rmanContReleaseLines.attribute21" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute22">{{columns['attribute22']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute22" name="attribute22" required [(ngModel)]="rmanContReleaseLines.attribute22" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute23">{{columns['attribute23']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute23" name="attribute23" required [(ngModel)]="rmanContReleaseLines.attribute23" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute24">{{columns['attribute24']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute24" name="attribute24" required [(ngModel)]="rmanContReleaseLines.attribute24" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute25">{{columns['attribute25']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute25" name="attribute25" required [(ngModel)]="rmanContReleaseLines.attribute25" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute26">{{columns['attribute26']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute26" name="attribute26" required [(ngModel)]="rmanContReleaseLines.attribute26" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute27">{{columns['attribute27']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute27" name="attribute27" required [(ngModel)]="rmanContReleaseLines.attribute27" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute28">{{columns['attribute28']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute28" name="attribute28" required [(ngModel)]="rmanContReleaseLines.attribute28" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute29">{{columns['attribute29']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute29" name="attribute29" required [(ngModel)]="rmanContReleaseLines.attribute29" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attribute30">{{columns['attribute30']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesattribute30" name="attribute30" required [(ngModel)]="rmanContReleaseLines.attribute30" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="creationDate">{{columns['creationDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasescreationDate" name="creationDate" required [(ngModel)]="rmanContReleaseLines.creationDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="createdBy">{{columns['createdBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasescreatedBy" name="createdBy" required [(ngModel)]="rmanContReleaseLines.createdBy" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lastUpdateDate">{{columns['lastUpdateDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseslastUpdateDate" name="lastUpdateDate" required [(ngModel)]="rmanContReleaseLines.lastUpdateDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lastUpdatedBy">{{columns['lastUpdatedBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseslastUpdatedBy" name="lastUpdatedBy" required [(ngModel)]="rmanContReleaseLines.lastUpdatedBy" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="templateId">{{columns['templateId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasestemplateId" name="templateId" required [(ngModel)]="rmanContReleaseLines.templateId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="applicationLevel">{{columns['applicationLevel']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesapplicationLevel" name="applicationLevel" required [(ngModel)]="rmanContReleaseLines.applicationLevel" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealNum">{{columns['dealNum']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesdealNum" name="dealNum" required [(ngModel)]="rmanContReleaseLines.dealNum" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="soHeaderId">{{columns['soHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasessoHeaderId" name="soHeaderId" required [(ngModel)]="rmanContReleaseLines.soHeaderId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="soLineId">{{columns['soLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasessoLineId" name="soLineId" required [(ngModel)]="rmanContReleaseLines.soLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="element">{{columns['element']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseselement" name="element" required [(ngModel)]="rmanContReleaseLines.element" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="ruleCategory">{{columns['ruleCategory']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesruleCategory" name="ruleCategory" required [(ngModel)]="rmanContReleaseLines.ruleCategory" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revenue">{{columns['revenue']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesrevenue" name="revenue" required [(ngModel)]="rmanContReleaseLines.revenue" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="cogs">{{columns['cogs']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasescogs" name="cogs" required [(ngModel)]="rmanContReleaseLines.cogs" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="deferredMethod">{{columns['deferredMethod']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesdeferredMethod" name="deferredMethod" required [(ngModel)]="rmanContReleaseLines.deferredMethod" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="releaseType">{{columns['releaseType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesreleaseType" name="releaseType" required [(ngModel)]="rmanContReleaseLines.releaseType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="releaseCogs">{{columns['releaseCogs']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesreleaseCogs" name="releaseCogs" required [(ngModel)]="rmanContReleaseLines.releaseCogs" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="releaseRevenue">{{columns['releaseRevenue']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesreleaseRevenue" name="releaseRevenue" required [(ngModel)]="rmanContReleaseLines.releaseRevenue" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="applyType">{{columns['applyType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesapplyType" name="applyType" required [(ngModel)]="rmanContReleaseLines.applyType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="invoiceHold">{{columns['invoiceHold']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesinvoiceHold" name="invoiceHold" required [(ngModel)]="rmanContReleaseLines.invoiceHold" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="avgContAcceptDur">{{columns['avgContAcceptDur']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesavgContAcceptDur" name="avgContAcceptDur" required [(ngModel)]="rmanContReleaseLines.avgContAcceptDur" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="status">{{columns['status']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesstatus" name="status" required [(ngModel)]="rmanContReleaseLines.status" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productName">{{columns['productName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesproductName" name="productName" required [(ngModel)]="rmanContReleaseLines.productName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="autoReleaseDays">{{columns['autoReleaseDays']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesautoReleaseDays" name="autoReleaseDays" required [(ngModel)]="rmanContReleaseLines.autoReleaseDays" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="releaseLineId">{{columns['releaseLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesreleaseLineId" name="releaseLineId" required [(ngModel)]="rmanContReleaseLines.releaseLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="completeFlag">{{columns['completeFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasescompleteFlag" name="completeFlag" required [(ngModel)]="rmanContReleaseLines.completeFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="deferredRelease">{{columns['deferredRelease']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesdeferredRelease" name="deferredRelease" required [(ngModel)]="rmanContReleaseLines.deferredRelease" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="rebate">{{columns['rebate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesrebate" name="rebate" required [(ngModel)]="rmanContReleaseLines.rebate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="poLineId">{{columns['poLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasespoLineId" name="poLineId" required [(ngModel)]="rmanContReleaseLines.poLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="poHeaderId">{{columns['poHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasespoHeaderId" name="poHeaderId" required [(ngModel)]="rmanContReleaseLines.poHeaderId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceLineId">{{columns['sourceLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasessourceLineId" name="sourceLineId" required [(ngModel)]="rmanContReleaseLines.sourceLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceHeaderId">{{columns['sourceHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasessourceHeaderId" name="sourceHeaderId" required [(ngModel)]="rmanContReleaseLines.sourceHeaderId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementId">{{columns['dealArrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releasesdealArrangementId" name="dealArrangementId" required [(ngModel)]="rmanContReleaseLines.dealArrangementId" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>

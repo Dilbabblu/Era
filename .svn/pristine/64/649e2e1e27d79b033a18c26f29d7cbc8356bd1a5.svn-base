@@ -1,0 +1,383 @@
+import {Injectable} from '@angular/core';
+import { HttpClient,HttpHeaders} from '@angular/common/http';
+declare var require:any;
+const appSettings = require('../appsettings');
+
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type':  'application/json',
+  })
+};
+
+
+
+
+@Injectable()
+export class RmanContReleaseLinesService {
+
+  constructor(private http: HttpClient) { }
+
+  getServiceUrl(paginationOptions: any, rmanContReleaseLinesSearchObject: any, exportFlag: any) {
+
+    let serviceUrl = appSettings.apiUrl + '/rmanContReleaseLinesExport?';
+
+    if (exportFlag == 0) {
+      serviceUrl = appSettings.apiUrl + '/rmanContReleaseLinesSearch?';
+    }
+
+
+    let searchString = '';
+
+    if (rmanContReleaseLinesSearchObject.transHeaderId != undefined && rmanContReleaseLinesSearchObject.transHeaderId != "") {
+      searchString = searchString + 'transHeaderId:' + rmanContReleaseLinesSearchObject.transHeaderId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.transLineId != undefined && rmanContReleaseLinesSearchObject.transLineId != "") {
+      searchString = searchString + 'transLineId:' + rmanContReleaseLinesSearchObject.transLineId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.ruleHeaderId != undefined && rmanContReleaseLinesSearchObject.ruleHeaderId != "") {
+      searchString = searchString + 'ruleHeaderId:' + rmanContReleaseLinesSearchObject.ruleHeaderId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.description != undefined && rmanContReleaseLinesSearchObject.description != "") {
+      searchString = searchString + 'description:' + rmanContReleaseLinesSearchObject.description + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.comments != undefined && rmanContReleaseLinesSearchObject.comments != "") {
+      searchString = searchString + 'comments:' + rmanContReleaseLinesSearchObject.comments + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.contEventType != undefined && rmanContReleaseLinesSearchObject.contEventType != "") {
+      searchString = searchString + 'contEventType:' + rmanContReleaseLinesSearchObject.contEventType + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.maxDuration != undefined && rmanContReleaseLinesSearchObject.maxDuration != "") {
+      searchString = searchString + 'maxDuration:' + rmanContReleaseLinesSearchObject.maxDuration + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.event != undefined && rmanContReleaseLinesSearchObject.event != "") {
+      searchString = searchString + 'event:' + rmanContReleaseLinesSearchObject.event + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.percentage != undefined && rmanContReleaseLinesSearchObject.percentage != "") {
+      searchString = searchString + 'percentage:' + rmanContReleaseLinesSearchObject.percentage + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.application != undefined && rmanContReleaseLinesSearchObject.application != "") {
+      searchString = searchString + 'application:' + rmanContReleaseLinesSearchObject.application + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.ranking != undefined && rmanContReleaseLinesSearchObject.ranking != "") {
+      searchString = searchString + 'ranking:' + rmanContReleaseLinesSearchObject.ranking + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute1 != undefined && rmanContReleaseLinesSearchObject.attribute1 != "") {
+      searchString = searchString + 'attribute1:' + rmanContReleaseLinesSearchObject.attribute1 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute2 != undefined && rmanContReleaseLinesSearchObject.attribute2 != "") {
+      searchString = searchString + 'attribute2:' + rmanContReleaseLinesSearchObject.attribute2 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute3 != undefined && rmanContReleaseLinesSearchObject.attribute3 != "") {
+      searchString = searchString + 'attribute3:' + rmanContReleaseLinesSearchObject.attribute3 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute4 != undefined && rmanContReleaseLinesSearchObject.attribute4 != "") {
+      searchString = searchString + 'attribute4:' + rmanContReleaseLinesSearchObject.attribute4 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute5 != undefined && rmanContReleaseLinesSearchObject.attribute5 != "") {
+      searchString = searchString + 'attribute5:' + rmanContReleaseLinesSearchObject.attribute5 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute6 != undefined && rmanContReleaseLinesSearchObject.attribute6 != "") {
+      searchString = searchString + 'attribute6:' + rmanContReleaseLinesSearchObject.attribute6 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute7 != undefined && rmanContReleaseLinesSearchObject.attribute7 != "") {
+      searchString = searchString + 'attribute7:' + rmanContReleaseLinesSearchObject.attribute7 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute8 != undefined && rmanContReleaseLinesSearchObject.attribute8 != "") {
+      searchString = searchString + 'attribute8:' + rmanContReleaseLinesSearchObject.attribute8 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute9 != undefined && rmanContReleaseLinesSearchObject.attribute9 != "") {
+      searchString = searchString + 'attribute9:' + rmanContReleaseLinesSearchObject.attribute9 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute10 != undefined && rmanContReleaseLinesSearchObject.attribute10 != "") {
+      searchString = searchString + 'attribute10:' + rmanContReleaseLinesSearchObject.attribute10 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute11 != undefined && rmanContReleaseLinesSearchObject.attribute11 != "") {
+      searchString = searchString + 'attribute11:' + rmanContReleaseLinesSearchObject.attribute11 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute12 != undefined && rmanContReleaseLinesSearchObject.attribute12 != "") {
+      searchString = searchString + 'attribute12:' + rmanContReleaseLinesSearchObject.attribute12 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute13 != undefined && rmanContReleaseLinesSearchObject.attribute13 != "") {
+      searchString = searchString + 'attribute13:' + rmanContReleaseLinesSearchObject.attribute13 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute14 != undefined && rmanContReleaseLinesSearchObject.attribute14 != "") {
+      searchString = searchString + 'attribute14:' + rmanContReleaseLinesSearchObject.attribute14 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute15 != undefined && rmanContReleaseLinesSearchObject.attribute15 != "") {
+      searchString = searchString + 'attribute15:' + rmanContReleaseLinesSearchObject.attribute15 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute16 != undefined && rmanContReleaseLinesSearchObject.attribute16 != "") {
+      searchString = searchString + 'attribute16:' + rmanContReleaseLinesSearchObject.attribute16 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute17 != undefined && rmanContReleaseLinesSearchObject.attribute17 != "") {
+      searchString = searchString + 'attribute17:' + rmanContReleaseLinesSearchObject.attribute17 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute18 != undefined && rmanContReleaseLinesSearchObject.attribute18 != "") {
+      searchString = searchString + 'attribute18:' + rmanContReleaseLinesSearchObject.attribute18 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute19 != undefined && rmanContReleaseLinesSearchObject.attribute19 != "") {
+      searchString = searchString + 'attribute19:' + rmanContReleaseLinesSearchObject.attribute19 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute20 != undefined && rmanContReleaseLinesSearchObject.attribute20 != "") {
+      searchString = searchString + 'attribute20:' + rmanContReleaseLinesSearchObject.attribute20 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute21 != undefined && rmanContReleaseLinesSearchObject.attribute21 != "") {
+      searchString = searchString + 'attribute21:' + rmanContReleaseLinesSearchObject.attribute21 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute22 != undefined && rmanContReleaseLinesSearchObject.attribute22 != "") {
+      searchString = searchString + 'attribute22:' + rmanContReleaseLinesSearchObject.attribute22 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute23 != undefined && rmanContReleaseLinesSearchObject.attribute23 != "") {
+      searchString = searchString + 'attribute23:' + rmanContReleaseLinesSearchObject.attribute23 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute24 != undefined && rmanContReleaseLinesSearchObject.attribute24 != "") {
+      searchString = searchString + 'attribute24:' + rmanContReleaseLinesSearchObject.attribute24 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute25 != undefined && rmanContReleaseLinesSearchObject.attribute25 != "") {
+      searchString = searchString + 'attribute25:' + rmanContReleaseLinesSearchObject.attribute25 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute26 != undefined && rmanContReleaseLinesSearchObject.attribute26 != "") {
+      searchString = searchString + 'attribute26:' + rmanContReleaseLinesSearchObject.attribute26 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute27 != undefined && rmanContReleaseLinesSearchObject.attribute27 != "") {
+      searchString = searchString + 'attribute27:' + rmanContReleaseLinesSearchObject.attribute27 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute28 != undefined && rmanContReleaseLinesSearchObject.attribute28 != "") {
+      searchString = searchString + 'attribute28:' + rmanContReleaseLinesSearchObject.attribute28 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute29 != undefined && rmanContReleaseLinesSearchObject.attribute29 != "") {
+      searchString = searchString + 'attribute29:' + rmanContReleaseLinesSearchObject.attribute29 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.attribute30 != undefined && rmanContReleaseLinesSearchObject.attribute30 != "") {
+      searchString = searchString + 'attribute30:' + rmanContReleaseLinesSearchObject.attribute30 + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.creationDate != undefined && rmanContReleaseLinesSearchObject.creationDate != "") {
+      searchString = searchString + 'creationDate:' + rmanContReleaseLinesSearchObject.creationDate + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.createdBy != undefined && rmanContReleaseLinesSearchObject.createdBy != "") {
+      searchString = searchString + 'createdBy:' + rmanContReleaseLinesSearchObject.createdBy + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.lastUpdateDate != undefined && rmanContReleaseLinesSearchObject.lastUpdateDate != "") {
+      searchString = searchString + 'lastUpdateDate:' + rmanContReleaseLinesSearchObject.lastUpdateDate + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.lastUpdatedBy != undefined && rmanContReleaseLinesSearchObject.lastUpdatedBy != "") {
+      searchString = searchString + 'lastUpdatedBy:' + rmanContReleaseLinesSearchObject.lastUpdatedBy + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.templateId != undefined && rmanContReleaseLinesSearchObject.templateId != "") {
+      searchString = searchString + 'templateId:' + rmanContReleaseLinesSearchObject.templateId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.applicationLevel != undefined && rmanContReleaseLinesSearchObject.applicationLevel != "") {
+      searchString = searchString + 'applicationLevel:' + rmanContReleaseLinesSearchObject.applicationLevel + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.dealNum != undefined && rmanContReleaseLinesSearchObject.dealNum != "") {
+      searchString = searchString + 'dealNum:' + rmanContReleaseLinesSearchObject.dealNum + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.soHeaderId != undefined && rmanContReleaseLinesSearchObject.soHeaderId != "") {
+      searchString = searchString + 'soHeaderId:' + rmanContReleaseLinesSearchObject.soHeaderId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.soLineId != undefined && rmanContReleaseLinesSearchObject.soLineId != "") {
+      searchString = searchString + 'soLineId:' + rmanContReleaseLinesSearchObject.soLineId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.element != undefined && rmanContReleaseLinesSearchObject.element != "") {
+      searchString = searchString + 'element:' + rmanContReleaseLinesSearchObject.element + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.ruleCategory != undefined && rmanContReleaseLinesSearchObject.ruleCategory != "") {
+      searchString = searchString + 'ruleCategory:' + rmanContReleaseLinesSearchObject.ruleCategory + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.revenue != undefined && rmanContReleaseLinesSearchObject.revenue != "") {
+      searchString = searchString + 'revenue:' + rmanContReleaseLinesSearchObject.revenue + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.cogs != undefined && rmanContReleaseLinesSearchObject.cogs != "") {
+      searchString = searchString + 'cogs:' + rmanContReleaseLinesSearchObject.cogs + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.deferredMethod != undefined && rmanContReleaseLinesSearchObject.deferredMethod != "") {
+      searchString = searchString + 'deferredMethod:' + rmanContReleaseLinesSearchObject.deferredMethod + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.releaseType != undefined && rmanContReleaseLinesSearchObject.releaseType != "") {
+      searchString = searchString + 'releaseType:' + rmanContReleaseLinesSearchObject.releaseType + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.releaseCogs != undefined && rmanContReleaseLinesSearchObject.releaseCogs != "") {
+      searchString = searchString + 'releaseCogs:' + rmanContReleaseLinesSearchObject.releaseCogs + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.releaseRevenue != undefined && rmanContReleaseLinesSearchObject.releaseRevenue != "") {
+      searchString = searchString + 'releaseRevenue:' + rmanContReleaseLinesSearchObject.releaseRevenue + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.applyType != undefined && rmanContReleaseLinesSearchObject.applyType != "") {
+      searchString = searchString + 'applyType:' + rmanContReleaseLinesSearchObject.applyType + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.invoiceHold != undefined && rmanContReleaseLinesSearchObject.invoiceHold != "") {
+      searchString = searchString + 'invoiceHold:' + rmanContReleaseLinesSearchObject.invoiceHold + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.avgContAcceptDur != undefined && rmanContReleaseLinesSearchObject.avgContAcceptDur != "") {
+      searchString = searchString + 'avgContAcceptDur:' + rmanContReleaseLinesSearchObject.avgContAcceptDur + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.status != undefined && rmanContReleaseLinesSearchObject.status != "") {
+      searchString = searchString + 'status:' + rmanContReleaseLinesSearchObject.status + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.productName != undefined && rmanContReleaseLinesSearchObject.productName != "") {
+      searchString = searchString + 'productName:' + rmanContReleaseLinesSearchObject.productName + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.autoReleaseDays != undefined && rmanContReleaseLinesSearchObject.autoReleaseDays != "") {
+      searchString = searchString + 'autoReleaseDays:' + rmanContReleaseLinesSearchObject.autoReleaseDays + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.releaseLineId != undefined && rmanContReleaseLinesSearchObject.releaseLineId != "") {
+      searchString = searchString + 'releaseLineId:' + rmanContReleaseLinesSearchObject.releaseLineId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.completeFlag != undefined && rmanContReleaseLinesSearchObject.completeFlag != "") {
+      searchString = searchString + 'completeFlag:' + rmanContReleaseLinesSearchObject.completeFlag + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.deferredRelease != undefined && rmanContReleaseLinesSearchObject.deferredRelease != "") {
+      searchString = searchString + 'deferredRelease:' + rmanContReleaseLinesSearchObject.deferredRelease + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.rebate != undefined && rmanContReleaseLinesSearchObject.rebate != "") {
+      searchString = searchString + 'rebate:' + rmanContReleaseLinesSearchObject.rebate + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.poLineId != undefined && rmanContReleaseLinesSearchObject.poLineId != "") {
+      searchString = searchString + 'poLineId:' + rmanContReleaseLinesSearchObject.poLineId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.poHeaderId != undefined && rmanContReleaseLinesSearchObject.poHeaderId != "") {
+      searchString = searchString + 'poHeaderId:' + rmanContReleaseLinesSearchObject.poHeaderId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.sourceLineId != undefined && rmanContReleaseLinesSearchObject.sourceLineId != "") {
+      searchString = searchString + 'sourceLineId:' + rmanContReleaseLinesSearchObject.sourceLineId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.sourceHeaderId != undefined && rmanContReleaseLinesSearchObject.sourceHeaderId != "") {
+      searchString = searchString + 'sourceHeaderId:' + rmanContReleaseLinesSearchObject.sourceHeaderId + ',';
+    }
+
+    if (rmanContReleaseLinesSearchObject.dealArrangementId != undefined && rmanContReleaseLinesSearchObject.dealArrangementId != "") {
+      searchString = searchString + 'dealArrangementId:' + rmanContReleaseLinesSearchObject.dealArrangementId;
+    }
+
+
+
+    if (searchString == '') {
+      serviceUrl = serviceUrl + 'search=%25';
+    }
+    else {
+      serviceUrl = serviceUrl + 'search=' + searchString;
+    }
+
+    if (paginationOptions.pageNumber != undefined && paginationOptions.pageNumber != "" && !isNaN(paginationOptions.pageNumber) && paginationOptions.pageNumber != 0) {
+      serviceUrl = serviceUrl + '&page=' + paginationOptions.pageNumber + '&size=' + paginationOptions.pageSize;
+    }
+
+    return serviceUrl;
+  }
+
+
+
+  getAllRmanContReleaseLines(paginationOptions: any, rmanContReleaseLinesSearchObject: any): Promise<any[]> {
+
+    let serviceUrl = this.getServiceUrl(paginationOptions, rmanContReleaseLinesSearchObject, 0);
+    return this.http.get(serviceUrl).toPromise().then((data: any) => {
+      return data;
+    });
+  }
+
+
+
+  saveRmanContReleaseLines(rmanContReleaseLines: any) {
+    let body = JSON.stringify(rmanContReleaseLines);
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+  //  let options = new RequestOptions({ headers: headers });
+    return this.http.post(appSettings.apiUrl + '/RMAN_CONT_RELEASE_LINES', body, httpOptions).toPromise().then(data => {
+      return data;
+    });
+  }
+
+  updateRmanContReleaseLines(rmanContReleaseLines: any) {
+
+    delete rmanContReleaseLines._links;
+    delete rmanContReleaseLines.interests;
+    let body = JSON.stringify(rmanContReleaseLines);
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+    
+    return this.http.put(appSettings.apiUrl + '/RMAN_CONT_RELEASE_LINES/' + rmanContReleaseLines.transLineId, body, httpOptions).toPromise().then(data => {
+      return data;
+    });
+
+  }
+
+  deleteRmanContReleaseLines(rmanContReleaseLines: any) {
+    let deleteUrl = appSettings.apiUrl + '/RMAN_CONT_RELEASE_LINES/' + rmanContReleaseLines.transLineId;
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+  
+    return this.http.delete(deleteUrl, httpOptions).toPromise().then(data => {
+      return data;
+    });
+  }
+
+}

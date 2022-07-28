@@ -1,0 +1,59 @@
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row justify-content-center">
+			<div class="col-md-5">
+				<div class="card-block card-block-c">
+					<div class="user-icon"><em class="fa fa-user"></em></div>
+					<p-panel header="User Info" [style]="{'margin-top':'40px'}">
+
+						<table class="userInfoTbl table-bordered">
+							<tr>
+								<td class="w-35"><strong>Full Name</strong></td>
+								
+								<td class="val">{{fullName}}</td>
+							</tr>
+							<tr>
+								<td><strong>Email ID</strong></td>
+								
+								<td class="val">{{email}}</td>
+							</tr>
+
+							<tr>
+								<td><strong>User Name</strong></td>
+								
+								<td class="val">{{userName}}</td>
+							</tr>
+							<tr>
+								<td><strong>Phone Number</strong></td>
+								
+								<td class="val">{{phone}}</td>
+							</tr>
+
+							<tr>
+								<td><strong>Employee ID</strong></td>
+								
+								<td class="val">{{employeeId}}</td>
+							</tr>
+							<tr>
+								<td><strong>Role</strong></td>
+								
+								<td class="val">{{role}}</td>
+							</tr>
+
+						</table>
+						
+							<strong class="cpc"><a class="primary-btn cp" data-toggle="modal" (click)="showChangePwd()">Change Password <em class="fa fa-arrow-right" aria-hidden="true"></em></a></strong>						
+						
+					</p-panel>
+
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p-dialog header="Change Password" [(visible)]="displayPasswordDialog" width="400" showEffect="fade" [modal]="true"
+	[draggable]="true" (onHide)="destroyPasswordComponent({dimiss:true,pwd_changed:false})">
+	<div #passwordcontainer></div>
+</p-dialog>

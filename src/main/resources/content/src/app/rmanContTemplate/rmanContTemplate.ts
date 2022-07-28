@@ -1,0 +1,31 @@
+export interface RmanContTemplate {
+    attribute10: any;
+    invoiceHold: any;
+    attribute14: any;
+    attribute13: any;
+    attribute12: any;
+    cogs: any;
+    attribute11: any;
+    applyType: any;
+    lastUpdateDate: any;
+    templateId: any;
+    description: any;
+    effectiveEndDate: any;
+    attribute3: any;
+    createdBy: any;
+    attribute2: any;
+    lastUpdatedBy: any;
+    attribute1: any;
+    revenue: any;
+    creationDate: any;
+    attribute9: any;
+    attribute8: any;
+    attribute7: any;
+    attribute6: any;
+    defaultDays: any;
+    attribute5: any;
+    attribute4: any;
+    effectiveStartDate: any;
+    templateName: any;
+    attribute15: any;
+}

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Ayara :: Reset Password</title>
+    <script src='../assets/js/jquery.min.js'></script>
+    <script src="../assets/js/jquery.validate.min.js"></script>
+    <script src="../assets/js/popper.min.js"></script>
+    <script src="../assets/js/bootstrap.min.js"></script>
+    <script src='../assets/js/jquery.blockUI.js'></script>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link href="../assets/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="../assets/css/google-api-fonts.css" rel="stylesheet">    
+    <link href="./css/styles.css" rel="stylesheet">
+    
+    <style type="text/css">
+    .container .signup-form .form .user-name::before {
+       content: "\f0e0" !important;
+       z-index: 999;
+    }
+
+    </style>
+    <script>
+        $.validator.setDefaults({
+            submitHandler: function () {
+
+                if (location.search) {
+                    var parts = location.search.substring(1).split('&');
+                    var qparams1 = {};
+                    for (var i = 0; i < parts.length; i++) {
+                        var nv = parts[i].split('=');
+                        if (!nv[0]) continue;
+                        qparams1[nv[0]] = nv[1];
+                    }
+                    var token = qparams1['tokenId'];
+                    var status = qparams1['statusMsg'];
+                }
+
+                var formData = $('#setPasswordForm').serialize();
+                formData = formData + "&tokenId=" + token;
+
+                $.blockUI();
+                $("#submit-loader").show();
+                $.ajax({
+                    url: "/saveResetPassword?token="+token+"&userId="+$('#userId').val()+"&newPwd="+$('#newPwd').val(),
+                    //data: formData, //ur data to be sent to server
+                    type: "GET",
+
+                    success: function (res) {
+                        var obj = JSON.parse(res);
+                        if (obj.statusCode == 0) {
+                            $('#SetpwdErrorMsg').html(obj.Msg).show();
+                        }
+                        else {
+                            $('#SetpwdSuccessMsg').html(obj.Msg + '. Please click <a href="/auth/login.html">here</a> to login').show();
+                            $('#SetpwdErrorMsg').hide();
+                            $('#resetInputs').hide();
+                            $(':input[type="submit"]').hide();
+                        }
+
+                        $.unblockUI();
+                        $("#submit-loader").hide();
+                    },
+                    error: function (x, y, z) {
+                        $('#SetpwdErrorMsg').html(x.responseText + "  " + x.status).show();
+                        $.unblockUI();
+                        $("#submit-loader").hide();
+                    }
+                });
+            }
+        });
+
+        function showPwdForm() {
+            $("#submit-loader").hide();
+            $("#statusMsg").hide();
+            $('#SetpwdSuccessMsg').hide();
+            $('#SetpwdErrorMsg').hide();
+
+            if (location.search) {
+                var parts = location.search.substring(1).split('&');
+                var qparams1 = {};
+                for (var i = 0; i < parts.length; i++) {
+                    var nv = parts[i].split('=');
+                    if (!nv[0]) continue;
+                    qparams1[nv[0]] = nv[1];
+                }
+
+                var status = qparams1['statusMsg'];
+
+                if (status) {
+                    if (status != 'OK') {
+                        // <!-- setTimeout(function(){ -->
+                        $("#statusMsg").html(decodeURI(status)).show();
+                        $("#setPasswordForm").hide();
+                        $("#resetPassword").hide();
+                        // <!-- },100) -->
+
+                    }
+                }
+                else {
+                    // <!-- setTimeout(function(){ -->
+                    $("#statusMsg").hide();
+                    $("#setPasswordForm").show();
+                    // <!-- },100); -->
+                }
+            }
+        }
+
+        $(document).ready(function () {
+            $.blockUI.defaults.message = '<img src="../assets/images/loading.gif" />Just a moment please';
+            $('[data-toggle="tooltip"]').tooltip({
+                "title" : '1) Password must be of minimum 8 Characters.' + '<br/>' + '2) Must contain at least one lower case letter,one upper case letter, one digit and one special character.' + '<br/>' + '3) Valid special characters are  !@#$%^&*',
+                "html": true
+            });
+            var footerVal = $(".footer span").text();
+            var currentYear = new Date().getFullYear();
+            footerVal = footerVal.replace("2019", currentYear);
+            $(".footer span").text(footerVal);
+            // $(':input[type="submit"]').prop('disabled', false);
+            showPwdForm();
+            $.blockUI.defaults = {
+                // message displayed when blocking (use null for no message)
+                message: '<svg width="65px" height="65px" viewBox="0 0 66 66" style="position: absolute;left: 45%;top: 43%;'
+                    + '-webkit-transform: translateX(-50%);-ms-transform: translateX(-50%);transform: translate(50%);"xmlns="http://www.w3.org/2000/svg">'
+                    + '<g>'
+                    + '<animateTransform attributeName="transform" type="rotate" values="0 33 33;270 33 33" begin="0s" dur="1.4s" fill="freeze" repeatCount="indefinite"/>'
+                    + '<circle fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30" stroke-dasharray="187" stroke-dashoffset="610">'
+                    + '<animate attributeName="stroke" values="#3f51b5" begin="0s" dur="5.6s" fill="freeze" repeatCount="indefinite"/>'
+                    + '<animateTransform attributeName="transform" type="rotate" values="0 33 33;135 33 33;450 33 33" begin="0s" dur="1.4s" fill="freeze" repeatCount="indefinite"/>'
+                    + ' <animate attributeName="stroke-dashoffset" values="187;46.75;187" begin="0s" dur="1.4s" fill="freeze" repeatCount="indefinite"/>'
+                    + '</circle>'
+                    + '</g>'
+                    + '</svg>'
+
+            };
+
+            $.validator.addMethod("regx", function (value, element, regexpr) {
+                return regexpr.test(value);
+            });
+
+            $.validator.addMethod("socialMails", function (value, element) {
+                var mailFormatArray = ["gmail", "yahoo", "rediff", "hotmail"];
+                var count = 0;
+                var mail = value.substring(value.indexOf("@") + 1, value.lastIndexOf("."));
+                for (var i = 0; i <= mailFormatArray.length; i++) {
+                    if (mail == mailFormatArray[i]) {
+                        count = 1;
+                        return false;
+                    }
+                }
+                if (count == 0) {
+                    return true;
+                }
+                return false;
+            });
+
+            $("#setPasswordForm").validate({
+
+                // Specify the validation rules
+                rules: {
+                    userId: {
+                        required: true,
+                        // regx:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                        //regx: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9._%]*$/,
+                        //socialMails: true
+                    },
+                    newPwd: {
+                        required: true,
+                        regx: /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]){8,}/
+                    },
+                    cnfrmPwd: {
+                        required: true,
+                        equalTo: "#newPwd"
+                    },
+                },
+
+                // Specify the validation error messages
+                messages: {
+                    userId: {
+                        required: "User Name is required",
+                        //regx: "Enter Valid User Name",
+                        //socialMails: "Please provide business email"
+                    },
+                    newPwd: {
+                        required: "Password is required",
+                        regx: "Enter Valid Password"
+                    },
+                    cnfrmPwd: {
+                        required: "Confirm Password is required",
+                        equalTo: "Password and Confirm Password should be same "
+                    }
+                },
+                errorPlacement: function (error, element) {
+                    error.insertAfter($(element).parents('.has-float-label'));
+                }
+            });
+        });
+
+    </script>
+</head>
+
+<body>
+    <section id="signin" class="mt-11p mb-8p">
+        <div class="">
+            <div class="signin">
+                <div class="flodata_login">
+                    <div class="row flodata_row-sm-offset-3">
+                        <div class="col-xs-12 col-sm-6  col-md-12">
+                                <div class="container">
+                                    <div class="signup-content">
+                                            <div class="content">
+                                          <div class="inner-content">
+                                                <img src="../assets/images/revenue_intelligence.png" alt="Revenue Intelligence"><br><h2>Revenue Intelligence</h2>
+                                          <p>Revenue allocations, gross margin analysis and forecasting during the deal negotiation/quoting phase</p>
+                                          </div>
+                                          <div class="inner-content">
+                                                <img src="../assets/images/revenue_accounting.png" alt="Revenue Accounting"><br><h2>Revenue Accounting</h2>
+                                          <p>Automated proccessing of revenue transactions & revenue recognition/accounting based on delivered performance obligations</p>
+                                          </div>
+                                        </div>
+                                            </div>
+                            
+                                    <div class="signup-form">
+                                            <div class="form-header">
+                                                    <a class="logo" href="#">
+                                                          <img src="../assets/images/logo_login.png" alt="Ayara.png">
+                                                    </a>
+                                              </div>
+                                          <h1 id="resetPassword">Reset Password</h1>
+                                          <div class="text-danger" id="statusMsg"></div>
+                            
+                                          <form class="form" name="setPasswordForm" id="setPasswordForm" novalidate>
+                                          <span class ="reset-values" id="resetInputs">
+                                          <div class="form-group-item form-group input-group has-float-label user-name">
+                                                        <input id="userId" required name="userId" style="background-color: #ffffff; width: 100%;"
+                                                    readonly onfocus="this.removeAttribute('readonly');"
+                                                    class="form-control fullwidth" type="text" placeholder="Enter User Name"
+                                                    maxlength="100" value=""/>
+                                                    
+                                            </div>
+                                            <div class="form-group-item form-group has-float-label password">
+                                                <input id="newPwd" required name="newPwd" style="background-color: #ffffff;"
+                                                    readonly onfocus="this.removeAttribute('readonly');"
+                                                    class="form-control fullwidth" type="password" placeholder="Enter New Password"
+                                                    maxlength="100" data-toggle="tooltip" data-placement="right"/>
+                                                
+                                            </div>
+                                            <div class="form-group-item form-group has-float-label password">
+                                                <input id="cnfrmPwd" class="form-control fullwidth" type="password" required
+                                                    name="cnfrmPwd" style="background-color: #ffffff;" readonly
+                                                    onfocus="this.removeAttribute('readonly');" placeholder="Confirm New Password"
+                                                    maxlength="100" data-toggle="tooltip" data-placement="right"/>
+                                               
+                                            </div>
+                                            </span>
+                                            <div class="form-group-item form-group mt-3">
+                                                <small class="text-success" id="SetpwdSuccessMsg">Success</small>
+                                                <small class="text-danger" id="SetpwdErrorMsg">Error</small>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                            <div class="text-center w-100"><button class="btn submitbtn m-auto" type="submit"><em class="fa fa-sign-in"></em> Submit</button></div>
+                                            <div id="submit-loader">
+                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50px" height="50px"
+                                                    viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" style="background: none; shape-rendering: auto;">
+                                                    <g transform="rotate(0 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-1.375s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(30 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-1.25s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(60 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-1.125s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(90 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-1s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(120 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.875s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(150 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.75s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(180 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.625s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(210 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.5s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(240 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.375s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(270 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.25s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(300 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.125s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                    <g transform="rotate(330 50 50)" class="">
+                                                        <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                                                            <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="0s"
+                                                                repeatCount="indefinite" class="" />
+                                                        </rect>
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                            
+                                        </form>
+                            
+                            
+                                    </div>
+                            
+                              </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div style="text-align: center">
+            <span>&copy; 2021 - 2022 Forsys Inc. All Rights Reserved.</span>
+        </div>
+    </footer>
+</body>
+</html>

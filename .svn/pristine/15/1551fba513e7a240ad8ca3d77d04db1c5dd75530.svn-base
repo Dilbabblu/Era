@@ -1,0 +1,134 @@
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card-block card-padding card-overview">
+          <p-card>
+            <div class="cardHeader row mx-0">
+              <h2>Overview</h2>
+              <p-dropdown class="ml-auto" [options]="rmanFYears" [(ngModel)]="currentFY" [ngModelOptions]="{standalone: true}" (onChange)="onSelectChange()" name="FYear" [filter]="false"></p-dropdown>
+              <p-dropdown [options]="rmanPeriodDimensions" [(ngModel)]="currentPeriodDimension" [ngModelOptions]="{standalone: true}" (onChange)="onDimensionChange()" name="periodDimension" [filter]="false"></p-dropdown>
+              <p-dropdown *ngIf="currentFY != null && currentPeriodDimension == 'PTD'" [options]="rmanPeriods" [(ngModel)]="rmanPeriod" [ngModelOptions]="{standalone: true}" (onChange)="onPeriodsChange()" name="periodName" [filter]="false"></p-dropdown>
+              <p-dropdown *ngIf="currentFY != null && currentPeriodDimension == 'QTD'" [options]="rmanQuarters" [(ngModel)]="rmanQuarter" [ngModelOptions]="{standalone: true}" (onChange)="onPeriodsChange()" name="quarterName" [filter]="false"></p-dropdown>
+          </div>
+            <div class="row">
+              <h6 *ngIf="noOverviewData" class="no-data-found">No data found</h6>
+              <span class="card-container row mx-0" *ngFor="let item of overviewFigures">
+                <div class="col card-main-">
+                  <div class="card">
+                    <p>Arrangement<br/>Amount(FC)</p>
+                    <h6>$ {{transformValues(item.ARRG_AMOUNT)}}</h6>
+                  </div>
+                </div>
+                <div class="col card-main-">
+                  <div class="card">
+                    <p>Allocation<br/>Amount(FC)</p>
+                    <h6>$ {{transformValues(item.ALLOCATION_AMOUNT)}}</h6>
+                  </div>
+                </div>
+                <div class="col card-main-">
+                  <div class="card">
+                    <p>Delivered<br/>Amount(FC)</p>
+                    <h6>$ {{transformValues(item.DELIVERED_AMOUNT)}}</h6>
+                  </div>
+                </div>
+                <div class="col card-main-">
+                  <div class="card">
+                    <p>Billed<br/>Amout(FC)</p>
+                    <h6>$ {{transformValues(item.BILLED_AMOUNT)}}</h6>
+                  </div>
+                </div>
+                <div class="col card-main-">
+                  <div class="card">
+                    <p>Delivered Allocated Amout(FC)</p>
+                    <h6>$ {{transformValues(item.DEL_ALLOC_AMT)}}</h6>
+                  </div>
+                </div>
+                <div class="col card-main-">
+                  <div class="card">
+                    <p>Revenue<br/>Amount(FC)</p>
+                    <h6>$ {{transformValues(item.REVENUE_AMOUNT)}}</h6>
+                  </div>
+                </div>
+                <div class="col card-main-">
+                  <div class="card">
+                    <p>Revenue Deferred Amount(FC)</p>
+                    <h6>$ {{transformValues(item.DEF_REV_AMOUNT)}}</h6>
+                  </div>
+                </div>
+                <div class="col card-main-">
+                  <div class="card">
+                    <p>Variable Consideration Amount(FC)</p>
+                    <h6>$ {{transformValues(item.DEF_CONT_AMOUNT)}}</h6>
+                  </div>
+                </div>
+              </span>
+              <p-progressSpinner *ngIf="overviewDataLoading" class="overviewFigures-load-spinner" styleClass="custom-spinner" strokeWidth="4"></p-progressSpinner>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card-wrapper" *ngIf="reportsList">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card-block card-padding d-flex">
+        <p-card>
+          <h2>Reports</h2>
+          <div class="pull-right icons-list">
+            <a  *ngIf="!noReports" (click)="onAddingReports($event)" class="add-column"><em class="fa fa-plus-circle"></em>List of Reports</a>
+            <div id="add-column-popup" class="dashboard-reports-popup" *ngIf="addReports">
+              <div class="user-popup right-align">
+                <div class="content overflow">
+                  <a class="close" title="Close" (click)="closeAddReports($event)" >&times;</a>
+                  <ol *ngFor="let report of reportsList">
+                    <li>
+                      <input type="checkbox" name="column" [checked]="report.showOnDashbaord == 'Y'" (change)="onReportChange(report)"/>
+                      <label for="{{report.id}}">{{report.reportName}}</label>				
+                    </li>
+                  </ol>
+                </div>
+                <div class="add-column-btns">
+                  <a class="primary-btn pointer" (click)="saveDashboardReports()">
+                    Save
+                  </a>
+                </div>
+                <p-progressSpinner *ngIf="saveLoading" class="save-dialog-spinner" styleClass="custom-spinner" strokeWidth="4"></p-progressSpinner>
+              </div>
+            </div>
+          </div>
+          <p-progressSpinner *ngIf="showLoading" class="reports-load-splinner" styleClass="custom-spinner" strokeWidth="4"></p-progressSpinner>
+          <div *ngIf="noReports">
+            <strong style="text-align: center;">No reports found</strong>
+          </div>
+          
+          <div class="dashboard-graphs-row" *ngFor="let report of reportsList">
+              <div *ngIf="report.showChart && report.showOnDashbaord == 'Y'" class="col-md-4 reports-card-main">
+                <div class="card">
+                  <h6 class="dashboard-report-name">
+                    <span [routerLink]="['/reports','analytical','report',report.id]">{{report.reportName}}</span>
+                    <div class="pull-right chart-switch" (click)="report.switchChart = !report.switchChart">
+                      <em [ngClass]="report.switchChart ? 'fa fa-bar-chart' : 'fa fa-pie-chart'"></em>
+                    </div>
+                  </h6>
+                  <ng-container *ngIf="!report.showLoading">
+                    <data-chart *ngIf="!report.switchChart && drillDownService.showChart" [columnData]="report.columnData" [title]="" [desc]="" [routeUrl]="currentUrl" [reportId]="report.id" #dataChart></data-chart>
+                    <pie-data-chart *ngIf="report.switchChart" [columnData]="report.columnData" [title]="" [desc]="" [routeUrl]="currentUrl" [reportId]="report.id" #pieDataChart></pie-data-chart>
+                  </ng-container>
+                  <p-progressSpinner *ngIf="report.showLoading" class="graph-load-spinner" styleClass="custom-spinner" strokeWidth="4"></p-progressSpinner>
+                </div>
+              </div>
+          </div>
+      </p-card>
+    </div>
+  </div>
+</div>
+</div>
+</div>

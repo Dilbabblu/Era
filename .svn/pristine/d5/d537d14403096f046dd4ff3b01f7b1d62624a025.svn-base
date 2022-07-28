@@ -1,0 +1,359 @@
+<div class="ContentSideSections Implementation">
+
+	<p-panel header="WaterFall Details Report" [toggleable]="true" [style]="{'margin-bottom':'20px'}" (onBeforeToggle)=onBeforeToggle($event)>
+
+	<p-header>
+	<div class="pull-right" *ngIf="collapsed">
+		<a  (click)="reset(dt)" class="icon-reset" title="Reset"></a>
+		<a  (click)="exportExcel()" class="icon-export" title="Export"></a>
+	</div>
+	</p-header>
+
+	<p-dataTable #dt [value]="rmanArrgWaterFallRepV2List" selectionMode="single"     (onRowSelect)="onRowSelect($event)" scrollable="true"  [paginator]="true" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements" (onLazyLoad)="getRmanArrgWaterFallRepV2($event)" >
+
+				<p-column field=sno header="{{columns['sno']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=msaNumber header="{{columns['msaNumber']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=msaName header="{{columns['msaName']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=dealArrangementName header="{{columns['dealArrangementName']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="false"></p-column>
+        <p-column field=dealArrangementNumber header="{{columns['dealArrangementNumber']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+				<p-column field=dealName header="{{columns['dealName']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+				<p-column field=dealArrangementId header="{{columns['dealArrangementId']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="false"></p-column>
+        <p-column field=legalEntityName header="{{columns['legalEntityName']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-revmantra="rowData" pTemplate="body">
+						<span title="{{revmantra.legalEntityName}}">{{revmantra.legalEntityName}}</span>
+					</ng-template>
+				</p-column>
+				<p-column field=solution header="{{columns['solution']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+			  <p-column field=legalEntityId header="{{columns['legalEntityId']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=creationDate header="{{columns['creationDate']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="false">
+					<ng-template let-revmantra="rowData" pTemplate="body">
+						<span title="{{revmantra.creationDate | date: 'dd/MM/yyyy'}}">{{revmantra.creationDate | date: 'dd/MM/yyyy'}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=createdBy header="{{columns['createdBy']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="false"></p-column>
+        <p-column field=revAccountantId header="{{columns['revAccountantId']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=revManagerId header="{{columns['revManagerId']}}"  styleClass="w-100" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=productName header="{{columns['productName']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="false"></p-column>
+        <p-column field=productDescription header="{{columns['productDescription']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-revmantra="rowData" pTemplate="body">
+						<span title="{{revmantra.productDescription}}">{{revmantra.productDescription}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=elementType header="{{columns['elementType']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-revmantra="rowData" pTemplate="body">
+						<span title="{{revmantra.elementType}}">{{revmantra.elementType}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=productGroup header="{{columns['productGroup']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-revmantra="rowData" pTemplate="body">
+						<span title="{{revmantra.productGroup}}">{{revmantra.productGroup}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=productType header="{{columns['productType']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-revmantra="rowData" pTemplate="body">
+						<span title="{{revmantra.productType}}">{{revmantra.productType}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=contractQuantity id="cqty" header="{{columns['contractQuantity']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="false"></p-column>
+        <p-column field=dealLineNumber header="{{columns['dealLineNumber']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="false"></p-column>
+        <p-column field=unitSellingPrice header="{{columns['unitSellingPrice']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="false">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.unitSellingPrice | round}}">{{rmanArrgWaterFallRepV2.unitSellingPrice | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=orderNumber header="{{columns['orderNumber']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="false"></p-column>
+        <p-column field=sourceLineNumber header="{{columns['sourceLineNumber']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=orderedQuantity header="{{columns['orderedQuantity']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=invoiceNumber header="{{columns['invoiceNumber']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=invoiceLineNumber header="{{columns['invoiceLineNumber']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=distributionAmount header="{{columns['distributionAmount']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=currentPeriod header="{{columns['currentPeriod']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=revenueStartDate header="{{columns['revenueStartDate']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-revmantra="rowData" pTemplate="body">
+						<span title="{{revmantra.revenueStartDate | date: 'dd/MM/yyyy'}}">{{revmantra.revenueStartDate | date: 'dd/MM/yyyy'}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=revenueEndDate header="{{columns['revenueEndDate']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-revmantra="rowData" pTemplate="body">
+						<span title="{{revmantra.revenueEndDate | date: 'dd/MM/yyyy'}}">{{revmantra.revenueEndDate | date: 'dd/MM/yyyy'}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period1 header="{{columns['period1']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period1 | round}}">{{rmanArrgWaterFallRepV2.period1 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period2 header="{{columns['period2']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period2 | round}}">{{rmanArrgWaterFallRepV2.period2 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period3 header="{{columns['period3']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period3 | round}}">{{rmanArrgWaterFallRepV2.period3 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period4 header="{{columns['period4']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period4 | round}}">{{rmanArrgWaterFallRepV2.period4 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period5 header="{{columns['period5']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period5 | round}}">{{rmanArrgWaterFallRepV2.period5 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period6 header="{{columns['period6']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period6 | round}}">{{rmanArrgWaterFallRepV2.period6 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period7 header="{{columns['period7']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period7 | round}}">{{rmanArrgWaterFallRepV2.period7 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period8 header="{{columns['period8']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period8 | round}}">{{rmanArrgWaterFallRepV2.period8 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period9 header="{{columns['period9']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period9 | round}}">{{rmanArrgWaterFallRepV2.period9 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period10 header="{{columns['period10']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period10 | round}}">{{rmanArrgWaterFallRepV2.period10 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period11 header="{{columns['period11']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period11 | round}}">{{rmanArrgWaterFallRepV2.period11 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=period12 header="{{columns['period12']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.period12 | round}}">{{rmanArrgWaterFallRepV2.period12 | round}}</span>
+					</ng-template>
+				</p-column>
+        <p-column field=future header="{{columns['future']}}"  [style]="{'width':'100px','text-align':'right'}" [hidden]="false" [sortable]="false" required="true">
+					<ng-template let-rmanArrgWaterFallRepV2="rowData" pTemplate="body">
+							<span title="{{rmanArrgWaterFallRepV2.future | round}}">{{rmanArrgWaterFallRepV2.future | round}}</span>
+					</ng-template>
+				</p-column>
+
+	</p-dataTable>
+</p-panel>
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog"  showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="msaName">{{columns['msaName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="msaName"  name="msaName" [(ngModel)]="rmanArrgWaterFallRepV2Search.msaName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="msaNumber">{{columns['msaNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="msaNumber"  name="msaNumber" [(ngModel)]="rmanArrgWaterFallRepV2Search.msaNumber" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanArrgWaterFallRepV2" width="500" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanArrgWaterFallRepV2">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sno">{{columns['sno']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sno" name="sno" required [(ngModel)]="rmanArrgWaterFallRepV2.sno" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="msaNumber">{{columns['msaNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="msaNumber" name="msaNumber" required [(ngModel)]="rmanArrgWaterFallRepV2.msaNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="msaName">{{columns['msaName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="msaName" name="msaName" required [(ngModel)]="rmanArrgWaterFallRepV2.msaName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementName">{{columns['dealArrangementName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementName" name="dealArrangementName" required [(ngModel)]="rmanArrgWaterFallRepV2.dealArrangementName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementNumber">{{columns['dealArrangementNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementNumber" name="dealArrangementNumber" required [(ngModel)]="rmanArrgWaterFallRepV2.dealArrangementNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementId">{{columns['dealArrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementId" name="dealArrangementId" required [(ngModel)]="rmanArrgWaterFallRepV2.dealArrangementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="legalEntityName">{{columns['legalEntityName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="legalEntityName" name="legalEntityName" required [(ngModel)]="rmanArrgWaterFallRepV2.legalEntityName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="legalEntityId">{{columns['legalEntityId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="legalEntityId" name="legalEntityId" required [(ngModel)]="rmanArrgWaterFallRepV2.legalEntityId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="creationDate">{{columns['creationDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="creationDate" name="creationDate" required [(ngModel)]="rmanArrgWaterFallRepV2.creationDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="createdBy">{{columns['createdBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="createdBy" name="createdBy" required [(ngModel)]="rmanArrgWaterFallRepV2.createdBy" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revAccountantId">{{columns['revAccountantId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revAccountantId" name="revAccountantId" required [(ngModel)]="rmanArrgWaterFallRepV2.revAccountantId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revManagerId">{{columns['revManagerId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revManagerId" name="revManagerId" required [(ngModel)]="rmanArrgWaterFallRepV2.revManagerId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="solution">{{columns['solution']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="solution" name="solution" required [(ngModel)]="rmanArrgWaterFallRepV2.solution" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealName">{{columns['dealName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealName" name="dealName" required [(ngModel)]="rmanArrgWaterFallRepV2.dealName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productName">{{columns['productName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productName" name="productName" required [(ngModel)]="rmanArrgWaterFallRepV2.productName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productDescription">{{columns['productDescription']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productDescription" name="productDescription" required [(ngModel)]="rmanArrgWaterFallRepV2.productDescription" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="elementType">{{columns['elementType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="elementType" name="elementType" required [(ngModel)]="rmanArrgWaterFallRepV2.elementType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productGroup">{{columns['productGroup']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productGroup" name="productGroup" required [(ngModel)]="rmanArrgWaterFallRepV2.productGroup" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productType">{{columns['productType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productType" name="productType" required [(ngModel)]="rmanArrgWaterFallRepV2.productType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="contractQuantity">{{columns['contractQuantity']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="contractQuantity" name="contractQuantity" required [(ngModel)]="rmanArrgWaterFallRepV2.contractQuantity" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealLineNumber">{{columns['dealLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealLineNumber" name="dealLineNumber" required [(ngModel)]="rmanArrgWaterFallRepV2.dealLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="unitSellingPrice">{{columns['unitSellingPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="unitSellingPrice" name="unitSellingPrice" required [(ngModel)]="rmanArrgWaterFallRepV2.unitSellingPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderNumber">{{columns['orderNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderNumber" name="orderNumber" required [(ngModel)]="rmanArrgWaterFallRepV2.orderNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceLineNumber">{{columns['sourceLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceLineNumber" name="sourceLineNumber" required [(ngModel)]="rmanArrgWaterFallRepV2.sourceLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderedQuantity">{{columns['orderedQuantity']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderedQuantity" name="orderedQuantity" required [(ngModel)]="rmanArrgWaterFallRepV2.orderedQuantity" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="invoiceNumber">{{columns['invoiceNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="invoiceNumber" name="invoiceNumber" required [(ngModel)]="rmanArrgWaterFallRepV2.invoiceNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="invoiceLineNumber">{{columns['invoiceLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="invoiceLineNumber" name="invoiceLineNumber" required [(ngModel)]="rmanArrgWaterFallRepV2.invoiceLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="distributionAmount">{{columns['distributionAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="distributionAmount" name="distributionAmount" required [(ngModel)]="rmanArrgWaterFallRepV2.distributionAmount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="currentPeriod">{{columns['currentPeriod']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="currentPeriod" name="currentPeriod" required [(ngModel)]="rmanArrgWaterFallRepV2.currentPeriod" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revenueStartDate">{{columns['revenueStartDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revenueStartDate" name="revenueStartDate" required [(ngModel)]="rmanArrgWaterFallRepV2.revenueStartDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revenueEndDate">{{columns['revenueEndDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revenueEndDate" name="revenueEndDate" required [(ngModel)]="rmanArrgWaterFallRepV2.revenueEndDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period1">{{columns['period1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period1" name="period1" required [(ngModel)]="rmanArrgWaterFallRepV2.period1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period2">{{columns['period2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period2" name="period2" required [(ngModel)]="rmanArrgWaterFallRepV2.period2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period3">{{columns['period3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period3" name="period3" required [(ngModel)]="rmanArrgWaterFallRepV2.period3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period4">{{columns['period4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period4" name="period4" required [(ngModel)]="rmanArrgWaterFallRepV2.period4" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period5">{{columns['period5']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period5" name="period5" required [(ngModel)]="rmanArrgWaterFallRepV2.period5" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period6">{{columns['period6']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period6" name="period6" required [(ngModel)]="rmanArrgWaterFallRepV2.period6" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period7">{{columns['period7']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period7" name="period7" required [(ngModel)]="rmanArrgWaterFallRepV2.period7" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period8">{{columns['period8']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period8" name="period8" required [(ngModel)]="rmanArrgWaterFallRepV2.period8" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period9">{{columns['period9']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period9" name="period9" required [(ngModel)]="rmanArrgWaterFallRepV2.period9" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period10">{{columns['period10']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period10" name="period10" required [(ngModel)]="rmanArrgWaterFallRepV2.period10" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period11">{{columns['period11']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period11" name="period11" required [(ngModel)]="rmanArrgWaterFallRepV2.period11" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="period12">{{columns['period12']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="period12" name="period12" required [(ngModel)]="rmanArrgWaterFallRepV2.period12" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="future">{{columns['future']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="future" name="future" required [(ngModel)]="rmanArrgWaterFallRepV2.future" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>
+</div>

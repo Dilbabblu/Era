@@ -1,0 +1,177 @@
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<p-panel header="SSP Books" [toggleable]="false" [style]="{'margin-bottom':'20px'}">
+						<p-header>
+							<div class="pull-right icons-list">
+                                <a (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+                                <a (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+								<a (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+                                <a [routerLink]="['/fairValues','sspBooks','groupingRules']" title="Go to Grouping Rules" class="ssp-books-icon-list">SSP Grouping Rules</a>
+                                <a *ngIf="sspBookId && selectedBookStatus === 'DRAFT'" [routerLink]="['/fairValues','sspBooks','generateSSP', sspBookId]" [state]="{ bookStartDate: selectedSspBooks.startDate , bookEndDate: selectedSspBooks.endDate}" title="Generate SSP" class="ssp-books-icon-list">Generate SSP</a>
+								<a [routerLink]="['/fairValues','sspActionLogs']" title="Action Logs" class="ssp-books-icon-list">Logs</a>
+							</div>
+						</p-header>
+						<div class="x-scroll">
+							<p-table #dt class="ui-datatable arrangementMgrTbl sspBooksTbl" [value]="sspBooksList" [loading]="loading" (onLazyLoad)="getAllSspBooks($event)" 
+							selectionMode="single" [(selection)]="selectedSspBooks" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnSelect()"
+							 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th></th>
+										<th>
+											<a>Name</a>
+										</th>
+										<th>
+											<a>From</a>
+										</th>
+										<th>
+											<a>To</a>
+										</th>
+										<th>
+											<a>Status</a>
+										</th>
+										
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-sspBook>
+									<tr [pSelectableRow]="rowData">
+										<td>
+                                            <span [ngClass]="{'noPointer': sspBook.status !== 'DRAFT'}">
+												<a (click)="editRow(sspBook)" class="icon-edit"> </a>
+											</span>
+											<span [ngClass]="{'noPointer': sspBook.status !== 'DRAFT'}">
+												<a (click)="delete(sspBook)" class="icon-delete"> </a>
+											</span>
+                                        </td>
+										<td title="{{sspBook.bookName}}">
+											<span>
+												<a [routerLink]="['/fairValues','sspBooks','rmanFmvRulesDef', sspBook.bookId]">{{sspBook.bookName}}</a>
+											</span>
+										</td>
+										<td title="{{sspBook.startDate}}"> {{sspBook.startDate | date: 'MM/dd/yyyy'}} </td>
+										<td title="{{sspBook.endDate}}"> {{sspBook.endDate | date: 'MM/dd/yyyy'}} </td>
+										<td>
+                                            <p-dropdown class="ml-auto ssp-books-status" [options]="sspBookStatusValues" [(ngModel)]="sspBook.status" [ngModelOptions]="{standalone: true}" (onChange)="onStatusChange(sspBook)" name="bookStatus" [filter]="false" appendTo="body"></p-dropdown>
+                                        </td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage">
+									<tr>
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+
+					</p-panel>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade"
+	 [modal]="true" [blockScroll]="true">
+		<form>
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+						<span class="md-inputfield">
+							<span class="selectSpan">Name</span>
+							<input pInputText name="fmvRuleName" class="textbox" placeholder="SSP Book Name" id="fmvRuleName" [ngModelOptions]="{standalone: true}" [(ngModel)]="sspBooksSearch.bookName"
+							/>
+						</span>
+					</div>
+					<div class="ui-g-6 pull-right">
+						<span class="selectSpan">Status</span>
+						<p-dropdown [options]="sspBookStatusValues" name="bookStatus" placeholder="Select Status" [ngModelOptions]="{standalone: true}" [(ngModel)]="sspBooksSearch.status"
+						 [filter]="true" appendTo="body"></p-dropdown>
+					</div>
+				</div>
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+							<span class="selectSpan">From</span>
+						<p-calendar showAnim="slideDown" name="startDate" inputStyleClass="textbox" id="startDate" [monthNavigator]="true" [yearNavigator]="true"
+						 yearRange="1950:2030" [ngModelOptions]="{standalone: true}" [(ngModel)]="sspBooksSearch.startDate"  dateFormat="yy-mm-dd"
+						 placeholder="From Date" appendTo="body"></p-calendar>
+					</div>
+					<div class="ui-g-6 pull-right">
+							<span class="selectSpan">To</span>
+						<p-calendar showAnim="slideDown" name="endDate" inputStyleClass="textbox" id="endDate" [monthNavigator]="true" [yearNavigator]="true"
+						 yearRange="1950:2030" [ngModelOptions]="{standalone: true}" [(ngModel)]="sspBooksSearch.endDate" dateFormat="yy-mm-dd"
+						 placeholder="To Date" appendTo="body"></p-calendar>
+					</div>
+				</div>
+			</div>
+
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancelSearch()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+
+	<p-dialog header="{{(isCreate) ? 'Create SSP Book' : 'Edit SSP Book'}}" width="700" [(visible)]="displayDialog"
+	 [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancel()">
+		<form (ngSubmit)="save()" [formGroup]="sspBookForm" novalidate>
+			<div class="ui-g ui-fluid">
+				<div class="ui-g-12 form-group">
+					<div class="ui-grid-row">
+						<div class="ui-g-12">
+							<div class="ui-g-12">
+								<span class="md-inputfield">
+									<span class="selectSpan">Book Name</span>
+									<input pInputText type="text" class="textbox" placeholder="Auto Generated Book Name" name="sspBookName" id="sspBookName" [readonly]="editFlag"
+									  formControlName="sspBookName" [(ngModel)]="sspBooks.bookName"/>
+									<div *ngIf="formErrors.sspBookName" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.sspBookName }}
+									</div>
+								</span>
+							</div>
+						</div>
+						
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="selectSpan">From <span class="red-color">*</span></span>
+								<p-calendar showAnim="slideDown" name="sspBookFromDate" inputStyleClass="textbox" id="sspBookFromDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+								 appendTo="body" dateFormat="mm/dd/yy" placeholder="From Date" formControlName="sspBookFromDate" [(ngModel)]="sspBooks.startDate"></p-calendar>
+								<div *ngIf="formErrors.sspBookFromDate" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.sspBookFromDate }}
+								</div>
+
+							</div>
+
+
+							<div class="ui-g-6 pull-right">
+									<span class="selectSpan">To<span class="red-color">*</span>
+									</span>
+									<p-calendar showAnim="slideDown" name="sspBookToDate" inputStyleClass="textbox" id="sspBookToDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030" formControlName="sspBookToDate"
+									 appendTo="body" dateFormat="mm/dd/yy" placeholder="To Date" [(ngModel)]="sspBooks.endDate"  [minDate]="sspBooks.startDate"></p-calendar>
+										<div *ngIf="formErrors.sspBookToDate" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.sspBookToDate }}
+									</div>
+							</div>
+						</div>
+						
+					</div>
+
+				</div>
+			</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!sspBookForm.valid"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancel()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+
+	<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

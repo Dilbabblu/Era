@@ -1,0 +1,4 @@
+<h2>Forecast-Actual comparision</h2>
+<div class="" id="ContentArea">
+   <div id="pivot" style="margin: 30px;"></div>
+</div>

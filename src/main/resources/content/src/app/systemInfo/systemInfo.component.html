@@ -1,0 +1,200 @@
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<p-panel header="Current Release Details" [style]="{'margin-bottom':'20px'}">
+						<p-header>
+							<div class="pull-right icons-list">
+								<a *isAuthorized="['write','ARLOG']" (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+								<a (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+							</div>
+						</p-header>
+						<div class="x-scroll">
+							<p-table #dt class="ui-datatable arrangementMgrTbl releaseLogTbl" [value]="releaseLogList" [loading]="loading" (onLazyLoad)="getAllReleaseLogs($event)" 
+							 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th *isAuthorized="['write','ARLOG']" style="width:50px !important;"></th>
+										<th>
+											<a style="width:170px;">Current Firmware Version</a>
+										</th>
+										<th>
+											<a>Release Date</a>
+										</th>
+										<th>
+											<a>Release Notes</a>
+										</th>
+										
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-releaseLog>
+									<tr [pSelectableRow]="rowData">
+										<td *isAuthorized="['write','ARLOG']" style="width:50px !important;">
+											<a (click)="editRow(releaseLog)" class="icon-edit"> </a>
+											<a (click)="delete(releaseLog)" class="icon-delete"> </a>
+                                        </td>
+										<td style="width:170px;" title="{{releaseLog.firmwareVersion}}">{{releaseLog.firmwareVersion}}</td>
+										<td title="{{releaseLog.releaseDate | date: 'MM/dd/yyyy'}}"> {{releaseLog.releaseDate | date: 'MM/dd/yyyy'}} </td>
+										<td>
+											<ol>
+												<li *ngFor="let item of releaseLog.releaseNotesList" >
+													<span>{{item}}</span>
+												</li>
+											</ol>
+										</td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage">
+									<tr>
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+					</p-panel>
+					<p-panel header="Release Logs" [style]="{'margin-bottom':'20px'}">
+						<p-header>
+							<div class="icons-list">
+								<a *ngIf="!showAllReleaseLogs" (click)="showLogs()" title="Show Previous Releases"><em class="fa fa-chevron-circle-down"></em></a>
+								<a *ngIf="showAllReleaseLogs" (click)="hideLogs()" title="Hide Releases"><em class="fa fa-times-circle"></em></a>
+								<a *ngIf="showSingleReleaseLog" (click)="goToAllLogs()" title="Show All Releases"><em class="fa fa-arrow-left"></em></a>
+							</div>
+						</p-header>
+						<div *ngIf="!showSingleReleaseLog && showAllReleaseLogs" class="x-scroll">
+							<p-table #dt class="ui-datatable arrangementMgrTbl releaseLogTbl2" [value]="releaseLogList2" [loading]="loading"
+							 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th>
+											<a style="width:170px;">Firmware Version</a>
+										</th>
+										<th>
+											<a>Release Date</a>
+										</th>
+										<th>
+											<a>Release Notes</a>
+										</th>
+										
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-releaseLog>
+									<tr [pSelectableRow]="rowData" class="release-logs">
+										<td class="firmware-version" style="width:170px;" (click)="goToRelease(releaseLog.firmwareVersion)" title="{{releaseLog.firmwareVersion}}">{{releaseLog.firmwareVersion}}</td>
+										<td title="{{releaseLog.releaseDate | date: 'MM/dd/yyyy'}}"> {{releaseLog.releaseDate | date: 'MM/dd/yyyy'}} </td>
+										<td>
+											<ol>
+												<li *ngFor="let item of releaseLog.releaseNotesList" >
+													<span>{{item}}</span>
+												</li>
+											</ol>
+										</td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage">
+									<tr>
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+
+						<div *ngIf="showSingleReleaseLog" class="x-scroll">
+							<p-table #dt class="ui-datatable arrangementMgrTbl releaseLogTbl" [value]="releaseLogList3" [loading]="loading"
+							 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th>
+											<a style="width:170px;">Firmware Version</a>
+										</th>
+										<th>
+											<a>Release Date</a>
+										</th>
+										<th>
+											<a>Release Notes</a>
+										</th>
+										
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-releaseLog>
+									<tr [pSelectableRow]="rowData">
+										<td style="width:170px;" title="{{releaseLog.firmwareVersion}}">{{releaseLog.firmwareVersion}}</td>
+										<td title="{{releaseLog.releaseDate | date: 'MM/dd/yyyy'}}"> {{releaseLog.releaseDate | date: 'MM/dd/yyyy'}} </td>
+										<td>
+											<ol>
+												<li *ngFor="let item of releaseLog.releaseNotesList" >
+													<span>{{item}}</span>
+												</li>
+											</ol>
+										</td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage">
+									<tr>
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+					</p-panel>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p-dialog header="{{(isCreate) ? 'Add Release Details' : 'Edit Release Details'}}" width="700" [(visible)]="displayAddDialog"
+[draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancel()">
+   <form (ngSubmit)="save()" [formGroup]="releaseLogsForm" novalidate>
+	   <div class="ui-g ui-fluid">
+		   <div class="ui-g-12 form-group">
+			   <div class="ui-grid-row">
+				   <div class="ui-g-12">
+					   <div class="ui-g-6">
+						   <span class="md-inputfield">
+							   <span class="selectSpan">Firmware Version<span class="red-color">*</span></span>
+							   <input pInputText type="text" class="textbox" placeholder="Firmware Version" name="firmwareVersion" id="firmwareVersion" [readonly]="!isCreate"
+								 formControlName="firmwareVersion" [(ngModel)]="releaseLogs.firmwareVersion"/>
+							   <div *ngIf="formErrors.firmwareVersion" class="ui-message ui-messages-error ui-corner-all">
+								   {{ formErrors.firmwareVersion }}
+							   </div>
+						   </span>
+					   </div>
+					   <div class="ui-g-6 pull-right">
+						<span class="selectSpan">Release Date<span class="red-color">*</span></span>
+						<p-calendar showAnim="slideDown" name="releaseDate" inputStyleClass="textbox" id="releaseDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+						 appendTo="body" dateFormat="mm/dd/yy" placeholder="Release Date" formControlName="releaseDate" [(ngModel)]="releaseLogs.releaseDate"></p-calendar>
+						<div *ngIf="formErrors.releaseDate" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.releaseDate }}
+						</div>
+				   </div>
+				   
+				   <div class="ui-g-12">
+					   <div class="ui-g-12">
+							<span class="selectSpan">Release Notes<span class="red-color">*</span></span>
+							<textarea rows="6" cols="80" pInputTextarea id="releaseNotes" class="releaseNotes" formControlName="releaseNotes" [(ngModel)]="releaseLogs.releaseNotes"
+							placeholder="Each release note should be seperated with comma(,)"></textarea>
+							<div *ngIf="formErrors.releaseNotes" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.releaseNotes }}
+							</div>
+					   </div>
+				   </div>
+				   
+			   </div>
+
+		   </div>
+	   </div>
+	   </div>
+   </form>
+   <p-footer>
+	   <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+		   <button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!releaseLogsForm.valid"></button>
+		   <button type="button" pButton class="secondary-btn" (click)="cancel()" label="Cancel"></button>
+	   </div>
+   </p-footer>
+</p-dialog>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

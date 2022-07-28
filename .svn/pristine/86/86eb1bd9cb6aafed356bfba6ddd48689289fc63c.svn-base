@@ -1,0 +1,191 @@
+<div class="content-section implementation">	
+</div>
+
+<div class="card-wrapper">
+     <div class="container-fluid">
+       <div class="row">
+         <div class="col-md-12">
+           <div class="card-block">
+     <p-panel header="Account Analysis Report" [toggleable]="false" (onBeforeToggle)=onBeforeToggle($event)>
+          <p-header>
+               <div class="pull-right icons-list">
+                    <a  (click)="goToOperationReports()" class="add-column"><em class="fa fa-reply"></em>Back</a>
+                    <a  (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+                    <a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+                    <a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+                    <a  (click)="exportExcel()" title="Export" *ngIf="!disableExport"><em class="fa fa-external-link"></em></a>
+                    <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                         <div class="user-popup">
+                           <div class="content overflow">
+                             <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+                             <label for="selectall">Select All</label>
+                             <a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+                             <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                              <ng-template let-col let-index="index" pTemplate="item">
+                                <div *ngIf="col.drag">
+                                <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+                                 (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                                  <div class="drag">
+                                    <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+                                    <label>{{col.header}}</label>
+                                  </div>
+                                </div>
+                                </div>
+                                <div *ngIf="!col.drag">
+                                <div class="ui-helper-clearfix">
+                                  <div>
+                                    <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+                                    <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                                  </div>
+                                </div>
+                                </div>
+                              </ng-template>
+                              </p-listbox>
+                         </div>
+                         <div class="pull-right">
+                              <a class="configColBtn" (click)="saveColumns()">Save</a>
+                              <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                            </div>
+                    </div>
+                    </div>
+               
+               </div>
+     </p-header>
+
+     <div class="x-scroll">
+          <p-table class="ui-datatable arrangementMgrTbl" #dt id="account-dt" [loading]="loading"  [value]="rmanGlAccountingVList" selectionMode="single"
+                 (onRowSelect)="onRowSelect($event)" scrollable="true"
+                [paginator]="showPaginator" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements"
+               (onLazyLoad)="getRmanGlAccountingV($event)"  [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+              
+               <ng-template pTemplate="colgroup" let-columns>
+                    <colgroup>
+                         <col *ngFor="let col of columns">
+                    </colgroup>
+               </ng-template>
+
+               <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                    <tr>
+                         <ng-container *ngFor="let col of columns">
+                              <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                              <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                         </ng-container>
+                    </tr>
+               </ng-template>
+               <ng-template pTemplate="body" let-rowData let-revmantra>
+                    <tr [pSelectableRow]="rowData">
+
+                         <ng-container *ngFor="let col of columns" >
+                              <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                                   {{rowData[col.field]}}
+                              </td>
+                         
+                              <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                                   {{rowData[col.field]}}
+                              </td>
+                         
+                              <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                                   {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                              </td>
+                         
+                              <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                                   {{rowData[col.field] | round}}
+                              </td>
+                         </ng-container>
+
+                    </tr>
+               </ng-template>
+
+               <ng-template pTemplate="emptymessage" let-columns>
+                    <tr>
+                         <td [attr.colspan]="columns.length" class="no-data">{{noData}}</td>
+                    </tr>
+               </ng-template>
+
+          </p-table>
+          </div>
+
+     </p-panel>
+     </div>
+     </div>
+     </div>
+     </div>
+     </div>
+
+
+     <p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade"
+          [modal]="true">
+          <form (ngSubmit)="search()">
+               <div class="ui-grid ui-grid-responsive ui-fluid">
+                    <div class="ui-g-12">
+                         <div class="ui-g-6">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">Arrangement Number From</span>
+                                   <input pInputText name="from" id="from"  class="textbox" placeholder="Arrangement Number From" [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanGlAccountingVSearch.fromArrgId" />
+                                  
+                              </span>
+                         </div>
+                         <div class="ui-g-6 pull-right">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">Arrangement Number To</span>
+                                   <input pInputText name="to" id="to"  class="textbox" placeholder="Arrangement Number To" [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanGlAccountingVSearch.toArrgId" />
+                                 
+                              </span>
+                         </div>
+                    </div>
+                    <div class="ui-g-12">
+                         <div class="ui-g-6">
+                              <span class="selectSpan">GL Period From</span>
+                              <p-calendar showAnim="slideDown" inputStyleClass="textbox" name="fromPeriod" id="fromPeriod" [monthNavigator]="true"
+                                   [yearNavigator]="true" yearRange="1950:2030" appendTo="body"
+                                   [ngModelOptions]="{standalone: true}"
+                                   [(ngModel)]="rmanGlAccountingVSearch.fromPeriod" dateFormat="yy-mm-dd"
+                                   placeholder="From Period"></p-calendar>
+                         </div>
+
+                         <div class="ui-g-6 pull-right">
+                              <span class="selectSpan">GL Period To</span>
+                              <p-calendar showAnim="slideDown" name="toPeriod" inputStyleClass="textbox" id="toPeriod" [monthNavigator]="true"
+                                   [yearNavigator]="true" yearRange="1950:2030" appendTo="body"
+                                   [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanGlAccountingVSearch.toPeriod"
+                                   dateFormat="yy-mm-dd" placeholder="To Period"></p-calendar>
+                         </div>
+
+                    </div>
+                    <div class="ui-g-12">
+                         <div class="ui-g-6">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">GL Account</span>
+                                   <input pInputText name="account" id="account" class="textbox" placeholder="GL Account" [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanGlAccountingVSearch.account" />
+                              </span>
+                         </div>
+                         <div class="ui-g-6 pull-right">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">SO#</span>
+                                   <input pInputText name="so" id="so" class="textbox" placeholder="SO#" [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanGlAccountingVSearch.orderNumber" />
+                              </span>
+                         </div>
+                    </div>
+                    <div class="ui-g-12">
+                         <div class="ui-g-6">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">SO Line#</span>
+                                   <input pInputText name="soLine" id="soLine" class="textbox" placeholder="SO Line#" [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanGlAccountingVSearch.sourceLineNumber" />
+                              </span>
+                         </div>
+                    </div>
+
+               </div>
+               <p-footer>
+                    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+                         <button type="button" pButton class="primary-btn" (click)="search()" label="Search"></button>
+                         <button type="button" pButton class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    </div>
+               </p-footer>
+          </form>
+     </p-dialog>

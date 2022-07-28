@@ -1,0 +1,33 @@
+export interface RmanLegalEntities {
+    reportingCurrency: any;
+    defRevCogsId: any;
+    lastUpdateDate: any;
+    ledgerName: any;
+    currencyCode: any;
+    createdBy: any;
+    attribute3: any;
+    cogsAccountId: any;
+    allocationCurrency: any;
+    lastUpdatedBy: any;
+    attribute2: any;
+    attribute1: any;
+    periodType: any;
+    defRevAccountId: any;
+    legalEntityId: any;
+    roundingPrecision: any;
+    revAccountId: any;
+    defCogsAccountId: any;
+    creationDate: any;
+    enabledFlag: any;
+    currencyFormat: any;
+    attribute5: any;
+    name: any;
+    attribute4: any;
+    locale: any;
+    functionalCurrency: any;
+    deferredCogs: any;
+    calendar: any;
+    defferedAccount: any;
+    companyCode: any;
+    description: any;
+}

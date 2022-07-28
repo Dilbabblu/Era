@@ -1,0 +1,407 @@
+import {Component,EventEmitter,Output,Injectable,OnInit} from '@angular/core';
+import {RmanDealHeaders} from './rmanDealHeaders.ts.bkp';
+import {RmanDealHeadersService} from './rmanDealHeadersservice.ts.bkp';
+import {RmanDealHeadersLabels} from './rmanDealHeadersLabels.ts.bkp';
+ import { FormControl,FormBuilder,FormGroup,Validators} from '@angular/forms';
+import { MenuItem } from 'primeng/api';
+import { NotificationService } from '../shared/notifications.service';
+
+
+declare var $:any;
+
+@Component({
+    templateUrl: './rmanDealHeaders.component.html',
+    selector: 'rmanDealHeaders-data',
+    providers: [RmanDealHeadersService ]
+})
+
+export class RmanDealHeadersComponent implements OnInit{
+
+    displayDialog: boolean;
+
+    displaySearchDialog: boolean;
+
+    rmanDealHeaders: any = new RmanDealHeadersImpl();
+
+    rmanDealHeadersSearch: any = new RmanDealHeadersImpl();
+
+	isSerached:number=0;
+
+    selectedRmanDealHeaders: RmanDealHeaders;
+
+    newRmanDealHeaders: boolean;
+
+	pDealHeaderId:number;
+
+    rmanDealHeadersList: any[];
+
+    cols:any[];
+    columns:ILabels;
+
+    columnOptions: any[];
+
+    paginationOptions:any;
+
+    pages:{};
+
+	cities:any[];
+
+    private items: MenuItem[];
+
+    datasource: any[];
+    pageSize:number;
+    totalElements:number;
+
+	collapsed:boolean=true;
+
+   dealHeadersForm: FormGroup;
+
+
+
+    constructor(private rmanDealHeadersService: RmanDealHeadersService,private formBuilder: FormBuilder,
+        private notificationService:NotificationService ) {
+
+        // generate list code
+        this.paginationOptions={'pageNumber':0,'pageSize':'10000'};
+
+		        this.cities = [];
+        this.cities.push({label:'Select City', value:null});
+        this.cities.push({label:'New York', value:{id:1, name: 'New York', code: 'NY'}});
+        this.cities.push({label:'Rome', value:{id:2, name: 'Rome', code: 'RM'}});
+        this.cities.push({label:'London', value:{id:3, name: 'London', code: 'LDN'}});
+        this.cities.push({label:'Istanbul', value:{id:4, name: 'Istanbul', code: 'IST'}});
+        this.cities.push({label:'Paris', value:{id:5, name: 'Paris', code: 'PRS'}});
+
+
+
+
+    }
+
+    ngOnInit() {
+
+        this.getAllRmanDealHeaders();
+
+        this.cols = [];
+        let cols:any = [];
+                cols["endCustomerName"] = "endCustomerName";
+        cols["financeContactId"] = "financeContactId";
+        cols["createdDate"] = "createdDate";
+        cols["priceList"] = "priceList";
+        cols["analystId"] = "analystId";
+        cols["customerType"] = "customerType";
+        cols["partnerName"] = "partnerName";
+        cols["billToCustomerNum"] = "billToCustomerNum";
+        cols["dealType"] = "dealType";
+        cols["salesChannel"] = "salesChannel";
+        cols["salesTeritory"] = "salesTeritory";
+        cols["billToCountry"] = "billToCountry";
+        cols["opportunityNum"] = "opportunityNum";
+        cols["dealCurrencyCode"] = "dealCurrencyCode";
+        cols["approverId"] = "approverId";
+        cols["conversionType"] = "conversionType";
+        cols["financeContact"] = "financeContact";
+        cols["paymentTerms"] = "paymentTerms";
+        cols["opportunityName"] = "opportunityName";
+        cols["endCustomerNum"] = "endCustomerNum";
+        cols["dealNumber"] = "dealNumber";
+        cols["billToCustomerName"] = "billToCustomerName";
+        cols["dealName"] = "dealName";
+        cols["agreementName"] = "agreementName";
+        cols["createdBy"] = "createdBy";
+        cols["attribute3"] = "attribute3";
+        cols["lastUpdatedBy"] = "lastUpdatedBy";
+        cols["attribute2"] = "attribute2";
+        cols["attribute1"] = "attribute1";
+        cols["legalEntityId"] = "legalEntityId";
+        cols["conversionRate"] = "conversionRate";
+        cols["dealHeaderId"] = "dealHeaderId";
+        cols["dealArrangementId"] = "dealArrangementId";
+        cols["attribute5"] = "attribute5";
+        cols["forecastCode"] = "forecastCode";
+        cols["attribute4"] = "attribute4";
+        cols["dealStatus"] = "dealStatus";
+        cols["agreementNumber"] = "agreementNumber";
+        cols["lastUpdatedDate"] = "lastUpdatedDate";
+        cols["salesOpsName"] = "salesOpsName";
+        cols["shipToCountry"] = "shipToCountry";
+        cols["agreementCode"] = "agreementCode";
+        cols["salesrepName"] = "salesrepName";
+        cols["conversionDate"] = "conversionDate";
+        cols["contractStartDate"] = "contractStartDate";
+        cols["contractEndDate"] = "contractEndDate";
+
+
+
+        //this.columns=cols;
+         let rmanDealHeadersLabels = new RmanDealHeadersLabels();
+
+        this.columns=rmanDealHeadersLabels.fieldLabels;
+
+        this.columnOptions = [];
+
+        this.cols=[];
+
+		//for (let prop in cols) {
+	    for (let prop in this.columns) {
+			 this.cols.push({field: prop, header: this.columns[prop]});
+			 this.columnOptions.push({label: this.columns[prop], value: prop});
+		}
+
+        this.items =
+        [
+                {
+                    label: 'Add', icon: 'fa-plus',command:(event:any)=>{
+                        this.showDialogToAdd();
+                    }
+                },
+                {
+                    label: 'Columns', icon: 'fa-columns',command: (event:any) => {
+                     this.toggleColumnMenu();
+                    }
+                },
+                {
+                    label: 'Search', icon: 'fa-search',command:(event:any)=>{
+                        this.showDialogToSearch();
+                    }
+                },
+                {
+                    label: 'Reset', icon: 'fa-refresh',command:(event:any)=>{
+                        this.paginationOptions={};
+                        this.rmanDealHeaders=new RmanDealHeadersImpl();
+                        this.getAllRmanDealHeaders();
+                    }
+                }
+        ];
+        this.buildForm();
+    }
+
+    buildForm(){
+    this.dealHeadersForm = this.formBuilder.group({
+
+'dealNumber':['',[Validators.required,Validators.pattern(/^[0-9]+$/)]],
+'dealName':['',[Validators.required]]
+});
+
+this.dealHeadersForm.valueChanges
+.subscribe(data => this.onValueChanged(data));
+
+this.onValueChanged();
+}
+
+onValueChanged(data?: any) {
+if (!this.dealHeadersForm) { return; }
+const form = this.dealHeadersForm;
+
+for (const field in this.formErrors) {
+// clear previous error message (if any)
+this.formErrors[field] = '';
+const control = form.get(field);
+// //console.log(control.valid);
+if (control && control.dirty && !control.valid) {
+const messages = this.validationMessages[field];
+for (const key in control.errors) {
+this.formErrors[field] += messages[key] + ' ';
+}
+}
+}
+}
+
+formErrors = {
+'dealNumber': '','dealName':''
+};
+
+validationMessages = {
+'dealNumber':{
+'required': "Deal Number is Required",
+'pattern':"Please enter a number between 0 to 9"
+},
+'dealName':{
+'required': "Deal Name is required"
+}
+}
+
+
+
+
+
+    getAllRmanDealHeaders() {
+      ////console.log(new Date());
+        this.rmanDealHeadersService.getAllRmanDealHeaders(this.paginationOptions,this.rmanDealHeaders).then((rmanDealHeadersList:any) => {
+        //  //console.log(new Date());
+            //console.log(rmanDealHeadersList);
+            this.datasource = rmanDealHeadersList.content;
+            this.rmanDealHeadersList = rmanDealHeadersList.content;
+            if(this.rmanDealHeadersList.length>0){
+            this.selectedRmanDealHeaders=this.rmanDealHeadersList[0];
+            this.pDealHeaderId = this.selectedRmanDealHeaders.dealHeaderId;
+            }
+            this.totalElements=rmanDealHeadersList.totalElements;
+            this.pageSize=rmanDealHeadersList.size;
+            this.displaySearchDialog = false;
+        });
+    }
+
+    reset(){
+      this.paginationOptions={};
+      this.rmanDealHeaders=new RmanDealHeadersImpl();
+      this.getAllRmanDealHeaders();
+    }
+
+
+    getRmanDealHeaders(event:any) {
+
+        let first:number=event.first;
+        let rows:number=event.rows;
+        let pageNumber:number=first/rows;
+        this.paginationOptions={'pageNumber':pageNumber,'pageSize':this.pageSize,'sortField':event.sortField,'sortOrder':event.sortOrder};
+        this.rmanDealHeadersService.getAllRmanDealHeaders(this.paginationOptions,this.rmanDealHeaders).then((rmanDealHeadersList:any) => {
+            this.datasource = rmanDealHeadersList.content;
+            this.rmanDealHeadersList = rmanDealHeadersList.content;
+            if(this.rmanDealHeadersList.length>0){
+            this.selectedRmanDealHeaders=this.rmanDealHeadersList[0];
+            this.pDealHeaderId = this.selectedRmanDealHeaders.dealHeaderId;
+            }
+            this.totalElements=rmanDealHeadersList.totalElements;
+            this.pageSize=rmanDealHeadersList.size;
+        });
+
+    }
+
+
+    showDialogToAdd() {
+
+        this.newRmanDealHeaders = true;
+        this.rmanDealHeaders = new RmanDealHeadersImpl();
+        this.displayDialog = true;
+
+    }
+
+
+    save() {
+
+        if (this.newRmanDealHeaders) {
+            this.rmanDealHeadersService.saveRmanDealHeaders(this.rmanDealHeaders).then((response:any) => {
+                 this.getAllRmanDealHeaders();
+            });
+        }
+        else {
+            this.rmanDealHeadersService.updateRmanDealHeaders(this.rmanDealHeaders).then((response:any) => {
+                 this.getAllRmanDealHeaders();
+            });
+        }
+
+        this.rmanDealHeaders = new RmanDealHeadersImpl();
+
+        this.displayDialog = false;
+
+    }
+
+
+    delete(rmanDealHeaders:any) {
+        this.rmanDealHeaders=rmanDealHeaders;
+
+        //this.rmanDealHeaders = null;
+        this.displayDialog = false;
+
+        if (window.confirm('Are you sure you want to delete this record?')) {
+           this.rmanDealHeadersList.splice(this.findSelectedRmanDealHeadersIndex(), 1);
+           this.rmanDealHeadersService.deleteRmanDealHeaders(this.rmanDealHeaders).then((response:any) => {
+               this.rmanDealHeaders = new RmanDealHeadersImpl();
+               this.getAllRmanDealHeaders();
+               //this.rmanDealHeadersList.splice(this.findSelectedRmanDealHeadersIndex(), 1);
+              //this.rmanDealHeaders = null;
+              // this.displayDialog = false;
+           });
+        }
+
+    }
+
+    editRow(rmanDealHeaders:any) {
+        this.newRmanDealHeaders = false;
+        this.rmanDealHeaders = this.cloneRmanDealHeaders(rmanDealHeaders);
+        this.displayDialog = true;
+
+    }
+
+
+    findSelectedRmanDealHeadersIndex(): number {
+        return this.rmanDealHeadersList.indexOf(this.selectedRmanDealHeaders);
+    }
+
+    onRowSelect(event:any) {
+
+		this.selectedRmanDealHeaders = event.data;
+		this.pDealHeaderId = this.selectedRmanDealHeaders.dealHeaderId;
+
+
+    }
+
+    cloneRmanDealHeaders(c: RmanDealHeaders): RmanDealHeaders {
+        let rmanDealHeaders:any
+         = new RmanDealHeadersImpl();
+        for(let prop in c) {
+            rmanDealHeaders[prop] = c[prop];
+        }
+        return rmanDealHeaders;
+    }
+
+    hideColumnMenu: boolean=true;
+
+    toggleColumnMenu(){
+        if(this.hideColumnMenu)
+        {
+            this.hideColumnMenu= false;
+        }else
+        {
+            this.hideColumnMenu=true;
+        }
+    }
+
+    showFilter: boolean= false;
+
+    toggleFilterBox(){
+        if(this.showFilter)
+        {
+            this.showFilter= false;
+        }else
+        {
+            this.showFilter=true;
+        }
+    }
+
+    showDialogToSearch() {
+
+        this.rmanDealHeadersSearch=new RmanDealHeadersImpl();
+        if (this.isSerached==0) {
+            this.rmanDealHeadersSearch=new RmanDealHeadersImpl();
+        }
+        this.displaySearchDialog = true;
+
+    }
+
+
+    search() {
+
+      if(this.isSerached=1){
+		this.rmanDealHeaders=this.rmanDealHeadersSearch;
+		this.getAllRmanDealHeaders();
+  }
+  }
+
+	onBeforeToggle(evt:any){
+  		//console.log('event test',evt);
+  		this.collapsed = evt.collapsed;
+  	}
+
+
+
+}
+
+
+export class RmanDealHeadersImpl {
+    constructor(public endCustomerName?:any,public financeContactId?:any,public createdDate?:any,public priceList?:any,public analystId?:any,public customerType?:any,public partnerName?:any,public billToCustomerNum?:any,public dealType?:any,public salesChannel?:any,public salesTeritory?:any,public billToCountry?:any,public opportunityNum?:any,public dealCurrencyCode?:any,public approverId?:any,public conversionType?:any,public financeContact?:any,public paymentTerms?:any,public opportunityName?:any,public endCustomerNum?:any,public dealNumber?:any,public billToCustomerName?:any,public dealName?:any,public agreementName?:any,public createdBy?:any,public attribute3?:any,public lastUpdatedBy?:any,public attribute2?:any,public attribute1?:any,public legalEntityId?:any,public conversionRate?:any,public dealHeaderId?:any,public dealArrangementId?:any,public attribute5?:any,public forecastCode?:any,public attribute4?:any,public dealStatus?:any,public agreementNumber?:any,public lastUpdatedDate?:any,public salesOpsName?:any,public shipToCountry?:any,public agreementCode?:any,public salesrepName?:any,public conversionDate?:any,public contractStartDate?:any,public contractEndDate?:any) {}
+}
+
+interface ILabels {
+     [index: string]: string;
+}

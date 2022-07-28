@@ -1,0 +1,119 @@
+<div class="ContentSideSections Implementation">
+	<div class="ui-widget-header ui-helper-clearfix" [hidden]='!showFilter'  style="padding:4px 10px;border-bottom: 0 none">
+    <em class="fa fa-search" style="float:left;margin:4px 4px 0 0"></em>
+		<input #gb type="text" pInputText size="50" style="float:left" placeholder="Global Filter">
+	</div>
+
+	<p-dataTable [value]="rmanFcstActualDetailsVList" selectionMode="single"     (onRowSelect)="onRowSelect($event)"  [paginator]="true" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements" (onLazyLoad)="getRmanFcstActualDetailsV($event)"   [globalFilter]="gb">
+
+	<p-header>RmanFcstActualDetailsV
+		<div class="pull-right">
+		<a  (click)="showDialogToAdd()" class="icon-add" title="Add"></a>
+		<a  (click)="showDialogToSearch()" class="icon-search" title="Search"></a>
+		<a  (click)="getAllRmanFcstActualDetailsV()" class="icon-reset" title="Reset"></a>
+		</div>
+	</p-header>
+     <header [style.display]="hideColumnMenu ? 'none' :  'block'">	
+			<div style="text-align:left;">
+				<p-multiSelect [options]="columnOptions" [(ngModel)]="cols" [hidden]='hideColumnMenu'></p-multiSelect>
+			</div>
+		</header>
+		<p-column styleClass="col-button" styleClass="w-100">
+                        <ng-template let-rmanFcstActualDetailsV="rowData" pTemplate="body">
+                                <button type="button" pButton (click)="editRow(rmanFcstActualDetailsV)" icon="fa-edit"></button>
+                                <button type="button" pButton (click)="delete(rmanFcstActualDetailsV)" icon="fa-trash"></button>
+                        </ng-template>
+         </p-column>
+		        <p-column field=arrangementId header="{{columns['arrangementId']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=arrangementName header="{{columns['arrangementName']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=sku header="{{columns['sku']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=qty header="{{columns['qty']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=elementType header="{{columns['elementType']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=netPrice header="{{columns['netPrice']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=expectedBookingAmount header="{{columns['expectedBookingAmount']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=recordType header="{{columns['recordType']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=amount header="{{columns['amount']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=quarterName header="{{columns['quarterName']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=glPeriod header="{{columns['glPeriod']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=startDate header="{{columns['startDate']}}"  styleClass="w-100" [hidden]="false" [sortable]="false" required="true"></p-column>
+  
+	</p-dataTable>
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="arrangementId">{{columns['arrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText name="arrangementId"  id="arrangementId" [(ngModel)]="rmanFcstActualDetailsVSearch.arrangementId" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanFcstActualDetailsV" width="500" [(visible)]="displayDialog" [draggable]="true" showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanFcstActualDetailsV">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrangementId">{{columns['arrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="arrangementId"  id="arrangementId" required [(ngModel)]="rmanFcstActualDetailsV.arrangementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrangementName">{{columns['arrangementName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="arrangementName"  id="arrangementName" required [(ngModel)]="rmanFcstActualDetailsV.arrangementName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sku">{{columns['sku']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="sku"  id="sku" required [(ngModel)]="rmanFcstActualDetailsV.sku" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="qty">{{columns['qty']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="qty"  id="qty" required [(ngModel)]="rmanFcstActualDetailsV.qty" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="elementType">{{columns['elementType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="elementType"  id="elementType" required [(ngModel)]="rmanFcstActualDetailsV.elementType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="netPrice">{{columns['netPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="netPrice"  id="netPrice" required [(ngModel)]="rmanFcstActualDetailsV.netPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="expectedBookingAmount">{{columns['expectedBookingAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="expectedBookingAmount"  id="expectedBookingAmount" required [(ngModel)]="rmanFcstActualDetailsV.expectedBookingAmount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="recordType">{{columns['recordType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="recordType"  id="recordType" required [(ngModel)]="rmanFcstActualDetailsV.recordType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="amount">{{columns['amount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="amount"  id="amount" required [(ngModel)]="rmanFcstActualDetailsV.amount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="quarterName">{{columns['quarterName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="quarterName"  id="quarterName" required [(ngModel)]="rmanFcstActualDetailsV.quarterName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="glPeriod">{{columns['glPeriod']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="glPeriod"  id="glPeriod" required [(ngModel)]="rmanFcstActualDetailsV.glPeriod" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="startDate">{{columns['startDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="startDate"  id="startDate" required [(ngModel)]="rmanFcstActualDetailsV.startDate" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>
+</div>

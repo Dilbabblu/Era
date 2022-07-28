@@ -1,0 +1,255 @@
+<div class="content-section implementation">
+</div>
+
+
+<p-panel header="Contracts" class="row-active" (onBeforeToggle)="onBeforeToggle($event)">
+  <p-header>
+    <div class="pull-right icons-list" *ngIf="collapsed">
+      <a (click)="onConfiguringColumns($event)" class="add-column">
+        <em class="fa fa-cog"></em>Columns</a>
+      <a (click)="showDialogToSearch()" title="Search">
+        <em class="fa fa-search"></em>
+      </a>
+      <a (click)="showSplitOptions()" class="icon-split" title="Split"></a>
+      <a (click)="showMergeOptions()" class="icon-merge" title="Merge"></a>
+		
+      <a (click)="reset(dt)" title="Reset">
+        <em class="fa fa-refresh"></em>
+      </a>
+      <ng-container *ngIf="!disableExport">
+        <a (click)="exportExcel()" title="Export">
+          <em class="fa fa-external-link"></em>
+        </a>
+      </ng-container>
+      <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+        <div class="user-popup">
+          <div class="content overflow">
+            <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+            <label for="selectall">Select All</label>
+            <a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+            <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+              <ng-template let-col let-index="index" pTemplate="item">
+                <div *ngIf="col.drag">
+                  <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                    <div class="drag">
+                      <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+                      <label>{{col.header}}</label>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="!col.drag">
+                  <div class="ui-helper-clearfix">
+                    <div>
+                      <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+                      />
+                      <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </p-listbox>
+
+          </div>
+
+          <div class="pull-right">
+            <a class="configColBtn" (click)="saveColumns()">Save</a>
+            <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </p-header>
+  <div class="x-scroll">
+    <p-table class="ui-datatable arrangementMgrTbl" #dt id="contractHeaders-dt" [loading]="loading" [columns]="columns" [value]="contractHeadersInfoVList" selectionMode="single"
+      [(selection)]="selectedContractHeadersInfoV" (onRowSelect)="onRowSelect($event)"(onRowUnselect)="onRowUnSelect($event)"
+      (onLazyLoad)="getContractHeadersInfoV($event)" [lazy]="true" [paginator]="showPaginator" [rows]="pageSize" [totalRecords]="totalElements"
+      scrollable="true" [resizableColumns]="true" columnResizeMode="expand">
+
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col>
+          <col *ngFor="let col of columns">
+        </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" class="arrangementMgrTblHead">
+        <tr>
+            <th class="select-box"></th>
+          <ng-container *ngFor="let col of columns">
+            <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+            <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+              title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+          </ng-container>
+
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-contractHeadersInfoV let-columns="columns" let-rowIndex="rowIndex">
+        <tr [pSelectableRow]="rowData">
+            <td class="select-box">
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+              </td>
+              
+          <ng-container *ngFor="let col of columns">
+            <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+              {{rowData[col.field]}}
+            </td>
+
+            <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+              {{rowData[col.field]}}
+            </td>
+
+            <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+              {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+            </td>
+
+            <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+              {{rowData[col.field] | round}}
+            </td>
+          </ng-container>
+
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage" let-columns>
+        <div class="no-results-data">
+          <p>{{noData}}</p>
+        </div>
+      </ng-template>
+    </p-table>
+  </div>
+</p-panel>
+
+
+<div>
+  <rmanDealDetails-data [pDealHeaderId]='pDealHeaderId'></rmanDealDetails-data>
+</div>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+  <form (ngSubmit)="search()">
+    <div class="ui-grid ui-grid-responsive ui-fluid">
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">Deal Number</span>
+            <input pInputText class="textbox" placeholder="Deal Number" name="dealNumber" id="dealNumber" [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="contractHeadersInfoVSearch.dealNumber" />
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+  </form>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" class="primary-btn" pButton label="Search" (click)="search()"></button>
+      <button type="button" class="secondary-btn" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+    </div>
+  </p-footer>
+</p-dialog>
+
+
+<p-dialog header="Select Delivered/All Lines for Split" width="450" [(visible)]="displaySplitDialog" [draggable]="true" showEffect="fade"
+ [modal]="true">
+
+	<div class="ui-md-12">
+		<div class="row" class="ml-0">
+			
+      <div class="ui-md-4">
+		    <input type="radio" class="radio-btns" value="U" [(ngModel)]="flag" name="undelivered_split"/> <span>Undelivered</span>
+      </div>
+      <div class="ui-md-4">
+          <input type="radio" class="radio-btns" value="A" [(ngModel)]="flag" name="all_lines_split"/> <span>All Lines</span>
+        </div>
+		</div>
+  </div>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" class="primary-btn" pButton label="Split" (click)="splitProcess()"></button>
+      <button type="button" class="secondary-btn" pButton (click)="splitCancel()" label="Cancel"></button>
+    </div>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Select Delivered/All Lines for Merge" width="450" [(visible)]="mergeSelection" [draggable]="true" showEffect="fade"
+ [modal]="true">
+
+	<div class="ui-md-12">
+		<div class="row" class="ml-0">
+			
+      <div class="ui-md-4">
+		    <input type="radio" class="radio-btns" value="U" [(ngModel)]="mergeFlag" name="undelivered_merge"/> <span>Undelivered</span>
+      </div>
+      <div class="ui-md-4">
+          <input type="radio" class="radio-btns" value="A" [(ngModel)]="mergeFlag" name="all_lines_merge"/> <span>All Lines</span>
+        </div>
+		</div>
+  </div>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" class="primary-btn" pButton label="Merge" (click)="showMergeDialog()"></button>
+      <button type="button" class="secondary-btn" pButton (click)="mergeCancel()" label="Cancel"></button>
+    </div>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Merge Contracts" width="800" [(visible)]="displayMergeDialog" showEffect="fade" [draggable]="true" [modal]="true">
+    <form>
+      <div class="ui-grid ui-grid-responsive ui-fluid">
+        <div class="ui-g-12">
+          <div class="ui-g-6">
+            <span class="md-inputfield">
+              <span class="selectSpan">Revenue Contract Number</span>
+              <input pInputText class="textbox" placeholder="Revenue Contract Number" name="dealArrangementNumber"
+               id="dealArrangementNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealArrangementsSearch.dealArrangementNumber"
+              />
+            </span>
+          </div>
+        </div>
+  
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+          <button type="submit" class="primary-btn" pButton label="Search" (click)="searchArrangements()"></button>
+          <button type="button" class="secondary-btn" pButton label="Reset" (click)="resetArrangements()"></button>
+        </div>
+      </div>
+  
+      <div>
+        <div class="x-scroll">
+          <p-table class="ui-datatable arrangementMgrTbl" #da [loading]="loading" [value]="rmanDealArrangementsList" selectionMode="single"
+           [(selection)]="selectedArrangement" (onRowSelect)="onRowArrgSelect($event)" (onLazyLoad)="getRmanDealArrangements($event)"
+           [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalArrgElements" scrollable="true" scrollHeight="200px">
+            <ng-template pTemplate="header" class="arrangementMgrTblHead">
+              <tr>
+                <th>Revenue Contract Name</th>
+                <th>Revenue Contract Number</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-rmanDealArrangements>
+              <tr [pSelectableRow]="rowData">
+                <td title="{{rmanDealArrangements.dealArrangementName}}">{{rmanDealArrangements.dealArrangementName}}</td>
+                <td title="{{rmanDealArrangements.dealArrangementNumber}}">{{rmanDealArrangements.dealArrangementNumber}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+              <tr *ngIf="!columns">
+                <td class="no-data">{{noData}}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+  
+      </div>
+    </form>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="button" class="primary-btn" pButton (click)="mergeProcess(targetDealArrangementId)" label="Submit"></button>
+        <button type="button" class="secondary-btn" pButton (click)="cancelMergeProcess()" label="Cancel"></button>
+  
+      </div>
+    </p-footer>
+  
+  </p-dialog>
+
+
+  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

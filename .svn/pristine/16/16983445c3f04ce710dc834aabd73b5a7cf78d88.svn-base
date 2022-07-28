@@ -1,0 +1,276 @@
+<!-- <div class="ui-datatable ui-widget ui-datatable-reflow">
+<div class="ui-datatable-header ui-widget-header">
+<header>RmanContTransLines</header>
+</div>
+</div> -->
+
+<!-- 	<p-menubar [model]="items"></p-menubar>
+	<div class="ui-widget-header ui-helper-clearfix" [hidden]='!showFilter'  style="padding:4px 10px;border-bottom: 0 none">
+    <em class="fa fa-search" style="float:left;margin:4px 4px 0 0"></em>
+		<input #gb type="text" pInputText size="50" style="float:left" placeholder="Global Filter">
+	</div>
+	 <div class="panel-group" id="transLinesaccordion" role="tablist" aria-multiselectable="true">
+
+	 <!-- <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="transLinesheadingThree">
+            <h4 class="panel-title"> <a role="button" data-toggle="collapse"  href="#collapseThree" aria-expanded="true" aria-controls="collapseThree"> Apply Contingencies </a> </h4>
+        </div>
+        <div id="transLinescollapseThree" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
+            <div class="panel-body" style="padding-left: 1%;">
+
+            </div>
+        </div>
+    </div> -->
+<div class="content-section implementation">
+	<p-growl [(value)]="growlMsgs" [sticky]="true"></p-growl>
+</div>
+
+<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="search()">
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4"><label for="transLineId">{{columns['transLineId']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="transLineId" id="transLinestransLineId" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransLinesSearch.transLineId" /></div>
+			</div>
+
+		</div>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="button" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+				<button type="submit" pButton label="Search"></button>
+			</div>
+		</footer>
+	</form>
+</p-dialog>
+<p-dialog header="Add Contingency" width="1000" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()" [formGroup]="applyContingenciesForm">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanContTransLines">
+			<h4>Application Hierarchy</h4>
+			<hr/>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.applicationLevel" class="selectSpan"> Application Level </span>
+					<p-dropdown [options]="rmanLookupsV2" name="applicationLevel" [(ngModel)]="rmanContTransLines.applicationLevel" (onChange)="onSelectApplicationLevel($event.value)" [filter]="true" formControlName="appLevel"></p-dropdown>
+					<div *ngIf="formErrors.appLevel" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.appLevel }}
+					</div>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.element" class="selectSpan"> Element </span>
+					<p-dropdown [options]="rmanContProdNameLovV" name="element" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransLines.element" [disabled]="rmanContTransLines.applicationLevel == 'POB'"  [filter]="true"></p-dropdown>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.sourceHeaderId" class="selectSpan"> Source Header # </span>
+					<p-dropdown [options]="rmanContSourceLov" name="sourceHeaderId" [disabled]="rmanContTransLines.applicationLevel == 'ARRANGEMENT'" [(ngModel)]="rmanContTransLines.sourceHeaderId" (onChange)="onSelectSourceHeader($event.value)" [filter]="true"
+					  formControlName="sourceHeaderId"></p-dropdown>
+					<div *ngIf="formErrors.sourceHeaderId" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.sourceHeaderId }}
+					</div>
+				</div>
+
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.productGroup" class="selectSpan"> Product Group </span>
+					<p-dropdown [options]="rmanContProdGroupV1" name="productGroup" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransLines.productGroup"  [disabled]="rmanContTransLines.applicationLevel == 'POB'" [filter]="true"></p-dropdown>
+				</div>
+
+
+			</div>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.sourceLineId" class="selectSpan"> Source Line # </span>
+					<p-dropdown [options]="rmanContSourceLov1" name="sourceLineId" [disabled]="rmanContTransLines.applicationLevel == 'ARRANGEMENT'" [(ngModel)]="rmanContTransLines.sourceLineId" (onChange)="onSelectSourceLine($event.value)"   [filter]="true" formControlName="sourceLineId"></p-dropdown>
+					<div *ngIf="formErrors.sourceLineId" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.sourceLineId }}
+					</div>
+				</div>
+
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.productCategory" class="selectSpan"> Product Category </span>
+					<p-dropdown [options]="rmanContProdCategoryV1" name="productCategory" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransLines.productCategory" [disabled]="rmanContTransLines.applicationLevel == 'POB'"  [filter]="true"></p-dropdown>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.attribute29" class="selectSpan"> Post Allocation Contingency </span>
+					<p-dropdown [options]="rmanLookupsV" name="attribute29" [(ngModel)]="rmanContTransLines.attribute29" [filter]="true" [disabled]='enableFlag' formControlName="postAllocationContingency"></p-dropdown>
+					<div *ngIf="formErrors.postAllocationContingency" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.postAllocationContingency }}
+					</div>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.productName" class="selectSpan"> Product Name </span>
+					<p-dropdown [options]="rmanContProdNameV1" name="productName" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransLines.productName" [filter]="true" [disabled]="rmanContTransLines.applicationLevel == 'POB'"></p-dropdown>
+				</div>
+
+
+
+			</div>
+
+
+
+
+			<div class="ui-g-12">
+
+
+
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.contEventType" class="selectSpan"> Cont Event Type </span>
+					<p-dropdown [options]="rmanLookupsV3" name="contEventType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransLines.contEventType" [filter]="true" ></p-dropdown>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+			</div>
+
+			<h4>Contingency Details & Templates</h4>
+			<hr/>
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.ruleHeaderId" class="selectSpan"> Name </span>
+					<p-dropdown [options]="rmanContHeaderV" name="ruleHeaderId" [(ngModel)]="rmanContTransLines.ruleHeaderId" (onChange)="onSelectContingency($event.value)" formControlName="name" ></p-dropdown>
+					<div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.name }}
+					</div>
+				</div>
+
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.templateId" class="selectSpan"> Template </span>
+					<p-dropdown [options]="rmanContLinkTemplateV" name="templateId" [(ngModel)]="rmanContTransLines.templateId" (onChange)="onSelectContTemplate($event.value)" [disabled]="rmanContTransLines.ruleHeaderId ==null" formControlName="template"></p-dropdown>
+					<div *ngIf="formErrors.template" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.template }}
+					</div>
+				</div>
+
+
+			</div>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span class="md-inputfield"><input pInputText id="transLinesrevenue" name="revenue" [(ngModel)] ="rmanContTransLines.revenue" [readonly]="customFlag" formControlName="revenue" />
+						<div *ngIf="formErrors.revenue" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.revenue }}
+						</div>
+						<label for="revenue">{{columns['revenue']}}</label></span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="transLinescogs" name="cogs" [(ngModel)] ="rmanContTransLines.cogs" [readonly]="customFlag" formControlName="cogs"/>
+						<div *ngIf="formErrors.cogs" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.cogs }}
+						</div>
+					<label for="cogs">{{columns['cogs']}}</label></span>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.applyType" class="selectSpan">{{columns['applyType']}}</span>
+					<p-dropdown [options]="rmanLookupsV4" name="applyType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransLines.applyType" [disabled]="customFlag" ></p-dropdown>
+    	</div>
+
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="transLinesranking"  name="ranking" [ngModelOptions]="{standalone: true}" [(ngModel)] ="rmanContTransLines.ranking" [disabled]="true" /><label for="ranking">{{columns['ranking']}}</label></span>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<!--<span class="md-inputfield">
+						<input pInputText id="transLinesattribute28" name="attribute28"   [ngModelOptions]="{standalone: true}" [(ngModel)] ="rmanContTransLines.attribute28" [disabled]="true" /><label for="attribute28">{{columns['attribute28']}}</label>
+					</span>-->
+					<span *ngIf="rmanContTransLines.attribute28" class="selectSpan">{{columns['attribute28']}}</span>
+					<p-dropdown [options]="rmanLookupsV9" name="attribute28" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransLines.attribute28" (onChange)="onSelectAllocation($event.value)" [disabled]="rmanContTransLines.ruleCategory=='DEFERRED'"></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.invoiceHold" class="selectSpan"> Invoice Hold </span>
+					<p-dropdown [options]="rmanLookupsV8" name="invoiceHold" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransLines.invoiceHold" ></p-dropdown>
+				</div>
+
+			</div>
+
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield"><input pInputText id="transLinesruleCategory" name="ruleCategory"   [ngModelOptions]="{standalone: true}" [(ngModel)] ="rmanContTransLines.ruleCategory" [disabled]="true" /><label for="ruleCategory">{{columns['ruleCategory']}}</label></span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="transLinesdeferredMethod" name="deferredMethod"  [ngModelOptions]="{standalone: true}" [(ngModel)] ="rmanContTransLines.deferredMethod" [disabled]="true" /><label for="deferredMethod">{{columns['deferredMethod']}}</label></span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.event" class="selectSpan"> Release Event </span>
+					<p-dropdown [options]="rmanLookupsV1" name="event" [(ngModel)]="rmanContTransLines.event" (onChange)="onSelecttAutoReleaseEvent($event.value)" formControlName="event" ></p-dropdown>
+					<div *ngIf="formErrors.event" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.event }}
+					</div>
+				</div>
+
+
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="transLinescomments" name="comments"  [ngModelOptions]="{standalone: true}" [(ngModel)] ="rmanContTransLines.comments" /><label for="comments">{{columns['comments']}}</label></span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span class="md-inputfield"><input pInputText id="transLinesautoReleaseDays" name="autoReleaseDays"   [(ngModel)] ="rmanContTransLines.autoReleaseDays" [readonly]="eventFlag" formControlName="releaseDays"/>
+						<div *ngIf="formErrors.releaseDays" class="ui-message ui-messages-error ui-corner-all">
+								{{ formErrors.releaseDays }}
+						</div>
+					<label for="autoReleaseDays">{{columns['autoReleaseDays']}}<span style="color:red">*</span></label>
+					</span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="transLinesattribute14" name="attribute14"  [ngModelOptions]="{standalone: true}" [(ngModel)] ="rmanContTransLines.attribute14" /><label for="attribute14">{{columns['attribute14']}}</label></span>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield"><input pInputText id="transLinesforecastingDelay" name="forecastingDelay"  [ngModelOptions]="{standalone: true}" [(ngModel)] ="rmanContTransLines.forecastingDelay" /><label for="forecastingDelay">{{columns['forecastingDelay']}}</label></span>
+				</div>
+			</div>
+
+
+
+
+
+			<!-- <div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.contEventType" class="selectSpan"> Cont Event Type </span>
+					<p-dropdown [options]="rmanLookupsV3" name="contEventType"    [ngModelOptions]="{standalone: true}" [(ngModel)] ="rmanContTransLines.contEventType"  [filter]="true" ></p-dropdown>
+				</div>
+
+			 </div>-->
+
+
+
+
+		</div>
+
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton (click)="displayDialog=false" label="Cancel"></button>
+			<button type="submit" pButton label="Save" (click)="save()" [disabled]="!applyContingenciesForm.valid"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

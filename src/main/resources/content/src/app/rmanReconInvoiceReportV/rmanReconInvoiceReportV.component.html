@@ -1,0 +1,337 @@
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper">
+     <div class="container-fluid">
+       <div class="row">
+         <div class="col-md-12">
+           <div class="card-block">
+
+		<p-panel header="Reconciliation of Shipments/Fulfillments to Billings Report" [toggleable]="false" (onBeforeToggle)=onBeforeToggle($event)>
+
+                  <p-header>
+                    <div class="pull-right icons-list">
+                         <a  (click)="goToReconciliationReports()" class="add-column"><em class="fa fa-reply"></em>Back</a>
+                         <a  (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>	
+                         <a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+                         <a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+                         <a  (click)="exportExcel()" title="Export" *ngIf="!disableExport"><em class="fa fa-external-link"></em></a>
+                         <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                              <div class="user-popup">
+                                <div class="content overflow">
+                                  <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+                                  <label for="selectall">Select All</label>
+                                  <a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+                                  <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                                   <ng-template let-col let-index="index" pTemplate="item">
+                                     <div *ngIf="col.drag">
+                                     <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+                                      (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                                       <div class="drag">
+                                         <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+                                         <label>{{col.header}}</label>
+                                       </div>
+                                     </div>
+                                     </div>
+                                     <div *ngIf="!col.drag">
+                                     <div class="ui-helper-clearfix">
+                                       <div>
+                                         <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+                                         <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                                       </div>
+                                     </div>
+                                     </div>
+                                   </ng-template>
+                                   </p-listbox>
+                                   </div>
+                                   	  
+					  <div class="pull-right">
+                              <a class="configColBtn" (click)="saveColumns()">Save</a>
+                              <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                            </div>
+                              </div>
+                              </div>
+                  </div>
+                </p-header>
+     
+               <div class="x-scroll">
+                  <p-table class="ui-datatable arrangementMgrTbl" #dt id="reconciliation3-dt" [loading]="loading" [value]="rmanReconInvoiceReportVList" selectionMode="single"   (onRowSelect)="onRowSelect($event)"
+                  (onLazyLoad)="getRmanReconInvoiceReportV($event)" [lazy]="true" [paginator]="showPaginator" [rows]="pageSize" [totalRecords]="totalElements"
+                   scrollable="true"  [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+                         
+                    <ng-template pTemplate="colgroup" let-columns>
+                         <colgroup>
+                              <col *ngFor="let col of columns">
+                         </colgroup>
+                    </ng-template>
+                         
+                         <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                              <tr>
+                                   <ng-container *ngFor="let col of columns">
+                                        <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                                        <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                                   </ng-container>
+
+                              </tr>
+                         </ng-template>
+
+                          <ng-template pTemplate="body" let-rowData let-rmanReconInvoiceReport>
+                               <tr [pSelectableRow]="rowData">
+                                   <ng-container *ngFor="let col of columns" >
+                                        <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                                             {{rowData[col.field]}}
+                                        </td>
+                                   
+                                        <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                                             {{rowData[col.field]}}
+                                        </td>
+                                   
+                                        <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                                             {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                                        </td>
+                                   
+                                        <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                                             {{rowData[col.field] | round}}
+                                        </td>
+                                   </ng-container>                                  
+                               </tr>
+                          </ng-template>
+
+                          <ng-template pTemplate="emptymessage" let-columns>
+                              <tr *ngIf="!columns">
+                                   <td [attr.colspan]="columns.length" class="no-data">{{noData}}</td>
+                              </tr>
+                         </ng-template>
+                         
+                    </p-table>
+               </div>
+	
+          </p-panel>
+          </div>
+          </div>
+          </div>
+          </div>
+          </div>
+
+	<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+                  <div class="ui-grid ui-grid-responsive ui-fluid">
+
+                        <div class="ui-g-12">
+                              <div class="ui-g-6">
+                                    <span class="md-inputfield">
+                                        <span for="orderNumber">Sales Order#</span>
+                                          <input pInputText name="orderNumber" id="orderNumber" class="textbox" placeholder="Sales Order#" [ngModelOptions]="{standalone: true}" [(ngModel)]="searchFields.orderNumber"
+                                          />
+                                         
+                                    </span>
+                              </div>
+                              <div class="ui-g-6 pull-right">
+                                    <span class="md-inputfield">
+                                        <span for="invoiceNumber">Invoice Number</span>
+                                          <input pInputText name="invoiceNumber" class="textbox" placeholder="Invoice Number" id="invoiceNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="searchFields.invoiceNumber"
+                                          />
+                                         
+                                    </span>
+                              </div>
+                              <div class="ui-g-12">
+                                    <div class="ui-g-6">
+                                      <span class="selectSpan">From Period</span>
+                                      <p-calendar showAnim="slideDown" name="fromPeriod" inputStyleClass="textbox"id="fromPeriod" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+                                        appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="searchFields.fromPeriod" dateFormat="yy-mm-dd"
+                                        placeholder="From Period"></p-calendar>
+                                    </div>
+                          
+                                    <div class="ui-g-6 pull-right">
+                                      <span class="selectSpan">To Period</span>
+                                      <p-calendar showAnim="slideDown" inputStyleClass="textbox" name="toPeriod" id="toPeriod" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+                                        appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="searchFields.toPeriod" dateFormat="yy-mm-dd"
+                                        placeholder="To Period"></p-calendar>
+                                    </div>
+                          
+                                  </div>
+                  
+                  
+                              
+                        </div>
+                  </div>
+                        <p-footer>
+                              <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+                                   <button type="submit" pButton class="primary-btn" label="Search"></button>
+                                    <button type="button" pButton  class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+                         
+                              </div>
+                        </p-footer>
+                       
+			
+            </form>
+            
+     
+      </p-dialog>
+      
+	<p-dialog header="RmanReconInvoiceReportV" width="500" [(visible)]="displayDialog" [draggable]="true" showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanReconInvoiceReportV">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sno">{{columns['sno']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sno" name="sno" required [(ngModel)]="rmanReconInvoiceReportV.sno" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementId">{{columns['dealArrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementId" name="dealArrangementId" required [(ngModel)]="rmanReconInvoiceReportV.dealArrangementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="legalEntityId">{{columns['legalEntityId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="legalEntityId" name="legalEntityId" required [(ngModel)]="rmanReconInvoiceReportV.legalEntityId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="legalEntityName">{{columns['legalEntityName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="legalEntityName" name="legalEntityName" required [(ngModel)]="rmanReconInvoiceReportV.legalEntityName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementNumber">{{columns['dealArrangementNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementNumber" name="dealArrangementNumber" required [(ngModel)]="rmanReconInvoiceReportV.dealArrangementNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementName">{{columns['dealArrangementName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementName" name="dealArrangementName" required [(ngModel)]="rmanReconInvoiceReportV.dealArrangementName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementBasis">{{columns['dealArrangementBasis']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementBasis" name="dealArrangementBasis" required [(ngModel)]="rmanReconInvoiceReportV.dealArrangementBasis" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="endCustomerName">{{columns['endCustomerName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="endCustomerName" name="endCustomerName" required [(ngModel)]="rmanReconInvoiceReportV.endCustomerName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel1">{{columns['salesNodeLevel1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="salesNodeLevel1" name="salesNodeLevel1" required [(ngModel)]="rmanReconInvoiceReportV.salesNodeLevel1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel2">{{columns['salesNodeLevel2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="salesNodeLevel2" name="salesNodeLevel2" required [(ngModel)]="rmanReconInvoiceReportV.salesNodeLevel2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesNodeLevel3">{{columns['salesNodeLevel3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="salesNodeLevel3" name="salesNodeLevel3" required [(ngModel)]="rmanReconInvoiceReportV.salesNodeLevel3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealHeaderId">{{columns['dealHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealHeaderId" name="dealHeaderId" required [(ngModel)]="rmanReconInvoiceReportV.dealHeaderId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealNumber">{{columns['dealNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealNumber" name="dealNumber" required [(ngModel)]="rmanReconInvoiceReportV.dealNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealLineNumber">{{columns['dealLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealLineNumber" name="dealLineNumber" required [(ngModel)]="rmanReconInvoiceReportV.dealLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productName">{{columns['productName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productName" name="productName" required [(ngModel)]="rmanReconInvoiceReportV.productName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productDescription">{{columns['productDescription']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productDescription" name="productDescription" required [(ngModel)]="rmanReconInvoiceReportV.productDescription" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="itemType">{{columns['itemType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="itemType" name="itemType" required [(ngModel)]="rmanReconInvoiceReportV.itemType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="customerPoNum">{{columns['customerPoNum']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="customerPoNum" name="customerPoNum" required [(ngModel)]="rmanReconInvoiceReportV.customerPoNum" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderNumber">{{columns['orderNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderNumber" name="orderNumber" required [(ngModel)]="rmanReconInvoiceReportV.orderNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceLineNumber">{{columns['sourceLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceLineNumber" name="sourceLineNumber" required [(ngModel)]="rmanReconInvoiceReportV.sourceLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderedDate">{{columns['orderedDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderedDate" name="orderedDate" required [(ngModel)]="rmanReconInvoiceReportV.orderedDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="bookedDate">{{columns['bookedDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="bookedDate" name="bookedDate" required [(ngModel)]="rmanReconInvoiceReportV.bookedDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderedQuantity">{{columns['orderedQuantity']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderedQuantity" name="orderedQuantity" required [(ngModel)]="rmanReconInvoiceReportV.orderedQuantity" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="actualFulfilledDate">{{columns['actualFulfilledDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="actualFulfilledDate" name="actualFulfilledDate" required [(ngModel)]="rmanReconInvoiceReportV.actualFulfilledDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="shippedQuantity">{{columns['shippedQuantity']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="shippedQuantity" name="shippedQuantity" required [(ngModel)]="rmanReconInvoiceReportV.shippedQuantity" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="repUnitListPrice">{{columns['repUnitListPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="repUnitListPrice" name="repUnitListPrice" required [(ngModel)]="rmanReconInvoiceReportV.repUnitListPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="repUnitSellingPrice">{{columns['repUnitSellingPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="repUnitSellingPrice" name="repUnitSellingPrice" required [(ngModel)]="rmanReconInvoiceReportV.repUnitSellingPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="transactionPrice">{{columns['transactionPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="transactionPrice" name="transactionPrice" required [(ngModel)]="rmanReconInvoiceReportV.transactionPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="invoiceNumber">{{columns['invoiceNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="invoiceNumber" name="invoiceNumber" required [(ngModel)]="rmanReconInvoiceReportV.invoiceNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="invoiceLineNumber">{{columns['invoiceLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="invoiceLineNumber" name="invoiceLineNumber" required [(ngModel)]="rmanReconInvoiceReportV.invoiceLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="invoicedDate">{{columns['invoicedDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="invoicedDate" name="invoicedDate" required [(ngModel)]="rmanReconInvoiceReportV.invoicedDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="invoicedQuantity">{{columns['invoicedQuantity']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="invoicedQuantity" name="invoicedQuantity" required [(ngModel)]="rmanReconInvoiceReportV.invoicedQuantity" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="invoiceCurrency">{{columns['invoiceCurrency']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="invoiceCurrency" name="invoiceCurrency" required [(ngModel)]="rmanReconInvoiceReportV.invoiceCurrency" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="acctdCurrency">{{columns['acctdCurrency']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="acctdCurrency" name="acctdCurrency" required [(ngModel)]="rmanReconInvoiceReportV.acctdCurrency" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fxRate">{{columns['fxRate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fxRate" name="fxRate" required [(ngModel)]="rmanReconInvoiceReportV.fxRate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fxDate">{{columns['fxDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fxDate" name="fxDate" required [(ngModel)]="rmanReconInvoiceReportV.fxDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revenueAmount">{{columns['revenueAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revenueAmount" name="revenueAmount" required [(ngModel)]="rmanReconInvoiceReportV.revenueAmount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="acctdRevAmount">{{columns['acctdRevAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="acctdRevAmount" name="acctdRevAmount" required [(ngModel)]="rmanReconInvoiceReportV.acctdRevAmount" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+

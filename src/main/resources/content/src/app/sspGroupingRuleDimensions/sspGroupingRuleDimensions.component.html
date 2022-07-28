@@ -1,0 +1,171 @@
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<p-panel header="Dimensions" [toggleable]="false" [style]="{'margin-bottom':'20px'}">
+							
+						<p-header>
+									<div class="pull-right icons-list">
+										<a (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+										<a (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+									   </div>
+								</p-header>
+						
+						<div class="x-scroll">
+							<p-table #dt class="ui-datatable arrangementMgrTbl" [value]="sspGroupingRuleDimensions" [loading]="loading" (onLazyLoad)="getSspGroupingRuleDimensions($event)" 
+							 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th></th>
+										<th>
+											<a>Dimension Number</a>
+										</th>
+										<th>
+											<a>Dimension Name</a>
+										</th>
+										<th>
+											<a>From</a>
+										</th>
+										<th>
+											<a>Identifier</a>
+										</th>
+                                        <th>
+											<a>To</a>
+										</th>
+										<th>
+											<a>And/Or</a>
+										</th>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-sspGroupingRuleDimension>
+									<tr [pSelectableRow]="rowData">
+											<td>
+													<span>            
+														<a (click)="editRow(sspGroupingRuleDimension)" class="icon-edit" title="Edit">
+														</a>
+													</span>
+													<span>
+														<a  (click)="deleteRow(sspGroupingRuleDimension)" class="icon-delete" title="Delete">
+														</a>
+													</span>
+												</td>
+										<td title="{{sspGroupingRuleDimension.attribute1}}">{{sspGroupingRuleDimension.attribute1}}</td>
+										<td title="{{sspGroupingRuleDimension.dimensionName}}"> {{sspGroupingRuleDimension.dimensionName}} </td>
+										<td title="{{sspGroupingRuleDimension.attribute2}}"> {{sspGroupingRuleDimension.attribute2}} </td>
+										<td title="{{transformRmanLookupsV(sspGroupingRuleDimension.rmanLookupsV)}}"> {{transformRmanLookupsV(sspGroupingRuleDimension.rmanLookupsV)}} </td>
+										<td title="{{sspGroupingRuleDimension.attribute4}}"> {{sspGroupingRuleDimension.attribute4}} </td>
+										<td title="{{sspGroupingRuleDimension.andOr}}"> {{sspGroupingRuleDimension.andOr}} </td>
+										
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage" let-columns>
+									<tr *ngIf="!columns">
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+
+					</p-panel>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p-dialog header="{{(isCreate) ? 'Add Dimension' : 'Edit Dimension'}}" width="700" [(visible)]="displayDialog"
+	 [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancel()">
+		<form (ngSubmit)="save()" [formGroup]="DimensionForm" novalidate>
+			<div class="ui-g ui-fluid">
+				<div class="ui-g-12 form-group"  *ngIf="sspDimensions">
+					<div class="ui-grid-row">
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="md-inputfield">
+									<span class="selectSpan">Dimension Number<span class="red-color">*</span></span>
+									<input pInputText type="text" class="textbox" placeholder="Dimension Number" name="dimensionNumber" id="dimensionNumber" [readonly]="editFlag"
+									formControlName="dimensionNumber" [(ngModel)]="sspDimensions.attribute1"/>
+									<div *ngIf="formErrors.dimensionNumber" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.dimensionNumber }}
+									</div>
+								</span>
+							</div>
+							
+							<div class="ui-g-6 pull-right">
+								<span class="selectSpan">Dimension<span class="red-color">*</span></span>
+								<p-dropdown [options]="dimensionNamesLookup" name="dimension" id="dimension" placeholder="Select Dimension" 
+									[filter]="true" appendTo="body" formControlName="dimension" [(ngModel)]="sspDimensions.dimensionName" (onChange)="onSelectingDimension($event.value)"></p-dropdown>
+									<div *ngIf="formErrors.dimension" class="ui-message ui-messages-error ui-corner-all">
+											{{ formErrors.dimension }}
+										</div>
+								</div>
+							
+						</div>
+						
+						<div class="ui-g-12">
+
+								<div class="ui-g-6">
+										<span class="selectSpan">Identifier<span class="red-color">*</span></span>
+										<p-dropdown [options]="identifiersLookup" name="identifier" id="identifier" placeholder="Select Identifier" 
+											[filter]="true" appendTo="body" formControlName="identifier" [(ngModel)]="sspDimensions.attribute3" (onChange)="onSelectingIdentifier($event.value)"></p-dropdown>
+											<div *ngIf="formErrors.identifier" class="ui-message ui-messages-error ui-corner-all">
+													{{ formErrors.identifier }}
+											</div>
+								</div>
+
+								<div class="ui-g-6">
+										<span class="selectSpan">Select And/Or<span class="red-color">*</span></span>
+										<p-dropdown [options]="AndOrLookup" name="andOr" id="andOr" placeholder="Select And/Or" 
+											[filter]="true" appendTo="body" formControlName="andOr" [(ngModel)]="sspDimensions.andOr"></p-dropdown>
+											<div *ngIf="formErrors.andOr" class="ui-message ui-messages-error ui-corner-all">
+													{{ formErrors.andOr }}
+											</div>
+								</div>
+
+					
+						</div>
+						
+						
+						<div class="ui-g-12">
+								<div class="ui-g-6">
+										<span class="md-inputfield">
+											<span class="selectSpan">{{value}}</span>
+											<input pInputText type="text" class="textbox" placeholder="{{value}}" name="from" id="from" [readonly]="editFlag"
+											formControlName="from" [(ngModel)]="sspDimensions.attribute2"/>
+											<div *ngIf="formErrors.from" class="ui-message ui-messages-error ui-corner-all">
+												{{ formErrors.from }}
+											</div>
+										</span>
+									</div>
+							
+									<div class="ui-g-6 pull-right" *ngIf="displayTo">
+											<span class="md-inputfield">
+												<span class="selectSpan">To<span class="red-color">*</span></span>
+												<input pInputText type="text" class="textbox" placeholder="To" name="to" id="to" [readonly]="editFlag"
+												formControlName="to" [(ngModel)]="sspDimensions.attribute4"/>
+												<div *ngIf="formErrors.to" class="ui-message ui-messages-error ui-corner-all">
+													{{ formErrors.to }}
+												</div>
+											</span>
+										</div>
+							
+						</div>
+						
+					</div>
+
+				</div>
+			</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!DimensionForm.valid"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancel()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+
+
+	<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

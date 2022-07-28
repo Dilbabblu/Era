@@ -1,0 +1,39 @@
+<div class="card-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card-block">
+                    <p-panel header="Operational Reports">
+
+                        <div class="x-scroll">
+                            <p-table class="ui-datatable arrangementMgrTbl" [value]="reportsList" selectionMode="single" [loading]="loading">
+
+                                <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                                    <tr>
+                                        <th>Report Name</th>
+                                        <th></th>
+
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowData let-reports let-i=r owIndex>
+                                    <tr *isAuthorized="['read', reports.reportCode]" [pSelectableRow]="rowData">
+                                        <td>{{reports.reportName}}</td>
+                                        <td class="pull-right">
+                                            <a target="_blank" (click)="path1(reports)" title="Open">
+                                                <em class="fa fa-folder-open icons-color"></em>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+
+
+                    </p-panel>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<router-outlet></router-outlet>

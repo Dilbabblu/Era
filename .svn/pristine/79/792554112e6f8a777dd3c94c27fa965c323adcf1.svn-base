@@ -1,0 +1,26 @@
+export interface RmanContReleaseEventsV {
+    dealArrangementNumber?:any;
+    lineNum?:any;
+    dealLineNumber?:any;
+    sourceLineId?:any;
+    sourceLineNumber?:any;
+    revenue?:any;
+    applyType?:any;
+    dealArrangementName?:any;
+    contingencyName?:any;
+    dealArrangementId?:any;
+    ranking?:any;
+    templateName?:any;
+    deferredAmount?:any;
+    sno?:any;
+    dealNumber?:any;
+    so?:any;
+    deferredReleaseAmount?:any;
+    undeferredAmount?:any;
+    deliveredAmount?:any;
+    bookedAmount?:any;
+    dealLineId?:any;
+    ruleCategory?:any;
+    trxCurrency?:any;
+    // currentDate?:any;
+}

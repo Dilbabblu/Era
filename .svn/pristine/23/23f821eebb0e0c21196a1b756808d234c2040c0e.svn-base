@@ -1,0 +1,343 @@
+<div class="content-section implementation">
+</div>
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+
+<div class="card-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card-block">
+          <p-panel header="Manage Users" class="row-active" [toggleable]="false"
+            (onBeforeToggle)="onBeforeToggle($event)">
+            <p-header>
+              <div class="pull-right icons-list" *ngIf="collapsed">
+                <a (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+                <a *isAuthorized="['write','US']" (click)="showDialogToAdd()" title="Add"><em
+                    class="fa fa-plus-circle"></em></a>
+                <a (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+                <a (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+                <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                  <div class="user-popup">
+                      <div class="content overflow">
+                          <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+                          <label for="selectall">Select All</label>
+                          <a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+                          <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                              <ng-template let-col let-index="index" pTemplate="item">
+                                  <div *ngIf="col.drag">
+                                      <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                                          <div class="drag">
+                                              <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+                                              <label>{{col.header}}</label>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div *ngIf="!col.drag">
+                                      <div class="ui-helper-clearfix">
+                                          <div>
+                                              <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+                                              />
+                                              <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </ng-template>
+                          </p-listbox>
+                      </div>
+                      <div class="pull-right">
+                          <a class="configColBtn" (click)="saveColumns()">Save</a>
+                          <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                      </div>
+                  </div>
+              </div>
+              </div>
+            </p-header>
+
+            <div class="x-scroll">
+              <p-table #dt [loading]="loading" class="ui-datatable arrangementMgrTbl" id="rmanUsers-dt"
+                [value]="rmanUsersList" selectionMode="single" [(selection)]="selectedRmanUsers"
+                (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnSelect()"
+                (onLazyLoad)="getRmanUsers($event)" [lazy]="true" [paginator]="true" [rows]="9"
+                [totalRecords]="totalElements" scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+
+                
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                      <col>
+                      <col *ngFor="let col of columns">
+                  </colgroup>
+              </ng-template>
+
+
+              <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                  <tr>
+                      <th></th>
+                      <ng-container *ngFor="let col of columns">
+                          <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                          <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+                              title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                      </ng-container>
+                  </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-rowData let-rmanUsers let-columns="columns">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                      <td>
+                        <a *isAuthorized="['write','US']" (click)="editRow(rmanUsers)" class="icon-edit"> </a>
+                        <a *isAuthorized="['write','US']" (click)="delete(rmanUsers)" class="icon-delete"> </a>
+                      </td>
+                      <ng-container *ngFor="let col of columns">
+                          <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                              {{rowData[col.field]}}
+                          </td>
+
+                          <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                              {{rowData[col.field]}}
+                          </td>
+
+                          <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                              {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                          </td>
+
+                          <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                              {{rowData[col.field] | round}}
+                          </td>
+                      </ng-container>
+
+                  </tr>
+              </ng-template>
+
+              <ng-template pTemplate="emptymessage" let-columns>
+                  <tr *ngIf="!columns">
+                      <td class="no-data">{{noData}}</td>
+                  </tr>
+              </ng-template>
+              </p-table>
+            </div>
+          </p-panel>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade"
+  [modal]="true" [blockScroll]="true">
+  <form>
+    <div class="ui-grid ui-grid-responsive ui-fluid">
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['userName']}}</span>
+            <input pInputText name="userName" id="userNameSearch" class="textbox" placeholder="User Name"
+              [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanUsersSearch.userName" />
+          </span>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['fullName']}}</span>
+            <input pInputText name="fullName" id="fullNameSearch" class="textbox" placeholder="Full Name"
+              [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanUsersSearch.fullName" />
+          </span>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['emailAddress']}}</span>
+            <input pInputText name="emailAddress" id="emailAddressSearch" class="textbox" placeholder="Email Address"
+              [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanUsersSearch.emailAddress" />
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+  </form>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" pButton class="primary-btn" (click)="search()" label="Search"></button>
+      <button type="button" pButton class="secondary-btn" (click)="cancelSearch()" label="Cancel"></button>
+    </div>
+  </p-footer>
+</p-dialog>
+
+
+<p-dialog header="{{(newRmanUsers) ? 'Create User' : 'Edit User'}}" width="800" [(visible)]="displayDialog"
+  [draggable]="true" showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelEdit()">
+  <form (ngSubmit)="save()" [formGroup]="usersForm" novaldiate>
+    <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanUsers">
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['userName']}}<span class="red-color">*</span></span>
+            <input pInputText name="userName" class="textbox" placeholder="User Name" id="userName" required
+              [(ngModel)]="rmanUsers.userName" formControlName="name" />
+            <div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.name }}
+            </div>
+
+          </span>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['userPassword']}}<span class="red-color">*</span></span>
+            <input pInputText type="password" name="userPassword" class="textbox" placeholder="User Password"
+              id="userPassword" [disabled]="!newRmanUsers" [(ngModel)]="rmanUsers.userPassword"
+              formControlName="password" />
+            <div *ngIf="formErrors.password" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.password }}
+            </div>
+          </span>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['rmanEmployeeId']}}</span>
+            <input pInputText name="rmanEmployeeId" id="rmanEmployeeId" class="textbox" placeholder="Employee ID"
+              [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanUsers.rmanEmployeeId" />
+          </span>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['firstName']}}<span class="red-color">*</span></span>
+            <input pInputText name="firstName" id="firstName" class="textbox" placeholder="First Name"
+              [(ngModel)]="rmanUsers.firstName" formControlName="firstName" />
+            <div *ngIf="formErrors.firstName" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.firstName }}
+            </div>
+          </span>
+        </div>
+      </div>
+
+
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['lastName']}}</span>
+            <input pInputText name="lastName" id="lastName" class="textbox" placeholder="Last Name"
+              [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanUsers.lastName" />
+          </span>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['fullName']}}</span>
+            <input pInputText name="fullName" id="fullName" class="textbox" placeholder="Full Name"
+              [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanUsers.fullName" />
+          </span>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['homePhone']}}</span>
+            <input pInputText name="homePhone" class="textbox" placeholder="Home Phone" id="homePhone"
+              [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanUsers.homePhone" />
+          </span>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['workPhone']}}<span class="red-color">*</span></span>
+            <input pInputText name="workPhone" class="textbox" placeholder="Work Phone" id="workPhone"
+              [(ngModel)]="rmanUsers.workPhone" formControlName="workPhone" />
+            <div *ngIf="formErrors.workPhone" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.workPhone }}
+            </div>
+          </span>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">{{userColumns['emailAddress']}}<span class="red-color">*</span></span>
+            <input pInputText name="emailAddress" class="textbox" placeholder="Email Address" id="emailAddress"
+              [(ngModel)]="rmanUsers.emailAddress" formControlName="emailAddress" />
+            <div *ngIf="formErrors.emailAddress" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.emailAddress }}
+            </div>
+          </span>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="selectSpan"> Select Legal Entity </span>
+             <p-dropdown [options]="rmanLegalEntities" name="attribute1" id="attribute1" [(ngModel)]="rmanUsers.attribute1" appendTo="body"
+             formControlName="legalEntityId"></p-dropdown>
+
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="selectSpan">Select Manager</span>
+          <p-dropdown [options]="rmanUsersOpt" name="mgrId" [(ngModel)]="rmanUsers.mgrId"
+            [ngModelOptions]="{standalone: true}" [filter]="true"></p-dropdown>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="selectSpan">Start Date</span>
+          <p-calendar showAnim="slideDown" inputStyleClass="textbox" name="startDateActive" id="startDateActive"
+            [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030" appendTo="body"
+            [(ngModel)]="rmanUsers.startDateActive" dateFormat="yy-mm-dd" placeholder="Start Date*"
+            formControlName="activeDate">
+
+          </p-calendar>
+          <div *ngIf="formErrors.activeDate" class="ui-message ui-messages-error ui-corner-all">
+            {{ formErrors.activeDate }}
+          </div>
+        </div>
+      </div>
+
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="selectSpan">End Date</span>
+          <p-calendar showAnim="slideDown" inputStyleClass="textbox" name="endDateActive" id="endDateActive"
+            [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030" appendTo="body"
+            [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanUsers.endDateActive" dateFormat="yy-mm-dd"
+            placeholder="End Date"></p-calendar>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="selectSpan"> Enabled Flag </span>
+          <p-dropdown #dropdownRef [options]="rmanLookupsV" appendTo="body" [(ngModel)]="rmanUsers.enabledFlag"
+            name="enabledFlag" [filter]="true" formControlName="flag">
+          </p-dropdown>
+          <div *ngIf="formErrors.flag" class="ui-message ui-messages-error ui-corner-all">
+            {{ formErrors.flag }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" pButton class="primary-btn" label="Save" (click)="save()"
+        [disabled]="!usersForm.valid"></button>
+      <button type="button" pButton class="secondary-btn" (click)="cancelEdit();" label="Cancel"></button>
+    </div>
+  </p-footer>
+</p-dialog>
+
+
+<div class="modal fade dialogueBox" id="FieldsMandatory" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{{'Error'}}</h4>
+      </div>
+      <form class="form-horizontal">
+        <div class="modal-body clearfix">
+          <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+
+            <p *ngIf="showMsg==40">Please enter User Name</p>
+            <p *ngIf="showMsg==41">Please enter Start Date</p>
+
+
+          </div>
+
+        </div>
+        <div class="modal-footer" style="padding:3px;">
+          <button class="btn btn-primary pull-right" data-dismiss="modal">OK</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<rmanUserResponsibilities-data>loading..</rmanUserResponsibilities-data>

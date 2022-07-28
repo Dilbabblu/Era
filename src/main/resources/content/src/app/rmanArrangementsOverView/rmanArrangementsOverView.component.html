@@ -1,0 +1,61 @@
+<div class="ContentSideSections Implementation Implementation-margin-top">
+
+  <div class="content-section implementation">
+  </div>
+
+  
+  <div class="panel-group arrangement-overview" id="accordion" role="tablist" aria-multiselectable="true">
+
+    <div class="panel panel-default">
+
+      <div id="collapseTen" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTen">
+        <div class="panel-body">
+
+          <div class="ui-g arrangement-details">
+
+            <div>
+              <label for="arrgNumber">Revenue Contract Number :
+                <span>{{paramArrangementNumber}}</span>
+              </label>
+
+              <label for="arrgName">Revenue Contract Name :
+                <span>{{paramArrangementName}}</span>
+              </label>              
+            </div>
+
+          </div>
+
+
+          <p-tabView (onChange)="handleChange($event)" *ngIf="!paramTabFound">
+            <p-tabPanel header="Revenue Contract Overview">
+              <rmanDealArrangements-data [arrId]='parrangementId' *ngIf='parrangementDealFlag == "Y"'></rmanDealArrangements-data>
+            </p-tabPanel>
+            <p-tabPanel header="Contracts" [cache] = "false"></p-tabPanel>
+            <p-tabPanel header="Allocations" [cache] = "false"></p-tabPanel>
+            <p-tabPanel header="Holds & Events" [cache] = "false"></p-tabPanel>
+            <p-tabPanel header="Bookings" [cache] = "false"></p-tabPanel>
+            <p-tabPanel header="Billings" [cache] = "false"></p-tabPanel>
+            <p-tabPanel header="Revenue" [cache] = "false"></p-tabPanel>
+            <p-tabPanel header="Gross Margin" [cache] = "false"></p-tabPanel>
+            <p-tabPanel header="Forecasting" [cache] = "false">
+               <!-- <ng-template pTemplate="Forecasting">
+                    <p-tabView *ngIf="tabIndex==8" (onChange)="handleChangeFCST($event)" class="forecasting">
+                        <p-tabPanel header="Enter Forecasting" [cache] = "false" class="arrg_forecasting"></p-tabPanel>
+                        <p-tabPanel header="View Forecasting" [cache] = "false" class="arrg_forecasting"></p-tabPanel>
+                    </p-tabView>
+                  </ng-template>-->
+              
+            </p-tabPanel>
+            <p-tabPanel header="Forecast-Actual Analysis"  [cache] = "false"></p-tabPanel>
+            <p-tabPanel header="Approvals History"  [cache] = "false"></p-tabPanel>
+          </p-tabView>
+          <div class="arrangement-tabs" *ngIf="tabIndex != 0">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>

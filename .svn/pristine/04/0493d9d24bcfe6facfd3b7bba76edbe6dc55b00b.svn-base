@@ -1,0 +1,223 @@
+<div class="ContentSideSections Implementation">
+
+     <p-panel header="DZS BSB Report" [toggleable]="true" (onBeforeToggle)=onBeforeToggle($event)>
+
+
+          <p-header>
+               <div class="pull-right" *ngIf="collapsed">
+                    <a  (click)="showDialogToSearch()" class="icon-search" title="Search"></a>
+                    <a  (click)="reset(dt)" class="icon-reset" title="Reset"></a>
+                    <a  (click)="exportExcel()" class="icon-export" title="Export"></a>
+               </div>
+          </p-header>
+          <p-table class="ui-datatable" #dt [loading]="loading"  [value]="bsbReportList" selectionMode="single"
+                 (onRowSelect)="onRowSelect($event)" scrollable="true"
+                [paginator]="true" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements"
+               (onLazyLoad)="getBsbReport($event)" >
+               <ng-template pTemplate="header">
+                    <tr>
+                         <th style="width: 100px">{{columns['financialMonth']}}</th>
+                         <th style="width: 100px">{{columns['shipToCustomerName']}}</th>
+                         <th style="width: 100px">{{columns['shipToCountry']}}</th>
+                         <th style="width: 100px">{{columns['billToCustomerName']}}</th>
+                         <th style="width: 100px">{{columns['billToState']}}</th>
+                         <th style="width: 100px">{{columns['billToCountry']}}</th>
+                         <th style="width: 100px">{{columns['customerPo']}}</th>
+                         <th style="width: 100px">{{columns['fob']}}</th>
+                         <th style="width: 100px"> {{columns['freightTerms']}}</th>
+                         <th style="width: 150px;">{{columns['freightCarrier']}}</th>
+                         <th style="width: 100px;">{{columns['orderNumber']}}</th>
+                         <th style="width: 100px;">{{columns['orderLine']}}</th>
+                         <th style="width: 100px;text-align:center">{{columns['orderType']}}</th>
+                         <th style="width: 100px;text-align:center"> {{columns['subOrderType']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['isRevenue']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['salesrepName']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['region']}}</th>
+                         <th style="width: 100px;text-align:right"> {{columns['productNumber']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['productFamily']}}</th>
+                         <th style="width: 100px;text-align:right"> {{columns['productLine']}}</th>
+                         <th style="width: 100px;text-align:right"> {{columns['shipDate']}}</th>
+                         <th style="width: 100px;text-align:right"> {{columns['elementType']}}</th>
+                         <th style="width: 100px;text-align:right"> {{columns['contingencyApplied']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['invoiceNumber']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['invoiceLine']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['shippedQuantity']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['extendedCost']}}</th>
+                         <th style="width: 100px;text-align: right;">{{columns['shippedAmount']}}</th>
+                         <th style="width: 100px;text-align: right;">{{columns['division']}}</th>
+                         <th style="width: 100px;text-align: right;">{{columns['totalMonths']}}</th>
+                         <th style="width: 100px;text-align: right;">{{columns['serviceCode']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['endCustomer']}}</th>
+                         <th style="width: 100px;text-align: right;">{{columns['snExists']}}</th>
+                         <th style="width: 100px;text-align:right"> {{columns['username']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['itemType']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['warrantyTransferred']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['serviceStartDate']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['serviceEndDate']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['productService']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['productFamily2']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['note']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['je']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['geography10k']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['concatenate']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['source']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['extendedWarranty']}}</th>
+                         <th style="width: 100px;text-align: right;">{{columns['reasonForExclusion']}}</th>
+                         <th style="width: 100px;text-align: right;">{{columns['serviceMaintLegacy']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['reasonForExclusion2']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['serviceMaintNewParts']}}</th>
+                         <th style="width: 100px;text-align: right;"> {{columns['reasonForExclusion3']}}</th>
+                    </tr>
+               </ng-template>
+               <ng-template pTemplate="body" let-rowData let-revmantra>
+                    <tr [pSelectableRow]="rowData">
+                         
+                         <td style="width: 100px" title="{{revmantra.financialMonth}}">
+                              {{revmantra.financialMonth}}</td>
+                         <td style="width: 100px" title="{{revmantra.shipToCustomerName}}">
+                              {{revmantra.shipToCustomerName}}</td>
+                         <td style="width: 100px" title="{{revmantra.shipToCountry}}">
+                              {{revmantra.shipToCountry}}</td>
+                         <td style="width: 100px" title="{{revmantra.billToCustomerName}}">
+                              {{revmantra.billToCustomerName}}</td>          
+                         <td style="width: 100px" title="{{revmantra.billToState}}">{{revmantra.billToState}}</td>
+                         <td style="width: 100px" title="{{revmantra.billToCountry}}">{{revmantra.billToCountry}}</td>
+                          <td style="width: 100px" title="{{revmantra.customerPo}}">
+                              {{revmantra.customerPo}}</td>
+                         <td style="width: 100px" title="{{revmantra.fob}}">
+                              {{revmantra.fob}}</td>
+                         <td style="width: 100px" title="{{revmantra.freightTerms}}">
+                              {{revmantra.freightTerms}}</td>
+                         <td style="width: 150px;" title="{{revmantra.freightCarrier}}">
+                              {{revmantra.freightCarrier}}</td>
+                         <td style="width: 100px;" title=" {{revmantra.orderNumber}}">
+                              {{revmantra.orderNumber}}</td>
+                         <td style="width: 100px;" title=" {{revmantra.orderLine}}">
+                              {{revmantra.orderLine}}</td>
+                         <td style="width: 100px;text-align:center" title="{{revmantra.orderType}}">{{revmantra.orderType}}
+                         </td>
+
+                         <td style="width: 100px;text-align:center" title="{{revmantra.subOrderType}}">{{revmantra.subOrderType}}
+                        </td>
+                         <td style="width: 100px;text-align:right" title="{{rowData.isRevenue}}">{{rowData.isRevenue}}
+                         </td>
+                         <td style="width: 100px;text-align:right" title="{{rowData.salesrepName}}">{{rowData.salesrepName}}
+                         </td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.region}}">
+                              {{revmantra.region}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.productNumber}}">
+                              {{revmantra.productNumber}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.productFamily}}">
+                              {{revmantra.productFamily}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.productLine}}">
+                              {{revmantra.productLine}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.shipDate|date: 'MM/dd/yyyy'}}">
+                              {{revmantra.shipDate|date: 'MM/dd/yyyy'}}</td>
+                         <td style="width: 100px;text-align:left" title="{{rowData.elementType}}">{{rowData.elementType}}
+                         </td>
+                         <td style="width: 100px;text-align:left" title="{{rowData.contingencyApplied}}">{{rowData.contingencyApplied}}
+                         </td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.invoiceNumber}}">
+                              {{revmantra.invoiceNumber}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.invoiceLine}}">
+                              {{revmantra.invoiceLine}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.shippedQuantity}}">
+                              {{revmantra.shippedQuantity}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.extendedCost|round}}">
+                              {{revmantra.extendedCost|round}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.shippedAmount|round}}">
+                              {{revmantra.shippedAmount|round}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.division}}">
+                              {{revmantra.division}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.totalMonths}}">
+                              {{revmantra.totalMonths}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.serviceCode}}">
+                              {{revmantra.serviceCode}}</td>
+                         <td style="width: 100px;text-align:right" title="{{revmantra.endCustomer}}">
+                              {{revmantra.endCustomer}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.snExists}}">
+                              {{revmantra.snExists}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.username}}">
+                              {{revmantra.username}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.itemType}}">
+                              {{revmantra.itemType}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.warrantyTransferred}}">
+                              {{revmantra.warrantyTransferred}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.serviceStartDate|date : 'MM/dd/yyyy'}}">
+                              {{revmantra.serviceStartDate|date : 'MM/dd/yyyy'}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.serviceEndDate|date : 'MM/dd/yyyy' }}">
+                              {{revmantra.serviceEndDate|date : 'MM/dd/yyyy'}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.productService}}">
+                              {{revmantra.productService}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.productFamily2}}">
+                              {{revmantra.productFamily2}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.note}}">
+                              {{revmantra.note}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.je}}">
+                              {{revmantra.je}}</td> 
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.geography10k}}">
+                              {{revmantra.geography10k}}</td> 
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.concatenate}}">
+                              {{revmantra.concatenate}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.source}}">
+                              {{revmantra.source}}</td>
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.extendedWarranty}}">
+                              {{revmantra.extendedWarranty}}</td> 
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.reasonForExclusion}}">
+                              {{revmantra.reasonForExclusion}}</td>                       
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.serviceMaintLegacy}}">
+                              {{revmantra.serviceMaintLegacy}}</td>                       
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.reasonForExclusion2}}">
+                              {{revmantra.reasonForExclusion2}}</td>                       
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.serviceMaintNewParts}}">
+                              {{revmantra.serviceMaintNewParts}}</td>                       
+                         <td style="width: 100px;text-align: right;" title="{{revmantra.reasonForExclusion3}}">
+                              {{revmantra.reasonForExclusion3}}</td>                       
+                    </tr>
+               </ng-template>
+
+               <ng-template pTemplate="emptymessage" let-columns>
+                    <tr *ngIf="!columns">
+                         <td class="no-data">{{noData}}</td>
+                    </tr>
+               </ng-template>
+
+               
+
+
+          </p-table>
+
+     </p-panel>
+     <p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade"
+     [modal]="true">
+     <form>
+       <div class="ui-grid ui-grid-responsive ui-fluid">
+         
+       
+ 
+         
+
+         <div class="ui-g-12">
+            <div class="ui-g-5">
+              <span class="md-inputfield">
+                <input pInputText name="financialMonth" id="financialMonth" [ngModelOptions]="{standalone: true}" [(ngModel)]="bsbReportSearch.financialMonth" />
+                <label for="financialMonth">{{columns['financialMonth']}}</label>
+              </span>
+            </div>
+            
+          </div>
+ 
+ 
+       </div>
+ 
+     </form>
+     <p-footer>
+       <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+         <button type="button" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+         <button type="submit" pButton label="Search" (click)="search()"></button>
+       </div>
+     </p-footer>
+   </p-dialog>
+ 
+     
+</div>

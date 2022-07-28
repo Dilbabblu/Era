@@ -1,0 +1,325 @@
+<style>
+    h4 {
+        margin-bottom: 0px !important;
+    }
+
+    hr {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+</style>
+
+<div *ngIf="got_form_data">
+    <form [formGroup]="arrgForm">
+        <div class="ui-g ui-g-responsive ui-fluid">
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span class="md-inputfield">
+                        <input pInputText id="msaName" name="msaName" [(ngModel)]="rmanDealArrangements.msaName" formControlName="msaName" />
+                        <div *ngIf="formErrors.msaName" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.msaName }}
+                        </div>
+                        <label for="msaName">{{columns['msaName']}}
+                            <span class="red-color">*</span>
+                        </label>
+                    </span>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span class="md-inputfield">
+                        <input pInputText id="msaNumber" name="msaNumber" [(ngModel)]="rmanDealArrangements.msaNumber" formControlName="msaNumber"
+                        />
+                        <div *ngIf="formErrors.msaNumber" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.msaNumber }}
+                        </div>
+                        <label for="msaNumber">{{columns['msaNumber']}}
+                            <span class="red-color">*</span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span class="md-inputfield">
+                        <input pInputText id="dealArrangementName" name="dealArrangementNumber" [(ngModel)]="rmanDealArrangements.dealArrangementNumber"
+                            formControlName="dealArrangementNumber" />
+                        <div *ngIf="formErrors.dealArrangementNumber" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.dealArrangementNumber }}
+                        </div>
+                        <label for="dealArrangementNumber">{{columns['dealArrangementNumber']}}
+                            <span class="red-color">*</span>
+                        </label>
+                    </span>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span class="md-inputfield">
+                        <input pInputText id="dealArrangementName" name="dealArrangementName" [(ngModel)]="rmanDealArrangements.dealArrangementName"
+                            formControlName="dealArrangementName" />
+                        <div *ngIf="formErrors.dealArrangementName" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.dealArrangementName }}
+                        </div>
+                        <label for="dealArrangementName">{{columns['dealArrangementName']}}
+                            <span class="red-color">*</span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+
+                <div class="ui-g-5">
+                    <span class="md-inputfield">
+                        <input pInputText id="endCustomerName" [(ngModel)]="rmanDealArrangements.endCustomerName" name="endCustomerName" formControlName="endCustomerName"
+                            readonly>
+                        <div *ngIf="formErrors.endCustomerName" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.endCustomerName }}
+                        </div>
+                        <label for="standaloneSubSku">{{columns['endCustomerName']}}&nbsp;
+                            <span class="red-color">*</span>
+                        </label>
+                        <a class="icon-search searchinput" (click)="customerSearchDialog(0,customersdt)"></a>
+                    </span>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span class="md-inputfield">
+                        <input pInputText name="endCustomerNumber" id="endCustomerNumber" [(ngModel)]="rmanDealArrangements.endCustomerNumber" formControlName="endCustomerNumber"
+                            readonly/>
+                        <div *ngIf="formErrors.endCustomerNumber" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.endCustomerNumber }}
+                        </div>
+                        <label for="endCustomerNumber">{{columns['endCustomerNumber']}}
+                            <span class="red-color">*</span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span *ngIf="rmanDealArrangements.dealArrangementSource" class="selectSpan"> Deal Arrangement Source </span>
+                    <p-dropdown [options]="rmanLookupsV5" name="dealArrangementSource" [(ngModel)]="rmanDealArrangements.dealArrangementSource"
+                        [filter]="true" formControlName="dealArrangementSource"></p-dropdown>
+                    <div *ngIf="formErrors.dealArrangementSource" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.dealArrangementSource }}
+                    </div>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span *ngIf="rmanDealArrangements.dealArrangementBasis" class="selectSpan"> Deal Arrangement Basis </span>
+                    <p-dropdown [options]="rmanLookupsV6" name="dealArrangementBasis" [(ngModel)]="rmanDealArrangements.dealArrangementBasis"
+                        [filter]="true" formControlName="dealArrangementBasis"></p-dropdown>
+                    <div *ngIf="formErrors.dealArrangementBasis" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.dealArrangementBasis }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span class="md-inputfield">
+                        <input pInputText id="attribute15" name="attribute15" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealArrangements.attribute15"
+                        />
+                        <label for="attribute15">{{columns['attribute15']}}</label>
+                    </span>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span *ngIf="rmanDealArrangements.legalEntityId" class="selectSpan"> Legal Entity </span>
+                    <p-dropdown [options]="rmanLegalEntities" name="legalEntityName" [(ngModel)]="rmanDealArrangements.legalEntityId" (onChange)="onSelectEntity($event)"
+                        [filter]="true" formControlName="legalEntityId"></p-dropdown>
+                    <div *ngIf="formErrors.legalEntityId" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.legalEntityId }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span *ngIf="rmanDealArrangements.arrangementCurrency" class="selectSpan"> Arrangement Currency </span>
+                    <p-dropdown [options]="rmanCurrency" name="arrangementCurrency" [(ngModel)]="rmanDealArrangements.arrangementCurrency" [filter]="true"
+                        formControlName="arrangementCurrency"></p-dropdown>
+                    <div *ngIf="formErrors.arrangementCurrency" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.arrangementCurrency }}
+                    </div>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span *ngIf="rmanDealArrangements.salesNodeLevel1" class="selectSpan"> Sales Theater </span>
+                    <p-dropdown [options]="rmanLookupsV1" name="salesNodeLevel1" [(ngModel)]="rmanDealArrangements.salesNodeLevel1" [filter]="true"
+                        formControlName="salesNodeLevel1"></p-dropdown>
+                    <div *ngIf="formErrors.salesNodeLevel1" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.salesNodeLevel1 }}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span *ngIf="rmanDealArrangements.salesNodeLevel2" class="selectSpan"> Sales Region </span>
+                    <p-dropdown [options]="rmanLookupsV2" name="salesNodeLevel2" [(ngModel)]="rmanDealArrangements.salesNodeLevel2" [filter]="true"
+                        formControlName="salesNodeLevel2"></p-dropdown>
+                    <div *ngIf="formErrors.salesNodeLevel2" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.salesNodeLevel2 }}
+                    </div>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span *ngIf="rmanDealArrangements.salesNodeLevel3" class="selectSpan"> Sales Teritory </span>
+                    <p-dropdown [options]="rmanLookupsV3" name="salesNodeLevel3" [(ngModel)]="rmanDealArrangements.salesNodeLevel3" [filter]="true"
+                        formControlName="salesNodeLevel3"></p-dropdown>
+                    <div *ngIf="formErrors.salesNodeLevel3" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.salesNodeLevel3 }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span *ngIf="rmanDealArrangements.salesNodeLevel4" class="selectSpan"> Deal CLosed Flag </span>
+                    <p-dropdown [options]="rmanLookupsV4" name="salesNodeLevel4" [(ngModel)]="rmanDealArrangements.salesNodeLevel4" [filter]="true"
+                        formControlName="salesNodeLevel4"></p-dropdown>
+                    <div *ngIf="formErrors.salesNodeLevel4" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.salesNodeLevel4 }}
+                    </div>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span class="md-inputfield">
+                        <input pInputText id="salesContact" name="salesContact" [(ngModel)]="rmanDealArrangements.salesContact" formControlName="salesContact"
+                        />
+                        <div *ngIf="formErrors.salesContact" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.salesContact }}
+                        </div>
+                        <label for="salesContact">{{columns['salesContact']}}
+                            <span class="red-color">*</span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span *ngIf="rmanDealArrangements.revAccountantId" class="selectSpan"> Rev Accountant</span>
+                    <p-dropdown [options]="rmanUsers1" name="revAccountantId" [(ngModel)]="rmanDealArrangements.revAccountantId" [filter]="true"
+                        formControlName="revAccountantId"></p-dropdown>
+                    <div *ngIf="formErrors.revAccountantId" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.revAccountantId }}
+                    </div>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span *ngIf="rmanDealArrangements.revManagerId" class="selectSpan"> Rev Manager</span>
+                    <p-dropdown [options]="rmanUsers" name="revManagerId" [(ngModel)]="rmanDealArrangements.revManagerId" [filter]="true" formControlName="revManagerId"></p-dropdown>
+                    <div *ngIf="formErrors.revManagerId" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.revManagerId }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span *ngIf="rmanDealArrangements.masterArrgFlag" class="selectSpan"> Master Arrangement Flag </span>
+                    <p-dropdown [options]="rmanLookupsV" name="masterArrgFlag" [(ngModel)]="rmanDealArrangements.masterArrgFlag" [filter]="true"
+                        (onChange)="onSelectMasterFlag($event.value)" formControlName="masterArrgFlag"></p-dropdown>
+                    <div *ngIf="formErrors.masterArrgFlag" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.masterArrgFlag }}
+                    </div>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span *ngIf="rmanDealArrangements.masterArrgId" class="selectSpan"> Master Arrangement Id </span>
+                    <p-dropdown [options]="rmanMasterArrangementsV" name="masterArrgId" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealArrangements.masterArrgId"
+                        [filter]="true" [disabled]="!(this.displayMasterArragement)" (onChange)="onMasterArrgName($event.value)"></p-dropdown>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-5">
+                    <span class="md-inputfield">
+                        <input pInputText id="masterArrgName" name="masterArrgName" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealArrangements.masterArrgName"
+                        />
+
+                        <label for="masterArrgName">{{columns['masterArrgName']}}</label>
+                    </span>
+                </div>
+                <div class="ui-g-5 pull-right">
+                    <span class="md-inputfield">
+                        <input pInputText id="attribute14" name="attribute14" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealArrangements.attribute14"
+                        />
+                        <label for="attribute14">{{columns['attribute14']}}</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+            <button type="button" pButton (click)="onCancel()" label="Cancel"></button>
+            <button type="submit" pButton label="Save" [disabled]="!arrgForm.valid" (click)="save()"></button>
+        </div>
+    </p-footer>
+    <p-dialog header="Customer Search" width="600" [(visible)]="displayItemSearchDialog" showEffect="fade" [draggable]="true">
+        <form>
+            <div class="ui-grid ui-grid-responsive ui-fluid">
+                <div class="ui-g-12">
+
+                    <div class="ui-g-5 ">
+                        <span class="md-inputfield">
+                            <input pInputText name="customerNumber" id="customerNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanCustomersSearch.customerNumber"
+                            />
+                            <label for="customerNumber">{{customerColumns['customerNumber']}}&nbsp;</label>
+                        </span>
+                    </div>
+                    <div class="ui-g-5 pull-right">
+                        <span class="md-inputfield">
+                            <input pInputText name="customerName" id="customerName" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanCustomersSearch.customerName"
+                            />
+                            <label for="customerName">{{customerColumns['customerName']}}&nbsp;</label>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+                    <button type="button" pButton label="Reset" (click)="resetCustomers(customersdt)"></button>
+                    <button type="submit" pButton label="Search" [disabled]="!(rmanCustomersSearch.customerNumber || rmanCustomersSearch.customerName)"
+                        (click)="searchCustomer()"></button>
+                </div>
+
+
+            </div>
+            <div>
+
+
+                <p-table class="ui-datatable" #customersdt class="row-active" [value]="rmanCustomersList" selectionMode="single" [(selection)]="selectedCustomer"
+                    (onRowSelect)="onRowCustomerSelect($event)" (onLazyLoad)="getRmanCustomers($event)" [lazy]="true" [paginator]="true"
+                    [rows]="itemPageSize" [totalRecords]="itemTotalElements" scrollable="true" scrollHeight="200px">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>{{customerColumns['customerNumber']}}</th>
+                            <th>{{customerColumns['customerName']}}</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData>
+                        <tr [pSelectableRow]="rowData">
+                            <td title="{{rowData.customerNumber}}">{{rowData.customerNumber}}</td>
+                            <td title="{{rowData.customerName}}">{{rowData.customerName}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr *ngIf="!columns">
+                            <td class="no-data">{{noData}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </form>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton (click)="cancelCustomerSearch()" label="Cancel"></button>
+                <button type="button" pButton (click)="populate()" label="Ok"></button>
+            </div>
+        </p-footer>
+
+    </p-dialog>
+</div>
+
+<div *ngIf="!isLoad" class="deal-arr-loader">
+    <div class="ui-table-loading-content ng-star-inserted">
+        <em class="ui-table-loading-icon pi-spin pi pi-spinner"></em>
+    </div>
+</div>

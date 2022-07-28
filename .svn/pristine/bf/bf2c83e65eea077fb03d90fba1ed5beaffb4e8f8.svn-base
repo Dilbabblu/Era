@@ -1,0 +1,547 @@
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425">
+</p-confirmDialog>
+
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<p-panel header="Revenue Templates" [toggleable]="false" (onBeforeToggle)=onBeforeToggle($event)>
+
+						<p-header>
+							<div class="pull-right icons-list" *ngIf="collapsed">
+								<a (click)="onConfiguringColumns($event)" class="add-column">
+									<em class="fa fa-cog"></em>Columns</a>
+								<a *isAuthorized="['write','MRT']" (click)="showDialogToAdd()" title="Add">
+									<em class="fa fa-plus-circle"></em>
+								</a>
+								<a (click)="showDialogToSearch()" title="Search">
+									<em class="fa fa-search"></em>
+								</a>
+								<a (click)="reset(dt)" title="Reset">
+									<em class="fa fa-refresh"></em>
+								</a>
+								<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+									<div class="user-popup">
+										<div class="content overflow">
+											<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+											<label for="selectall">Select All</label>
+											<a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+											<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+												<ng-template let-col let-index="index" pTemplate="item">
+													<div *ngIf="col.drag">
+														<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+															<div class="drag">
+																<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+																<label>{{col.header}}</label>
+															</div>
+														</div>
+													</div>
+													<div *ngIf="!col.drag">
+														<div class="ui-helper-clearfix">
+															<div>
+																<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+																/>
+																<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+															</div>
+														</div>
+													</div>
+												</ng-template>
+											</p-listbox>
+
+										</div>
+
+										<div class="pull-right">
+											<a class="configColBtn" (click)="saveColumns()">Save</a>
+											<a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</p-header>
+
+						<div class="x-scroll">
+							<p-table [loading]="loading" class="ui-datatable arrangementMgrTbl" #dt id="rmanRevenueTemp-dt" [value]="rmanRevenueTemplatesList"
+							 selectionMode="single" (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanRevenueTemplates($event)" [lazy]="true"
+							 [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true" [columns]="columns" [resizableColumns]="true"
+							 columnResizeMode="expand">
+
+								<ng-template pTemplate="colgroup" let-columns>
+									<colgroup>
+										<col>
+										<col *ngFor="let col of columns">
+									</colgroup>
+								</ng-template>
+
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th></th>
+										<ng-container *ngFor="let col of columns">
+											<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+											<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+											 title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+										</ng-container>
+									</tr>
+								</ng-template>
+
+								<ng-template pTemplate="body" let-rowData let-rmanRevenueTemplates let-columns="columns">
+									<tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+										<td style="width:100px">
+											<a *isAuthorized="['write','MRT']" (click)="editRow(rmanRevenueTemplates)" class="icon-edit"> </a>
+											<a *isAuthorized="['write','MRT']" (click)="delete(rmanRevenueTemplates)" class="icon-delete"> </a>
+
+										</td>
+										<ng-container *ngFor="let col of columns">
+											<td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+												{{rowData[col.field]}}
+											</td>
+
+											<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+												{{rowData[col.field]}}
+											</td>
+
+											<td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+												{{rowData[col.field] | date: 'MM/dd/yyyy'}}
+											</td>
+
+											<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+												{{rowData[col.field] | round}}
+											</td>
+										</ng-container>
+
+									</tr>
+								</ng-template>
+								
+								<ng-template pTemplate="emptymessage" let-columns>
+									<tr *ngIf="!columns">
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+					</p-panel>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true"
+ [blockScroll]="true">
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">Name</span>
+						<input pInputText name="templateName" class="textbox" placeholder="Name" id="templateName" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="rmanRevenueTemplatesSearch.templateName" />
+					</span>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan">Description</span>
+					<span class="md-inputfield">
+						<input pInputText class="textbox" placeholder="Description" name="description" id="description" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="rmanRevenueTemplatesSearch.description" />
+					</span>
+				</div>
+			</div>
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+			<button type="button" pButton class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+		</div>
+	</p-footer>
+
+</p-dialog>
+
+<p-dialog header="{{(newRmanRevenueTemplates) ? 'Create Revenue Template' : 'Edit Revenue Template'}}" width="800" [(visible)]="displayDialog"
+ [draggable]="true" showEffect="fade" [modal]="true" (onHide)="cancelAddEdit()">
+	<form (ngSubmit)="save()" [formGroup]="revenueTemplatesForm">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanRevenueTemplates">
+
+			<h4>Template Details</h4>
+			<hr/>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">Name
+							<span class="red-color">*</span>
+						</span>
+						<input pInputText name="templateName" class="textbox" placeholder="Name" id="templateName" [(ngModel)]="rmanRevenueTemplates.templateName"
+						 formControlName="templateName" />
+						<div *ngIf="formErrors.templateName" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.templateName }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Description</span>
+						<input pInputText name="description" id="description" class="textbox" placeholder="Description" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="rmanRevenueTemplates.description" />
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-6">
+					<span class="selectSpan">Start Date
+						<span class="red-color">*</span>
+					</span>
+					<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="startDate" id="startDate" [monthNavigator]="true" [yearNavigator]="true"
+					 yearRange="1950:2030" [(ngModel)]="rmanRevenueTemplates.startDate" placeholder="Start Date*" formControlName="startDate"></p-calendar>
+					<div *ngIf="formErrors.startDate" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.startDate }}
+					</div>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan">End Date</span>
+					<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="endDate" id="endDate" [monthNavigator]="true" [yearNavigator]="true"
+					 yearRange="1950:2030" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanRevenueTemplates.endDate" placeholder="End Date"></p-calendar>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-6">
+					<span class="selectSpan"> Active Flag
+						<span class="red-color">*</span>
+					</span>
+					<p-dropdown [options]="rmanLookupsV8" name="activeFlag" id="activeFlag" [(ngModel)]="rmanRevenueTemplates.activeFlag" [filter]="true"
+					 formControlName="activeFlag"></p-dropdown>
+					<div *ngIf="formErrors.activeFlag" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.activeFlag }}
+					</div>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan"> LT/ST Flag </span>
+					<p-dropdown [options]="rmanLookupsV9" name="ltstFlag" id="ltstFlag" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanRevenueTemplates.ltstFlag"
+					 [filter]="true"></p-dropdown>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+
+					<div class="ui-g-6">
+						<span class="selectSpan"> Triggering Event <span class="red-color">*</span> </span>
+						<p-dropdown [options]="triggerEventsLookup" name="additionalAttribute5" id="additionalAttribute5" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanRevenueTemplates.additionalAttribute5"
+						 [filter]="true" formControlName="additionalAttribute5" ></p-dropdown>
+						 <div *ngIf="formErrors.additionalAttribute5" class="ui-message ui-messages-error ui-corner-all">
+								{{ formErrors.additionalAttribute5 }}
+							</div>
+					</div>
+				</div>
+
+			<div class="ui-g-12"></div>
+			<div class="ui-g-12"></div>
+
+
+			<h4>Accounting Treatment
+				<span class="red-color">*</span>
+			</h4>
+			<hr/>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4">
+				</div>
+				<div class="ui-g-4 text-center">Revenue
+				</div>
+				<div class="ui-g-4 text-center">Cogs
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Accounting Trigger
+				</div>
+				<div class="ui-g-4">
+					<span class="selectSpan"> Accounting Trigger Revenue </span>
+					<p-dropdown [options]="rmanLookupsV2" name="accTriggerRevenue" id="accTriggerRevenue" [(ngModel)]="rmanRevenueTemplates.accTriggerRevenue"
+					 [filter]="true" formControlName="accTriggerRevenue"></p-dropdown>
+					<div *ngIf="formErrors.accTriggerRevenue" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.accTriggerRevenue }}
+					</div>
+
+				</div>
+				<div class="ui-g-4">
+					<span class="selectSpan"> Accounting Trigger Cogs </span>
+					<p-dropdown [options]="rmanLookupsV" name="accTriggerCogs" id="accTriggerCogs" [(ngModel)]="rmanRevenueTemplates.accTriggerCogs"
+					 [filter]="true" formControlName="accTriggerCogs"></p-dropdown>
+					<div *ngIf="formErrors.accTriggerCogs" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.accTriggerCogs }}
+					</div>
+				</div>
+			</div>
+
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Accounting Rule
+				</div>
+				<div class="ui-g-4">
+					<span class="selectSpan"> Accounting Rule Revenue </span>
+					<p-dropdown [options]="rmanLookupsV1" name="accRuleRevenue" id="accRuleRevenue" [(ngModel)]="rmanRevenueTemplates.accRuleRevenue"
+					 (onChange)="onSelectRuleRevenue($event.value)" [filter]="true" formControlName="accRuleRevenue"></p-dropdown>
+					<div *ngIf="formErrors.accRuleRevenue" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.accRuleRevenue }}
+					</div>
+				</div>
+				<div class="ui-g-4">
+					<span class="selectSpan"> Accounting Rule Cogs </span>
+					<p-dropdown [options]="rmanLookupsV5" name="accRuleCogs" id="accRuleCogs" [(ngModel)]="rmanRevenueTemplates.accRuleCogs"
+					 (onChange)="onSelectRuleCogs($event.value)" [filter]="true" formControlName="accRuleCogs"></p-dropdown>
+					<div *ngIf="formErrors.accRuleCogs" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.accRuleCogs }}
+					</div>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Amortization Rule
+				</div>
+				<div class="ui-g-4">
+					<span class="selectSpan"> Amortization Rule Revenue </span>
+					<p-dropdown [options]="rmanLookupsV6" name="amortRuleRevenue" id="amortRuleRevenue" [readonly]="rmanRevenueTemplates.accRuleRevenue=='IMMEDIATE' || rmanRevenueTemplates.accRuleRevenue=='USAGE'"
+					[required]="rmanRevenueTemplates.accRuleRevenue=='RATABLE'" [(ngModel)]="rmanRevenueTemplates.amortRuleRevenue" [filter]="true" formControlName="amortRuleRevenue"></p-dropdown>
+					<div *ngIf="formErrors.amortRuleRevenue" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.amortRuleRevenue }}
+					</div>
+				</div>
+				<div class="ui-g-4">
+					<span class="selectSpan"> Amortization Rule Cogs </span>
+					<p-dropdown [options]="rmanLookupsV7" name="amortRuleCogs" id="amortRuleCogs" [readonly]="rmanRevenueTemplates.accRuleCogs=='IMMEDIATE' || rmanRevenueTemplates.accRuleCogs=='USAGE'"
+					 [required]="rmanRevenueTemplates.accRuleCogs=='RATABLE'" [(ngModel)]="rmanRevenueTemplates.amortRuleCogs" [filter]="true" formControlName="amortRuleCogs"></p-dropdown>
+					<div *ngIf="formErrors.amortRuleCogs" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.amortRuleCogs }}
+					</div>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Amortization Method
+				</div>
+				<div class="ui-g-4">
+					<span class="selectSpan"> Amortization Method Revenue </span>
+					<p-dropdown [options]="rmanLookupsV4" name="amortMethodRevenue" id="amortMethodRevenue" [readonly]="rmanRevenueTemplates.accRuleRevenue=='IMMEDIATE' || rmanRevenueTemplates.accRuleRevenue=='USAGE'"
+					 [required]="rmanRevenueTemplates.accRuleRevenue=='RATABLE'" [(ngModel)]="rmanRevenueTemplates.amortMethodRevenue" [filter]="true" formControlName="amortMethodRevenue"></p-dropdown>
+					<div *ngIf="formErrors.amortMethodRevenue" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.amortMethodRevenue }}
+					</div>
+				</div>
+				<div class="ui-g-4">
+					<span class="selectSpan"> Amortization method Cogs </span>
+					<p-dropdown [options]="rmanLookupsV3" name="amortMethodCogs" id="amortMethodCogs" [readonly]="rmanRevenueTemplates.accRuleCogs=='IMMEDIATE' || rmanRevenueTemplates.accRuleCogs=='USAGE'"
+					 [required]="rmanRevenueTemplates.accRuleCogs=='RATABLE'" [(ngModel)]="rmanRevenueTemplates.amortMethodCogs" [filter]="true" formControlName="amortMethodCogs" appendTo="body"></p-dropdown>
+					<div *ngIf="formErrors.amortMethodCogs" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.amortMethodCogs }}
+					</div>
+				</div>
+			</div>
+
+
+			<div class="ui-g-12"></div>
+			<div class="ui-g-12"></div>
+
+
+			<h4>Accounts
+				<span class="red-color">*</span>
+			</h4>
+			<hr/>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4">
+				</div>
+				<div class="ui-g-4 text-center">Account
+				</div>
+				<div class="ui-g-4 text-center">Sub Account
+				</div>
+			</div>
+
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Revenue
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="revAccount" id="revAccount" [(ngModel)]="rmanRevenueTemplates.revAccount" formControlName="revAccount"
+						/>
+						<div *ngIf="formErrors.revAccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.revAccount }}
+						</div>
+					</span>
+
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="revSubaccount" id="revSubaccount" [(ngModel)]="rmanRevenueTemplates.revSubaccount"
+						 formControlName="revSubaccount" />
+						<div *ngIf="formErrors.revSubaccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.revSubaccount }}
+						</div>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Deferred Revenue
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="defRevAccount" id="defRevAccount" [(ngModel)]="rmanRevenueTemplates.defRevAccount"
+						 formControlName="defRevAccount" />
+						<div *ngIf="formErrors.defRevAccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.defRevAccount }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="defRevSubaccount" id="defRevSubaccount" [(ngModel)]="rmanRevenueTemplates.defRevSubaccount"
+						 formControlName="defRevSubaccount" />
+						<div *ngIf="formErrors.defRevSubaccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.defRevSubaccount }}
+						</div>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">COGS
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="cogsAccount" id="cogsAccount" [(ngModel)]="rmanRevenueTemplates.cogsAccount"
+						 formControlName="cogsAccount" />
+						<div *ngIf="formErrors.cogsAccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.cogsAccount }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="cogsSubaccount" id="cogsSubaccount" [(ngModel)]="rmanRevenueTemplates.cogsSubaccount"
+						 formControlName="cogsSubaccount" />
+						<div *ngIf="formErrors.cogsSubaccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.cogsSubaccount }}
+						</div>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Deferred COGS
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="defCogsAccount" id="defCogsAccount" [(ngModel)]="rmanRevenueTemplates.defCogsAccount"
+						 formControlName="defCogsAccount" />
+						<div *ngIf="formErrors.defCogsAccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.defCogsAccount }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="defCogsSubaccount" id="defCogsSubaccount" [(ngModel)]="rmanRevenueTemplates.defCogsSubaccount"
+						 formControlName="defCogsSubaccount" />
+						<div *ngIf="formErrors.defCogsSubaccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.defCogsSubaccount }}
+						</div>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Revenue Reserve
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="revReserveAccount" id="revReserveAccount" [(ngModel)]="rmanRevenueTemplates.revReserveAccount"
+						 formControlName="revReserveAccount" />
+						<div *ngIf="formErrors.revReserveAccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.revReserveAccount }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="revenueReserveSubaccount" id="revenueReserveSubaccount" [(ngModel)]="rmanRevenueTemplates.revenueReserveSubaccount"
+						 formControlName="revenueReserveSubaccount" />
+						<div *ngIf="formErrors.revenueReserveSubaccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.revenueReserveSubaccount }}
+						</div>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Revenue Amortization
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="revAmortAccount" id="revAmortAccount" [(ngModel)]="rmanRevenueTemplates.revAmortAccount"
+						 formControlName="revAmortAccount" />
+						<div *ngIf="formErrors.revAmortAccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.revAmortAccount }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="revAmortSubaccount" id="revAmortSubaccount" [(ngModel)]="rmanRevenueTemplates.revAmortSubaccount"
+						 formControlName="revAmortSubaccount" />
+						<div *ngIf="formErrors.revAmortSubaccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.revAmortSubaccount }}
+						</div>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-4 adjust">Deferred Revenue Contingency
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="defRevenueContAccount" id="defRevenueContAccount" [(ngModel)]="rmanRevenueTemplates.defRevenueContAccount"
+						 formControlName="defRevenueContAccount" />
+						<div *ngIf="formErrors.defRevenueContAccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.defRevenueContAccount }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-4">
+					<span class="md-inputfield">
+						<input pInputText class="textbox" name="defRevenueContSubaccount" id="defRevenueContSubaccount" [(ngModel)]="rmanRevenueTemplates.defRevenueContSubaccount"
+						 formControlName="defRevenueContSubaccount" />
+						<div *ngIf="formErrors.defRevenueContSubaccount" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.defRevenueContSubaccount }}
+						</div>
+					</span>
+				</div>
+			</div>
+
+
+
+
+
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!revenueTemplatesForm.valid"></button>
+			<button type="button" pButton class="secondary-btn" (click)="cancelAddEdit()" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>

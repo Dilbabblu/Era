@@ -1,0 +1,91 @@
+<div class="ContentSideSections Implementation">
+<div class="ui-datatable ui-widget ui-datatable-reflow">
+<div class="ui-datatable-header ui-widget-header">
+<header>RmanLookupsV</header>
+</div>
+</div>
+
+	<p-menubar [model]="items"></p-menubar>
+	<div class="ui-widget-header ui-helper-clearfix" [hidden]='!showFilter'  style="padding:4px 10px;border-bottom: 0 none">
+    <em class="fa fa-search" style="float:left;margin:4px 4px 0 0"></em>
+		<input #gb type="text" pInputText size="50" style="float:left" placeholder="Global Filter">
+	</div>
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true" [responsive]="true" showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="lookupCode">{{columns['lookupCode']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText name="lookupCode"  id="lookupCode" [(ngModel)]="rmanLookupsVSearch.lookupCode" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="lookupDescription">{{columns['lookupDescription']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText name="lookupDescription"  id="lookupDescription" [(ngModel)]="rmanLookupsVSearch.lookupDescription" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanLookupsV" width="500" [(visible)]="displayDialog" [draggable]="true" [responsive]="true" showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanLookupsV">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupTypeName">{{columns['lookupTypeName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupTypeName"  id="lookupTypeName" required [(ngModel)]="rmanLookupsV.lookupTypeName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupTypeMeaning">{{columns['lookupTypeMeaning']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupTypeMeaning"  id="lookupTypeMeaning" required [(ngModel)]="rmanLookupsV.lookupTypeMeaning" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupTypeDescription">{{columns['lookupTypeDescription']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupTypeDescription"  id="lookupTypeDescription" required [(ngModel)]="rmanLookupsV.lookupTypeDescription" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupTypeStartDate">{{columns['lookupTypeStartDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupTypeStartDate"  id="lookupTypeStartDate" required [(ngModel)]="rmanLookupsV.lookupTypeStartDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupTypeEndDate">{{columns['lookupTypeEndDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupTypeEndDate"  id="lookupTypeEndDate" required [(ngModel)]="rmanLookupsV.lookupTypeEndDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupTypeEnabledFlag">{{columns['lookupTypeEnabledFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupTypeEnabledFlag"  id="lookupTypeEnabledFlag" required [(ngModel)]="rmanLookupsV.lookupTypeEnabledFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupCode">{{columns['lookupCode']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupCode"  id="lookupCode" required [(ngModel)]="rmanLookupsV.lookupCode" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupDescription">{{columns['lookupDescription']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupDescription"  id="lookupDescription" required [(ngModel)]="rmanLookupsV.lookupDescription" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupCodeStartDate">{{columns['lookupCodeStartDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupCodeStartDate"  id="lookupCodeStartDate" required [(ngModel)]="rmanLookupsV.lookupCodeStartDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupCodeEndDate">{{columns['lookupCodeEndDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupCodeEndDate"  id="lookupCodeEndDate" required [(ngModel)]="rmanLookupsV.lookupCodeEndDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lookupCodeEnabledFlag">{{columns['lookupCodeEnabledFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lookupCodeEnabledFlag"  id="lookupCodeEnabledFlag" required [(ngModel)]="rmanLookupsV.lookupCodeEnabledFlag" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>
+</div>

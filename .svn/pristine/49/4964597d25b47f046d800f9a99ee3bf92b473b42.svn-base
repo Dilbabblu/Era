@@ -1,0 +1,603 @@
+
+	<p-panel header="Exceptions" [toggleable]="true" [style]="{'margin-bottom':'20px'}" (onBeforeToggle)=onBeforeToggle($event)>
+
+		<p-header>
+			 <div class="pull-right" *ngIf="collapsed">
+				<a  (click)="reset(dt)" class="icon-reset" title="Reset"></a>
+				<a  (click)="exportExcel()" class="icon-export" title="Export"></a>
+			</div>
+		</p-header>
+    <p-table class="ui-datatable" #dt [loading]="loading" [value]="rmanOrdersList" selectionMode="single"   (onRowSelect)="onRowSelect($event)"
+    (onLazyLoad)="getRmanOrders($event)" [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"
+     scrollable="true" >
+    <ng-template pTemplate="header">
+            <tr>
+                   
+                    <th>{{columns['orderNumber']}}</th>
+                    <th>{{columns['productName']}}</th>
+                    <th>{{columns['dealNumber']}}</th>
+                    <th>{{columns['dealLineNumber']}}</th>
+                    <th>{{columns['exceptionMessage']}}</th>
+          </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-rmanOrders>
+            <tr [pSelectableRow]="rowData">
+                    <td title="{{rmanOrders.orderNumber}}">{{rmanOrders.orderNumber}}</td>
+                    <td title="{{rmanOrders.productName}}">{{rmanOrders.productName}}</td>
+                    <td title="{{rmanOrders.dealNumber}}">{{rmanOrders.dealNumber}}</td>
+                    <td title="{{rmanOrders.dealLineNumber}}">{{rmanOrders.dealLineNumber}}</td>
+                    <td title="{{rmanOrders.exceptionMessage}}">{{rmanOrders.exceptionMessage}}</td>
+                  
+             </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+        <tr *ngIf="!columns">
+            <td class="no-data">{{noData}}</td>
+        </tr>
+    </ng-template>
+  </p-table>
+ 
+</p-panel>
+	<p-dialog header="Search" width="auto" [draggable]="true" [(visible)]="displaySearchDialog"  showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="rmanLineId">{{columns['rmanLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="rmanLineId"  name="rmanLineId" [(ngModel)]="rmanOrdersSearch.rmanLineId" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanOrders" width="500" [(visible)]="displayDialog" [draggable]="true" showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanOrders">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="rmanLineId">{{columns['rmanLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="rmanLineId" name="rmanLineId" required [(ngModel)]="rmanOrders.rmanLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceHeaderId">{{columns['sourceHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceHeaderId" name="sourceHeaderId" required [(ngModel)]="rmanOrders.sourceHeaderId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderNumber">{{columns['orderNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderNumber" name="orderNumber" required [(ngModel)]="rmanOrders.orderNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="customerPoNum">{{columns['customerPoNum']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="customerPoNum" name="customerPoNum" required [(ngModel)]="rmanOrders.customerPoNum" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderType">{{columns['orderType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderType" name="orderType" required [(ngModel)]="rmanOrders.orderType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="bookingEntityId">{{columns['bookingEntityId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="bookingEntityId" name="bookingEntityId" required [(ngModel)]="rmanOrders.bookingEntityId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="shippingEntityId">{{columns['shippingEntityId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="shippingEntityId" name="shippingEntityId" required [(ngModel)]="rmanOrders.shippingEntityId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="soldToCustomer">{{columns['soldToCustomer']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="soldToCustomer" name="soldToCustomer" required [(ngModel)]="rmanOrders.soldToCustomer" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="billToCustomer">{{columns['billToCustomer']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="billToCustomer" name="billToCustomer" required [(ngModel)]="rmanOrders.billToCustomer" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="endCustomer">{{columns['endCustomer']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="endCustomer" name="endCustomer" required [(ngModel)]="rmanOrders.endCustomer" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="shipToCustomer">{{columns['shipToCustomer']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="shipToCustomer" name="shipToCustomer" required [(ngModel)]="rmanOrders.shipToCustomer" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="billToCountry">{{columns['billToCountry']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="billToCountry" name="billToCountry" required [(ngModel)]="rmanOrders.billToCountry" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="shipToCountry">{{columns['shipToCountry']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="shipToCountry" name="shipToCountry" required [(ngModel)]="rmanOrders.shipToCountry" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="shippingOrgCode">{{columns['shippingOrgCode']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="shippingOrgCode" name="shippingOrgCode" required [(ngModel)]="rmanOrders.shippingOrgCode" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="bookedDate">{{columns['bookedDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="bookedDate" name="bookedDate" required [(ngModel)]="rmanOrders.bookedDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderedDate">{{columns['orderedDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderedDate" name="orderedDate" required [(ngModel)]="rmanOrders.orderedDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="scheduleShipDate">{{columns['scheduleShipDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="scheduleShipDate" name="scheduleShipDate" required [(ngModel)]="rmanOrders.scheduleShipDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderStatus">{{columns['orderStatus']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderStatus" name="orderStatus" required [(ngModel)]="rmanOrders.orderStatus" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="priceList">{{columns['priceList']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="priceList" name="priceList" required [(ngModel)]="rmanOrders.priceList" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="salesrep">{{columns['salesrep']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="salesrep" name="salesrep" required [(ngModel)]="rmanOrders.salesrep" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="bookingCurrency">{{columns['bookingCurrency']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="bookingCurrency" name="bookingCurrency" required [(ngModel)]="rmanOrders.bookingCurrency" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fob">{{columns['fob']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fob" name="fob" required [(ngModel)]="rmanOrders.fob" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceLineId">{{columns['sourceLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceLineId" name="sourceLineId" required [(ngModel)]="rmanOrders.sourceLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceLineNumber">{{columns['sourceLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceLineNumber" name="sourceLineNumber" required [(ngModel)]="rmanOrders.sourceLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productName">{{columns['productName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productName" name="productName" required [(ngModel)]="rmanOrders.productName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productId">{{columns['productId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productId" name="productId" required [(ngModel)]="rmanOrders.productId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productOrgId">{{columns['productOrgId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productOrgId" name="productOrgId" required [(ngModel)]="rmanOrders.productOrgId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orderedQuantity">{{columns['orderedQuantity']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orderedQuantity" name="orderedQuantity" required [(ngModel)]="rmanOrders.orderedQuantity" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="shippedQuantity">{{columns['shippedQuantity']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="shippedQuantity" name="shippedQuantity" required [(ngModel)]="rmanOrders.shippedQuantity" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fulfilledQuantity">{{columns['fulfilledQuantity']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fulfilledQuantity" name="fulfilledQuantity" required [(ngModel)]="rmanOrders.fulfilledQuantity" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineType">{{columns['lineType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineType" name="lineType" required [(ngModel)]="rmanOrders.lineType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineStatus">{{columns['lineStatus']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineStatus" name="lineStatus" required [(ngModel)]="rmanOrders.lineStatus" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="unitSellingPrice">{{columns['unitSellingPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="unitSellingPrice" name="unitSellingPrice" required [(ngModel)]="rmanOrders.unitSellingPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="unitListPrice">{{columns['unitListPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="unitListPrice" name="unitListPrice" required [(ngModel)]="rmanOrders.unitListPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="shippableFlag">{{columns['shippableFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="shippableFlag" name="shippableFlag" required [(ngModel)]="rmanOrders.shippableFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="invoiceFlag">{{columns['invoiceFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="invoiceFlag" name="invoiceFlag" required [(ngModel)]="rmanOrders.invoiceFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orginalLineId">{{columns['orginalLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orginalLineId" name="orginalLineId" required [(ngModel)]="rmanOrders.orginalLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="origRmanLineId">{{columns['origRmanLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="origRmanLineId" name="origRmanLineId" required [(ngModel)]="rmanOrders.origRmanLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orginalLineNumber">{{columns['orginalLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orginalLineNumber" name="orginalLineNumber" required [(ngModel)]="rmanOrders.orginalLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="orginalOrderNumber">{{columns['orginalOrderNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="orginalOrderNumber" name="orginalOrderNumber" required [(ngModel)]="rmanOrders.orginalOrderNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="accountingRuleName">{{columns['accountingRuleName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="accountingRuleName" name="accountingRuleName" required [(ngModel)]="rmanOrders.accountingRuleName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="rmanAcctRuleId">{{columns['rmanAcctRuleId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="rmanAcctRuleId" name="rmanAcctRuleId" required [(ngModel)]="rmanOrders.rmanAcctRuleId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="serviceStartDate">{{columns['serviceStartDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="serviceStartDate" name="serviceStartDate" required [(ngModel)]="rmanOrders.serviceStartDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="serviceEndDate">{{columns['serviceEndDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="serviceEndDate" name="serviceEndDate" required [(ngModel)]="rmanOrders.serviceEndDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="serviceDuration">{{columns['serviceDuration']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="serviceDuration" name="serviceDuration" required [(ngModel)]="rmanOrders.serviceDuration" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="servicePeriod">{{columns['servicePeriod']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="servicePeriod" name="servicePeriod" required [(ngModel)]="rmanOrders.servicePeriod" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute1">{{columns['lineAttribute1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute1" name="lineAttribute1" required [(ngModel)]="rmanOrders.lineAttribute1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute2">{{columns['lineAttribute2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute2" name="lineAttribute2" required [(ngModel)]="rmanOrders.lineAttribute2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute3">{{columns['lineAttribute3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute3" name="lineAttribute3" required [(ngModel)]="rmanOrders.lineAttribute3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute4">{{columns['lineAttribute4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute4" name="lineAttribute4" required [(ngModel)]="rmanOrders.lineAttribute4" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute5">{{columns['lineAttribute5']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute5" name="lineAttribute5" required [(ngModel)]="rmanOrders.lineAttribute5" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute6">{{columns['lineAttribute6']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute6" name="lineAttribute6" required [(ngModel)]="rmanOrders.lineAttribute6" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute7">{{columns['lineAttribute7']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute7" name="lineAttribute7" required [(ngModel)]="rmanOrders.lineAttribute7" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute8">{{columns['lineAttribute8']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute8" name="lineAttribute8" required [(ngModel)]="rmanOrders.lineAttribute8" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute9">{{columns['lineAttribute9']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute9" name="lineAttribute9" required [(ngModel)]="rmanOrders.lineAttribute9" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute10">{{columns['lineAttribute10']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute10" name="lineAttribute10" required [(ngModel)]="rmanOrders.lineAttribute10" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute11">{{columns['lineAttribute11']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute11" name="lineAttribute11" required [(ngModel)]="rmanOrders.lineAttribute11" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute12">{{columns['lineAttribute12']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute12" name="lineAttribute12" required [(ngModel)]="rmanOrders.lineAttribute12" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute13">{{columns['lineAttribute13']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute13" name="lineAttribute13" required [(ngModel)]="rmanOrders.lineAttribute13" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute14">{{columns['lineAttribute14']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute14" name="lineAttribute14" required [(ngModel)]="rmanOrders.lineAttribute14" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineAttribute15">{{columns['lineAttribute15']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineAttribute15" name="lineAttribute15" required [(ngModel)]="rmanOrders.lineAttribute15" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute1">{{columns['headerAttribute1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute1" name="headerAttribute1" required [(ngModel)]="rmanOrders.headerAttribute1" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute2">{{columns['headerAttribute2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute2" name="headerAttribute2" required [(ngModel)]="rmanOrders.headerAttribute2" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute3">{{columns['headerAttribute3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute3" name="headerAttribute3" required [(ngModel)]="rmanOrders.headerAttribute3" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute4">{{columns['headerAttribute4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute4" name="headerAttribute4" required [(ngModel)]="rmanOrders.headerAttribute4" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute5">{{columns['headerAttribute5']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute5" name="headerAttribute5" required [(ngModel)]="rmanOrders.headerAttribute5" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute6">{{columns['headerAttribute6']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute6" name="headerAttribute6" required [(ngModel)]="rmanOrders.headerAttribute6" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute7">{{columns['headerAttribute7']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute7" name="headerAttribute7" required [(ngModel)]="rmanOrders.headerAttribute7" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute8">{{columns['headerAttribute8']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute8" name="headerAttribute8" required [(ngModel)]="rmanOrders.headerAttribute8" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute9">{{columns['headerAttribute9']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute9" name="headerAttribute9" required [(ngModel)]="rmanOrders.headerAttribute9" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute10">{{columns['headerAttribute10']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute10" name="headerAttribute10" required [(ngModel)]="rmanOrders.headerAttribute10" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute11">{{columns['headerAttribute11']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute11" name="headerAttribute11" required [(ngModel)]="rmanOrders.headerAttribute11" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute12">{{columns['headerAttribute12']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute12" name="headerAttribute12" required [(ngModel)]="rmanOrders.headerAttribute12" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute13">{{columns['headerAttribute13']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute13" name="headerAttribute13" required [(ngModel)]="rmanOrders.headerAttribute13" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute14">{{columns['headerAttribute14']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute14" name="headerAttribute14" required [(ngModel)]="rmanOrders.headerAttribute14" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="headerAttribute15">{{columns['headerAttribute15']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="headerAttribute15" name="headerAttribute15" required [(ngModel)]="rmanOrders.headerAttribute15" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="creationDate">{{columns['creationDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="creationDate" name="creationDate" required [(ngModel)]="rmanOrders.creationDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="createdBy">{{columns['createdBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="createdBy" name="createdBy" required [(ngModel)]="rmanOrders.createdBy" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lastUpdateDate">{{columns['lastUpdateDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lastUpdateDate" name="lastUpdateDate" required [(ngModel)]="rmanOrders.lastUpdateDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lastUpdatedBy">{{columns['lastUpdatedBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lastUpdatedBy" name="lastUpdatedBy" required [(ngModel)]="rmanOrders.lastUpdatedBy" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="arrangementId">{{columns['arrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="arrangementId" name="arrangementId" required [(ngModel)]="rmanOrders.arrangementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="allocationAmount">{{columns['allocationAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="allocationAmount" name="allocationAmount" required [(ngModel)]="rmanOrders.allocationAmount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="carveInOrOut">{{columns['carveInOrOut']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="carveInOrOut" name="carveInOrOut" required [(ngModel)]="rmanOrders.carveInOrOut" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fmvHistoryFlag">{{columns['fmvHistoryFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fmvHistoryFlag" name="fmvHistoryFlag" required [(ngModel)]="rmanOrders.fmvHistoryFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="eitfSop">{{columns['eitfSop']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="eitfSop" name="eitfSop" required [(ngModel)]="rmanOrders.eitfSop" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fmvRuleDefId">{{columns['fmvRuleDefId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fmvRuleDefId" name="fmvRuleDefId" required [(ngModel)]="rmanOrders.fmvRuleDefId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="repCurrUsp">{{columns['repCurrUsp']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="repCurrUsp" name="repCurrUsp" required [(ngModel)]="rmanOrders.repCurrUsp" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="repCurrUlp">{{columns['repCurrUlp']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="repCurrUlp" name="repCurrUlp" required [(ngModel)]="rmanOrders.repCurrUlp" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="repCurrExtendedAmt">{{columns['repCurrExtendedAmt']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="repCurrExtendedAmt" name="repCurrExtendedAmt" required [(ngModel)]="rmanOrders.repCurrExtendedAmt" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="repUnitSellingPrice">{{columns['repUnitSellingPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="repUnitSellingPrice" name="repUnitSellingPrice" required [(ngModel)]="rmanOrders.repUnitSellingPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="repUnitListPrice">{{columns['repUnitListPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="repUnitListPrice" name="repUnitListPrice" required [(ngModel)]="rmanOrders.repUnitListPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="elementType">{{columns['elementType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="elementType" name="elementType" required [(ngModel)]="rmanOrders.elementType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="deliveredFlag">{{columns['deliveredFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="deliveredFlag" name="deliveredFlag" required [(ngModel)]="rmanOrders.deliveredFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="parentLineId">{{columns['parentLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="parentLineId" name="parentLineId" required [(ngModel)]="rmanOrders.parentLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="projectName">{{columns['projectName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="projectName" name="projectName" required [(ngModel)]="rmanOrders.projectName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="projectNumber">{{columns['projectNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="projectNumber" name="projectNumber" required [(ngModel)]="rmanOrders.projectNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="projectId">{{columns['projectId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="projectId" name="projectId" required [(ngModel)]="rmanOrders.projectId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="taskName">{{columns['taskName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="taskName" name="taskName" required [(ngModel)]="rmanOrders.taskName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="taskNumber">{{columns['taskNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="taskNumber" name="taskNumber" required [(ngModel)]="rmanOrders.taskNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="taskId">{{columns['taskId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="taskId" name="taskId" required [(ngModel)]="rmanOrders.taskId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealNumber">{{columns['dealNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealNumber" name="dealNumber" required [(ngModel)]="rmanOrders.dealNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealLineNumber">{{columns['dealLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealLineNumber" name="dealLineNumber" required [(ngModel)]="rmanOrders.dealLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineCost">{{columns['lineCost']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineCost" name="lineCost" required [(ngModel)]="rmanOrders.lineCost" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="roleName">{{columns['roleName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="roleName" name="roleName" required [(ngModel)]="rmanOrders.roleName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revenueCategory">{{columns['revenueCategory']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revenueCategory" name="revenueCategory" required [(ngModel)]="rmanOrders.revenueCategory" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="expenditureType">{{columns['expenditureType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="expenditureType" name="expenditureType" required [(ngModel)]="rmanOrders.expenditureType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="repCurrCode">{{columns['repCurrCode']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="repCurrCode" name="repCurrCode" required [(ngModel)]="rmanOrders.repCurrCode" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="contingencyCode">{{columns['contingencyCode']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="contingencyCode" name="contingencyCode" required [(ngModel)]="rmanOrders.contingencyCode" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="subElementType">{{columns['subElementType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="subElementType" name="subElementType" required [(ngModel)]="rmanOrders.subElementType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="allocationFlag">{{columns['allocationFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="allocationFlag" name="allocationFlag" required [(ngModel)]="rmanOrders.allocationFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="customerPoLineNum">{{columns['customerPoLineNum']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="customerPoLineNum" name="customerPoLineNum" required [(ngModel)]="rmanOrders.customerPoLineNum" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementId">{{columns['dealArrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementId" name="dealArrangementId" required [(ngModel)]="rmanOrders.dealArrangementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="poHeaderId">{{columns['poHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="poHeaderId" name="poHeaderId" required [(ngModel)]="rmanOrders.poHeaderId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="poLineId">{{columns['poLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="poLineId" name="poLineId" required [(ngModel)]="rmanOrders.poLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="actualFulfilledDate">{{columns['actualFulfilledDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="actualFulfilledDate" name="actualFulfilledDate" required [(ngModel)]="rmanOrders.actualFulfilledDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealLineId">{{columns['dealLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealLineId" name="dealLineId" required [(ngModel)]="rmanOrders.dealLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="billToLocation">{{columns['billToLocation']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="billToLocation" name="billToLocation" required [(ngModel)]="rmanOrders.billToLocation" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="conversionRate">{{columns['conversionRate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="conversionRate" name="conversionRate" required [(ngModel)]="rmanOrders.conversionRate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fxDate">{{columns['fxDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fxDate" name="fxDate" required [(ngModel)]="rmanOrders.fxDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="fxRate">{{columns['fxRate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="fxRate" name="fxRate" required [(ngModel)]="rmanOrders.fxRate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revrecAccount">{{columns['revrecAccount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revrecAccount" name="revrecAccount" required [(ngModel)]="rmanOrders.revrecAccount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revrecAcctRule">{{columns['revrecAcctRule']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revrecAcctRule" name="revrecAcctRule" required [(ngModel)]="rmanOrders.revrecAcctRule" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revrecAcctScope">{{columns['revrecAcctScope']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revrecAcctScope" name="revrecAcctScope" required [(ngModel)]="rmanOrders.revrecAcctScope" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revrecDelay">{{columns['revrecDelay']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revrecDelay" name="revrecDelay" required [(ngModel)]="rmanOrders.revrecDelay" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revrecEndDate">{{columns['revrecEndDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revrecEndDate" name="revrecEndDate" required [(ngModel)]="rmanOrders.revrecEndDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revrecStDate">{{columns['revrecStDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revrecStDate" name="revrecStDate" required [(ngModel)]="rmanOrders.revrecStDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="shipToLocation">{{columns['shipToLocation']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="shipToLocation" name="shipToLocation" required [(ngModel)]="rmanOrders.shipToLocation" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="parentLine">{{columns['parentLine']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="parentLine" name="parentLine" required [(ngModel)]="rmanOrders.parentLine" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="bundleFlag">{{columns['bundleFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="bundleFlag" name="bundleFlag" required [(ngModel)]="rmanOrders.bundleFlag" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attributedListPrice">{{columns['attributedListPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="attributedListPrice" name="attributedListPrice" required [(ngModel)]="rmanOrders.attributedListPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="attributedSellPrice">{{columns['attributedSellPrice']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="attributedSellPrice" name="attributedSellPrice" required [(ngModel)]="rmanOrders.attributedSellPrice" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="glUpdateDate">{{columns['glUpdateDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="glUpdateDate" name="glUpdateDate" required [(ngModel)]="rmanOrders.glUpdateDate" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="glStatus">{{columns['glStatus']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="glStatus" name="glStatus" required [(ngModel)]="rmanOrders.glStatus" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>
+

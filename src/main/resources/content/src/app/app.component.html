@@ -1,0 +1,181 @@
+<div *ngIf="isLoading">
+	<div class="lds-roller">
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+	</div>
+</div>
+<nav *ngIf="!isHeaderMenuLoading" class="main-navigation">
+	<div id="logo">
+		<a href="#"><img src="assets/images/logo.png" alt="Ayara.png"/></a><span class="version">{{versionNumber}}</span>
+	</div>
+
+	<label for="drop" class="css-toggle">Menu</label>
+	<input type="checkbox" id="drop" />
+	<ul class="menu">
+		<li *isAuthorized="['read','','Revenue Contract Manager']" (click)="tabSelected='arrangementsmanager'">
+			<a href="#" role="button" routerLink="/rmanArrangementsAllV" routerLinkActive="active-parent">Revenue
+				Contract Manager</a>
+		</li>
+		<li *isAuthorized="['read','','SSP Rules']" (click)="tabSelected='sspBooks'">
+			<a href="#" role="button" [routerLink]="['/fairValues', 'sspBooks']"
+				routerLinkActive="active-parent">SSP Books</a>
+		</li>
+		<li *isAuthorized="['read','','Configuration Manager']"
+			[ngClass]="{'active-parent':tabSelected == 'configurationManager'}"
+			(click)="tabSelected='configurationManager'">
+			<!-- First Tier Drop Down -->
+			<a role="button" routerLinkActive="active-parent">Configuration Manager<em class="fa fa-angle-down"></em></a>
+			<input type="checkbox" id="drop-1" />
+			<ul>
+				<li *isAuthorized="['read','MAR']"><a routerLinkActive="active-tab"
+						[routerLink]="['/configuration', 'rmanRulesHeader']"><em class="fa fa-angle-right"></em>Manage
+						Revenue Contract Rules</a></li>
+				<li *isAuthorized="['read','MC']"><a routerLinkActive="active-tab"
+						[routerLink]="['/configuration', 'rmanContHeader']"><em class="fa fa-angle-right"></em>Manage
+						Contingency Codes</a></li>
+				<li *isAuthorized="['read','MT']"><a routerLinkActive="active-tab"
+						[routerLink]="['/configuration', 'rmanContTemplate']"><em class="fa fa-angle-right"></em>Manage
+						Contingency Templates</a></li>
+				<li *isAuthorized="['read','MAP']"><a routerLinkActive="active-tab"
+						[routerLink]="['/configuration', 'rmanFiscalPeriods']"><em class="fa fa-angle-right"></em>Manage
+						Accounting Periods</a></li>
+				<li *isAuthorized="['read','MPOB']"><a routerLinkActive="active-tab"
+						[routerLink]="['/configuration', 'rmanPobMappings']"><em class="fa fa-angle-right"></em>Manage POB
+						Mappings</a></li>
+				<li *isAuthorized="['read','MCR']"><a routerLinkActive="active-tab"
+						[routerLink]="['/configuration', 'rmanConversionRates']"><em class="fa fa-angle-right"></em>Manage
+						Conversion Rates</a></li>
+				<li *isAuthorized="['read','APRULES']"><a routerLinkActive="active-tab"
+							[routerLink]="['/configuration', 'rmanApprovalRules']"><em class="fa fa-angle-right"></em>Manage
+							Approval Rules</a></li>
+			</ul>
+
+		</li>
+
+		<li *isAuthorized="['read','','Admin']" [ngClass]="{'active-parent':tabSelected == 'admin'}"
+			(click)="tabSelected='admin';">
+			<!-- First Tier Drop Down -->
+			<label for="drop-1" class="css-toggle">Admin</label>
+			<a role="button">Admin<em class="fa fa-angle-down"></em></a>
+			<input type="checkbox" id="drop-1" />
+			<ul>
+				<li *isAuthorized="['read','LE']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanLegalEntities']"><em class="fa fa-angle-right"></em>Manage Legal
+						Entities</a></li>
+				<li *isAuthorized="['read','EN']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanEntities']"><em class="fa fa-angle-right"></em>Manage Entities</a>
+				</li>
+				<li *isAuthorized="['read','RL']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanResponsibilities']"><em class="fa fa-angle-right"></em>Manage
+						Responsibilities</a> </li>
+				<li *isAuthorized="['read','US']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanUsers']"><em class="fa fa-angle-right"></em>Manage Users</a> </li>
+				<li *isAuthorized="['read','MPM']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanFunctions']"><em class="fa fa-angle-right"></em>Manage Permissions
+						Modules</a></li>
+				<li *isAuthorized="['read','LK']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanLookupTypes']"><em class="fa fa-angle-right"></em>Manage Lookups</a>
+				</li>
+				<li *isAuthorized="['read','PM']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanProducts']"><em class="fa fa-angle-right"></em>Manage Products</a>
+				</li>
+				<li *isAuthorized="['read','MRT']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanRevenueTemplates']"><em class="fa fa-angle-right"></em>Manage
+						Revenue Templates</a></li>
+				<li *isAuthorized="['read','MAC']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanGlAccounts']"><em class="fa fa-angle-right"></em>Manage Accounting
+						Combinations</a> </li>
+				<li *isAuthorized="['read','MAS']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanAccountSetup']"><em class="fa fa-angle-right"></em>Manage Account
+						Setup</a> </li>
+				<li *isAuthorized="['read','ME']"><a routerLinkActive="active-tab"
+						[routerLink]="['/admin', 'rmanOrderEvents']"><em class="fa fa-angle-right"></em>Manage Events</a>
+				</li>
+				<li *isAuthorized="['read','MCUST']"><a routerLinkActive="active-tab"
+						[routerLink]="['admin', 'rmanCustomers']"><em class="fa fa-angle-right"></em>Manage Customers</a>
+				</li>
+				<li *isAuthorized="['read','MCURR']"><a routerLinkActive="active-tab"
+						[routerLink]="['admin', 'rmanCurrency']"><em class="fa fa-angle-right"></em>Manage Currencies</a>
+				</li>
+			</ul>
+		</li>
+
+		<li *isAuthorized="['read','','Jobs']" (click)="tabSelected='jobs'"><a href="#" role="button"
+				routerLinkActive="active-parent" routerLink="jobs">Jobs</a></li>
+
+		<li *isAuthorized="['read','','Reports']" [ngClass]="{'active-parent':tabSelected == 'reports'}"
+			(click)="tabSelected='reports'">
+			<!-- First Tier Drop Down -->
+			<label for="drop-1" class="css-toggle">Reports</label>
+			<a role="button">Reports<em class="fa fa-angle-down"></em></a>
+			<input type="checkbox" id="drop-1" />
+			<ul>
+				<li *isAuthorized="['read','','','OPERATIONAL']"><a routerLinkActive="active-tab"
+						[routerLink]="['/reports','operational']">Operational</a></li>
+				<li *isAuthorized="['read','','','RECONCILIATION']"><a routerLinkActive="active-tab"
+						[routerLink]="['/reports','reconciliation']">Reconciliation</a></li>
+				<li *isAuthorized="['read','ANLREPO']"><a routerLinkActive="active-tab"
+						[routerLink]="['/reports','analytical']">Analytical</a></li>
+			</ul>
+		</li>
+
+		<li *isAuthorized="['read','','Exceptions']" [ngClass]="{'active-parent':tabSelected == 'exceptions'}"
+			(click)="tabSelected='exceptions'">
+			<!-- First Tier Drop Down -->
+			<label for="drop-1" class="css-toggle">Exceptions</label>
+			<a role="button">Exceptions<em class="fa fa-angle-down"></em></a>
+			<input type="checkbox" id="drop-1" />
+			<ul>
+				<li *isAuthorized="['read','QUOTEEX']"><a routerLinkActive="active-tab"
+					[routerLink]="['/exceptions', 'all']"><em class="fa fa-angle-right"></em>All Exceptions</a></li>
+				<li *isAuthorized="['read','QUOTEEX']"><a routerLinkActive="active-tab"
+						[routerLink]="['/exceptions', 'quotes']"><em class="fa fa-angle-right"></em>Quotes</a></li>
+				<li *isAuthorized="['read','BOOKEX']"><a routerLinkActive="active-tab"
+						[routerLink]="['/exceptions','bookings']"><em class="fa fa-angle-right"></em>Bookings</a></li>
+				<li *isAuthorized="['read','SHIPEX']"><a routerLinkActive="active-tab"
+						[routerLink]="['/exceptions','shipments']"><em class="fa fa-angle-right"></em>Shipments</a></li>
+				<li *isAuthorized="['read','BILLEX']"><a routerLinkActive="active-tab"
+						[routerLink]="['/exceptions','billings']"><em class="fa fa-angle-right"></em>Billings</a></li>
+			</ul>
+
+		</li>
+
+		<li *isAuthorized="['read','','Approvals']" (click)="tabSelected='approvals'"><a role="button"
+			routerLinkActive="active-parent" routerLink="approvals">Approvals</a></li>
+
+		<li class="user-info"><a (click)="displayPopup($event)"><em class="fa fa-bars"></em></a></li>
+
+		<div id="popup1" class="popup_overlay" *ngIf="showUserPopup">
+			<div class="user-popup user-popup-init">
+				<div class="content">
+					<p class="user-info-link"><em class="fa fa-user"></em><a [routerLink]="['/userInfo']" (click)="closePopup($event)">User Info</a></p>
+					<p class="system-info-link"><em class="fa fa-exclamation-circle"></em><a [routerLink]="['/systemInfo']" (click)="closePopup($event)">System Info</a></p>
+				</div>
+				<div class="user-popup-footer">
+					<a href="/logout" class="primary-btn"><em class="fa fa-sign-out"></em><span>Logout</span></a>
+				</div>
+			</div>
+		</div>
+
+	</ul>
+</nav>
+
+<p-dialog header="Change Password" [(visible)]="displayPasswordDialog" width="400" showEffect="fade" [modal]="true"
+	[draggable]="true" (onHide)="destroyPasswordComponent({dimiss:true,pwd_changed:false})">
+	<div #passwordcontainer></div>
+</p-dialog>
+
+
+<div class="clearfix"></div>
+<router-outlet></router-outlet>
+
+<div class="content-section implementation">
+	<p-toast></p-toast>
+</div>
+<app-footer></app-footer>

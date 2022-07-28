@@ -1,0 +1,147 @@
+<div class="content-section implementation">
+</div>
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<p-panel header="Manage Role Permissions" (onBeforeToggle)="onBeforeToggle($event)">
+						<p-header>
+							<span class="masterData">
+								<strong>{{masterData?.responsibilityName}}</strong>
+							</span>
+							<div class="pull-right icons-list" *ngIf="collapsed">
+								<a *isAuthorized="['write','RL']" (click)="showDialogToAdd()" title="Add">
+									<em class="fa fa-plus-circle"></em>
+								</a>
+								<a (click)="reset(dt)" title="Reset">
+									<em class="fa fa-refresh"></em>
+								</a>
+							</div>
+						</p-header>
+						<div class="x-scroll">
+							<p-table #dt [loading]="loading" class="ui-datatable arrangementMgrTbl" id="manageRolePerm-dt" [value]="rmanPermissionsList"
+							 selectionMode="single" (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getAllPermissionsFunctions($event)" [lazy]="true"
+							 [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th></th>
+										<th>{{columns['functionName']}}</th>
+										<th class="width-70">{{columns['read']}}</th>
+										<th class="width-70">{{columns['write']}}</th>
+										<th class="width-70">{{columns['upload']}}</th>
+										<th>{{columns['enabledFlag']}}</th>
+										<th>{{columns['startDateActive']}}</th>
+										<th>{{columns['endDateActive']}}</th>
+
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-rmanPermissions>
+									<tr [pSelectableRow]="rowData">
+										<td>
+											<a *isAuthorized="['write','RL']" (click)="editRow(rmanPermissions)" class="icon-edit"> </a>
+											<a *isAuthorized="['write','RL']" (click)="delete(rmanPermissions)" class="icon-delete"></a>
+										</td>
+										<td title="{{rmanPermissions.rmanFunctions.name}}">
+											{{rmanPermissions.rmanFunctions.name}}</td>
+										<td class="width-70" title="{{transformPermissionsValues(rmanPermissions.read)}}">
+											{{transformPermissionsValues(rmanPermissions.read)}}</td>
+										<td class="width-70" title="{{transformPermissionsValues(rmanPermissions.write)}}">
+											{{transformPermissionsValues(rmanPermissions.write)}}</td>
+										<td class="width-70" title="{{transformPermissionsValues(rmanPermissions.upload)}}">
+											{{transformPermissionsValues(rmanPermissions.upload)}}</td>
+										<td title="{{rmanPermissions.enabledFlag}}">
+											{{rmanPermissions.enabledFlag}}</td>
+										<td title="{{rmanPermissions.startDateActive | date: 'MM/dd/yyyy'}}">
+											{{rmanPermissions.startDateActive | date: 'MM/dd/yyyy'}}</td>
+										<td title="{{rmanPermissions.endDateActive | date: 'MM/dd/yyyy'}}">
+											{{rmanPermissions.endDateActive | date: 'MM/dd/yyyy'}}</td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage" let-columns>
+									<tr *ngIf="!columns">
+										<td>{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+					</p-panel>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p-dialog header="{{(newRmanPermissions) ? 'Add Permissions' : 'Edit Permissions'}}" width="800" [draggable]="true" [(visible)]="displayDialog"
+ showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelEdit();">
+	<form (ngSubmit)="save()" [formGroup]="rolePermissionsForm" novalidate>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan"> Module Name</span>
+					<p-dropdown [options]="moduleList" appendTo="body" [(ngModel)]="selectedRmanModule" name="moduleName" [filter]="true" formControlName="mName"
+					 (ngModelChange)="prepareFunctions()" [disabled]="defaultseleted">
+					</p-dropdown>
+					<div *ngIf="formErrors.mName" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.mName }}
+					</div>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan"> Function Name</span>
+					<p-dropdown [options]="rmanFunctionsList" appendTo="body" [(ngModel)]="selectedRmanFunction" name="functionName" [filter]="true"
+					 formControlName="fName" [disabled]="verifyModuleSelection()">
+					</p-dropdown>
+					<div *ngIf="formErrors.fName" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.fName }}
+					</div>
+				</div>
+
+			</div>
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan"> Permissions </span>
+					<p-multiSelect [options]="permissionsList" appendTo="body" [(ngModel)]="selectedPermissionsList" defaultLabel="Select Permissions"
+					 optionLabel="name" formControlName="perm"></p-multiSelect>
+
+					<div *ngIf="formErrors.perm" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.perm }}
+					</div>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan"> Enabled Flag </span>
+					<p-dropdown #dropdownRef [options]="rmanLookupsV" appendTo="body" [(ngModel)]="rmanPermissions.enabledFlag" name="enabledFlag"
+					 [filter]="true" formControlName="flag">
+
+					</p-dropdown>
+					<div *ngIf="formErrors.flag" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.flag }}
+					</div>
+				</div>
+			</div>
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan">Start Date</span>
+					<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="startDate" id="startDate" [(ngModel)]="rmanPermissions.startDateActive"
+					 [ngModelOptions]="{standalone: true}" dateFormat="yy-mm-dd" placeholder="Start Date" appendTo="body">
+					</p-calendar>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan">End Date</span>
+					<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="endtDate" id="endtDate" [(ngModel)]="rmanPermissions.endDateActive"
+					 [ngModelOptions]="{standalone: true}" dateFormat="yy-mm-dd" placeholder="End Date" appendTo="body">
+					</p-calendar>
+				</div>
+			</div>
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="secondary-btn" (click)="save()" label="Save" [disabled]="!rolePermissionsForm.valid"></button>
+			<button type="button" pButton class="primary-btn" (click)="cancelEdit()" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>

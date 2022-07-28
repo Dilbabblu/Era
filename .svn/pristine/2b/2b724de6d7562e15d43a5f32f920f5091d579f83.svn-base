@@ -1,0 +1,403 @@
+<div class="ContentSideSections Implementation">
+
+    <div class="content-section implementation">
+    </div>
+    <p-panel header="Manage Forecasting Buckets" [style]="{'margin-bottom':'20px'}" (onBeforeToggle)="onBeforeToggle($event)">
+        <p-header>
+            <div class="pull-right" *ngIf="collapsed">
+                <a  (click)="showDialogToAdd()" class="icon-add" title="Add"></a>
+                <a  (click)="showDialogToSearch()" class="icon-search" title="Search"></a>
+                <a  (click)="reset(dt)" class="icon-reset" title="Reset"></a>
+            </div>
+        </p-header>
+        <p-table [loading]="loading" #dt class="ui-datatable" [value]="rmanFcBucketsList" selectionMode="single"  
+            (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanFcBuckets($event)" [lazy]="true" [paginator]="true" [rows]="pageSize"
+            [totalRecords]="totalElements"  scrollable="true" >
+            <ng-template pTemplate="header">
+                <tr>
+                    <th></th>
+                    <th>{{columns['name']}}</th>
+                    <th style="text-align:left">{{columns['numberOfBuckets']}}</th>
+                    <th style="text-align:left">{{columns['numberOfPeriods']}}</th>
+                    <th style="text-align:left">{{columns['numberOfQtrs']}}</th>
+                    <th style="text-align:left">{{columns['numberOfYears']}}</th>
+                    <th style="text-align:center">{{columns['startDate']}}</th>
+                    <th style="text-align:center">{{columns['endDate']}}</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-rmanFcBuckets>
+                <tr [pSelectableRow]="rowData">
+                    <td>
+                        <a  (click)="editRow(rmanFcBuckets)" class="icon-edit" title="Edit"> </a>
+                        <a  (click)="delete(rmanFcBuckets)" class="icon-delete" title="Delete"> </a>
+
+                    </td>
+                    <td title="{{rmanFcBuckets.name}}">{{rmanFcBuckets.name}}</td>
+                    <td title="{{rmanFcBuckets.numberOfBuckets}}" style="text-align:left">{{rmanFcBuckets.numberOfBuckets}}</td>
+                    <td title="{{rmanFcBuckets.numberOfPeriods}}" style="text-align:left">{{rmanFcBuckets.numberOfPeriods}}</td>
+                    <td title="{{rmanFcBuckets.numberOfQtrs}}" style="text-align:left">{{rmanFcBuckets.numberOfQtrs}}</td>
+                    <td title="{{rmanFcBuckets.numberOfYears}}" style="text-align:left">{{rmanFcBuckets.numberOfYears}}</td>
+                    <td style="text-align:center" title="{{rmanFcBuckets.startDate | date: 'MM/dd/yyyy ' }}">{{rmanFcBuckets.startDate | date: 'MM/dd/yyyy ' }}</td>
+                    <td style="text-align:center" title="{{rmanFcBuckets.endDate | date: 'MM/dd/yyyy '}}">{{rmanFcBuckets.endDate | date: 'MM/dd/yyyy ' }}</td>
+
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr *ngIf="!columns">
+                    <td class="no-data">{{noData}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-panel>
+    <p-dialog header="Search" width="800" [(visible)]="displaySearchDialog"  showEffect="fade" [modal]="true" [draggable]="true" (onHide)="cancelSearch()">
+        <form>
+            <div class="ui-grid ui-grid-responsive ui-fluid">
+                <div class="ui-g-12">
+                    <div class="ui-g-5">
+                        <span class="md-inputfield">
+                            <input pInputText name="name" id="name" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBucketsSearch.name"
+                            />
+                            <label for="name">{{columns['name']}}</label>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </form>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton (click)="cancelSearch();" label="Cancel"></button>
+                <button type="submit" pButton label="Search" (click)="search()"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
+    <p-dialog header="{{(newRmanFcBuckets) ? 'Define Forecasting Periods&Buckets' : 'Edit Forecasting Periods&Buckets'}}" width="800" [(visible)]="displayDialog" [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelEdit()">
+        <form (ngSubmit)="save()" [formGroup]="forecastingBucketsForm" novalidate>
+          
+            <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanFcBuckets">
+                <div class="ui-g-12">
+                    <div class="ui-g-5">
+                        <span class="md-inputfield">
+                            <input pInputText name="name" id="name" [(ngModel)]="rmanFcBuckets.name" formControlName="name" />
+                            <div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+                                    <span [innerHtml]="formErrors.name"> </span> 
+                            </div>
+                            <label for="name">{{columns['name']}}&nbsp;
+                                <span class="red-color">*</span>
+                            </label>
+                        </span>
+                    </div>
+
+                    <div class="ui-g-5 pull-right">
+                        <span class="md-inputfield">
+                            <input pInputText name="numberOfBuckets" id="numberOfBuckets"   formControlName="numberOfBuckets"  
+                                [(ngModel)]="rmanFcBuckets.numberOfBuckets" />
+                                <div *ngIf="formErrors.numberOfBuckets" class="ui-message ui-messages-error ui-corner-all">
+                                        <span [innerHtml]="formErrors.numberOfBuckets"> </span> 
+                                    </div>
+                            <label for="numberOfBuckets">{{columns['numberOfBuckets']}}</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="ui-g-12">
+                    <div class="ui-g-5">
+                        <span *ngIf="rmanFcBuckets.startDate" class="selectSpan">Start Date</span>
+                        <p-calendar showAnim="slideDown" name="startDate" id="startDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+                             [(ngModel)]="rmanFcBuckets.startDate" dateFormat="yy-mm-dd" placeholder="Start Date*"
+                            formControlName="fcStartDate" appendTo="body">
+
+                        </p-calendar>
+                        <div *ngIf="formErrors.fcStartDate" class="ui-message ui-messages-error ui-corner-all">
+                          
+                            <span [innerHtml]="formErrors.fcStartDate"> </span> 
+                        </div>
+                    </div>
+                    <div class="ui-g-5 pull-right">
+                        <span *ngIf="rmanFcBuckets.endDate" class="selectSpan">End Date</span>
+                        <p-calendar showAnim="slideDown" name="endDate" id="endDate" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.endDate"
+                            [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"  dateFormat="yy-mm-dd"
+                            placeholder="End Date" appendTo="body"></p-calendar>
+                    </div>
+                </div>
+
+
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-12" style="text-align:left;font-weight: bold;color: cornflowerblue;">Forecasting buckets Allocation</div>
+                </div>
+                <div class="ui-g-12">
+                    <div class="ui-g-5">
+                        <span class="md-inputfield">
+                            <input pInputText name="numberOfPeriods" id="numberOfPeriods" formControlName="numberOfPeriods" [(ngModel)]="rmanFcBuckets.numberOfPeriods"
+                            />
+                            <div *ngIf="formErrors.numberOfPeriods" class="ui-message ui-messages-error ui-corner-all">
+                                  
+                                    <span [innerHtml]="formErrors.numberOfPeriods"> </span> 
+                                </div>
+                            <label for="numberOfPeriods">{{columns['numberOfPeriods']}}</label>
+                        </span>
+                    </div>
+                    <div class="ui-g-5 pull-right">
+                        <span class="md-inputfield">
+                            <input pInputText name="numberOfQtrs" id="numberOfQtrs" formControlName="numberOfQtrs" [(ngModel)]="rmanFcBuckets.numberOfQtrs"/>
+                            <div *ngIf="formErrors.numberOfQtrs" class="ui-message ui-messages-error ui-corner-all">
+                                  
+                                    <span [innerHtml]="formErrors.numberOfQtrs "> </span> 
+                                </div>
+                            <label for="numberOfQtrs">{{columns['numberOfQtrs']}}</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="ui-g-12">
+                    <div class="ui-g-5">
+                        <span class="md-inputfield">
+                            <input pInputText name="numberOfYears" id="numberOfYears" formControlName="numberOfYears" [(ngModel)]="rmanFcBuckets.numberOfYears"
+                            />
+                            <div *ngIf="formErrors.numberOfYears" class="ui-message ui-messages-error ui-corner-all">
+                                  <span [innerHtml]="formErrors.numberOfYears "> </span> 
+                                </div>
+                            <label for="numberOfYears">{{columns['numberOfYears']}}</label>
+                        </span>
+                    </div>
+                </div>
+
+
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="version">{{columns['version']}}&nbsp;
+                            <span class="red-color">*</span>
+                        </label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="version" id="version"  [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.version"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="bucketId">{{columns['bucketId']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="bucketId" id="bucketId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.bucketId"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute1">{{columns['attribute1']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute1" id="attribute1" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.attribute1"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute2">{{columns['attribute2']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute2" id="attribute2" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.attribute2"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute3">{{columns['attribute3']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute3" id="attribute3" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.attribute3"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute4">{{columns['attribute4']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute4" id="attribute4" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.attribute4"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute5">{{columns['attribute5']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute5" id="attribute5" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.attribute5"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute6">{{columns['attribute6']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute6" id="attribute6" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.attribute6"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute7">{{columns['attribute7']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute7" id="attribute7" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.attribute7"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute8">{{columns['attribute8']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute8" id="attribute8" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.attribute8"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute9">{{columns['attribute9']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute9" id="attribute9" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.attribute9"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute10">{{columns['attribute10']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute10" id="attribute10" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanFcBuckets.attribute10" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute11">{{columns['attribute11']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute11" id="attribute11" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanFcBuckets.attribute11" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute12">{{columns['attribute12']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute12" id="attribute12" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanFcBuckets.attribute12" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute13">{{columns['attribute13']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute13" id="attribute13" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanFcBuckets.attribute13" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute14">{{columns['attribute14']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute14" id="attribute14" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanFcBuckets.attribute14" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute15">{{columns['attribute15']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute15" id="attribute15" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanFcBuckets.attribute15" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="createdDate">{{columns['createdDate']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="createdDate" id="createdDate" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanFcBuckets.createdDate" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="createdBy">{{columns['createdBy']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="createdBy" id="createdBy" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.createdBy"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="lastUpdatedDate">{{columns['lastUpdatedDate']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="lastUpdatedDate" id="lastUpdatedDate" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanFcBuckets.lastUpdatedDate" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="lastUpdatedBy">{{columns['lastUpdatedBy']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="lastUpdatedBy" id="lastUpdatedBy" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanFcBuckets.lastUpdatedBy" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="latestFlag">{{columns['latestFlag']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="latestFlag" id="latestFlag" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFcBuckets.latestFlag"
+                        />
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton (click)="cancelEdit();" label="Cancel"></button>
+                <button type="submit" pButton label="Save" (click)="save()" [disabled]="!forecastingBucketsForm.valid"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
+</div>
+
+<div class="modal fade dialogueBox" id="FieldsMandatory" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{'Error'}}</h4>
+            </div>
+            <form class="form-horizontal">
+                <div class="modal-body clearfix">
+                    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+
+                        <p *ngIf="showMsg==14">Please enter Name</p>
+                        <p *ngIf="showMsg==15">Please enter Start Date</p>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer" style="padding:3px;">
+                    <button class="btn btn-primary pull-right" data-dismiss="modal">OK</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

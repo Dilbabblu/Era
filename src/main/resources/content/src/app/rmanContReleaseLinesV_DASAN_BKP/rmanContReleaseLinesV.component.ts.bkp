@@ -1,0 +1,331 @@
+import {Component,Input,SimpleChange, OnInit} from '@angular/core';
+import { MenuItem, DataTable,Message,ConfirmationService } from 'primeng/primeng';
+import {RmanContReleaseLinesV} from './rmanContReleaseLinesV';
+import {RmanContReleaseLinesVService} from './rmanContReleaseLinesVservice';
+import {RmanContReleaseLinesVLabels} from './rmanContReleaseLinesVLabels';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+declare var $: any;
+declare var require: any;
+const appSettings = require('../appsettings');
+
+@Component({
+    templateUrl: './rmanContReleaseLinesV.component.html',
+    selector: 'rmanContReleaseLinesV-data',
+    providers: [RmanContReleaseLinesVService ]
+})
+
+export class RmanContReleaseLinesVComponent implements OnInit{
+    noData = appSettings.noData;
+    displayDialog: boolean;
+
+    displaySearchDialog: boolean;
+
+    rmanContReleaseLinesV: RmanContReleaseLinesV = new RmanContReleaseLinesVImpl();
+
+    rmanContReleaseLinesVSearch: RmanContReleaseLinesV = new RmanContReleaseLinesVImpl();
+
+	isSerached:number=0;
+
+    selectedRmanContReleaseLinesV: RmanContReleaseLinesV;
+
+    newRmanContReleaseLinesV: boolean;
+
+    rmanContReleaseLinesVList: RmanContReleaseLinesV[];
+
+    cols:any[];
+    columns:ILabels;
+
+    columnOptions: any[];
+
+    paginationOptions={};
+
+    pages:{};
+
+    datasource: any[];
+    pageSize:number;
+    totalElements:number;
+
+    collapsed: boolean = true;
+    arrIdK:any;
+    @Input() pTransHeaderId: number;
+    @Input() pTransLineId: number;
+    loading: boolean;
+    masterData: any;
+
+
+
+    constructor(private rmanContReleaseLinesVService: RmanContReleaseLinesVService , private router: Router, private route: ActivatedRoute) {
+
+        // generate list code
+        this.paginationOptions={'pageNumber':0,'pageSize':'10000'};
+
+        this.route.params.subscribe((params: any) => {
+          this.arrIdK = params['id'];
+        });
+
+
+
+    }
+
+    // ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
+
+    //   //console.log(changes['pTransHeaderId'].currentValue);
+    //   this.pTransHeaderId = changes['pTransHeaderId'].currentValue;
+    //   this.getAllRmanContReleaseLinesV();
+    // }
+
+    ngOnInit() {
+
+        // this.getAllRmanContReleaseLinesV();
+
+        this.cols = [];
+        let cols:any = [];
+                cols["transHeaderId"] = "transHeaderId";
+        cols["transLineId"] = "transLineId";
+        cols["productGroup"] = "productGroup";
+        cols["sourceLineNumber"] = "sourceLineNumber";
+        cols["sourceHeader"] = "sourceHeader";
+        cols["revenue"] = "revenue";
+        cols["releaseCogs"] = "releaseCogs";
+        cols["cogs"] = "cogs";
+        cols["ruleName"] = "ruleName";
+        cols["releaseLevel"] = "releaseLevel";
+        cols["elementType"] = "elementType";
+        cols["applyType"] = "applyType";
+        cols["productName"] = "productName";
+        cols["dealArrangementId"] = "dealArrangementId";
+        cols["event"] = "event";
+        cols["releaseType"] = "releaseType";
+        cols["templateName"] = "templateName";
+        cols["productCategory"] = "productCategory";
+        cols["releaseRevenue"] = "releaseRevenue";
+        cols["releaseLineId"] = "releaseLineId";
+		cols["customerPayment"] = "customerPayment";
+
+
+        //this.columns=cols;
+         let rmanContReleaseLinesVLabels = new RmanContReleaseLinesVLabels();
+
+        this.columns=rmanContReleaseLinesVLabels.fieldLabels;
+
+        this.columnOptions = [];
+
+        this.cols=[];
+
+		//for (let prop in cols) {
+	    for (let prop in this.columns) {
+			 this.cols.push({field: prop, header: this.columns[prop]});
+			 this.columnOptions.push({label: this.columns[prop], value: prop});
+		}
+
+
+    }
+
+    exportExcel() {
+
+      let serviceUrl = this.rmanContReleaseLinesVService.getServiceUrl(this.paginationOptions, { 'dealArrangementId': this.arrIdK,'transHeaderId':this.pTransHeaderId }, 1);
+      //console.log('serviceUrl', serviceUrl);
+      window.location.href = serviceUrl;
+
+    }
+
+    reset(dt: DataTable) {
+      this.paginationOptions = {};
+      this.rmanContReleaseLinesV = new RmanContReleaseLinesVImpl();
+      dt.reset();
+      // this.getAllRmanContReleaseLinesV();
+    }
+
+    parentCall(data) { 
+        this.masterData = data;
+        if (data != '') {
+          this.pTransHeaderId = data.transHeaderId;
+          this.getAllRmanContReleaseLinesV();
+        } else {
+          this.pTransHeaderId = null;
+          this.rmanContReleaseLinesVList = [];
+         
+        }
+      }
+
+    getAllRmanContReleaseLinesV() {
+      this.rmanContReleaseLinesV.transHeaderId = this.pTransHeaderId;
+      this.rmanContReleaseLinesV.transLineId = this.pTransLineId;
+      this.loading = true;
+        this.rmanContReleaseLinesVService.getAllRmanContReleaseLinesV(this.paginationOptions,{ 'dealArrangementId': this.arrIdK }).then((rmanContReleaseLinesVList:any) => {
+            //console.log(rmanContReleaseLinesVList);
+            this.datasource = rmanContReleaseLinesVList.content;
+            if (this.pTransHeaderId != null) {
+              this.rmanContReleaseLinesVList = rmanContReleaseLinesVList.content.filter((item: any) => item.transHeaderId == this.pTransHeaderId);
+              //console.log('Initial Cond');
+            } else {
+              //console.log('Second cond');
+              this.rmanContReleaseLinesVList = rmanContReleaseLinesVList.content;
+            }
+            this.totalElements=rmanContReleaseLinesVList.totalElements;
+            this.pageSize=rmanContReleaseLinesVList.size;
+            this.loading = false;
+            this.displaySearchDialog = false;
+        });
+    }
+
+
+    getRmanContReleaseLinesV(event:any) {
+      this.rmanContReleaseLinesV.transHeaderId = this.pTransHeaderId;
+      this.rmanContReleaseLinesV.transLineId = this.pTransLineId;
+
+        let first:number=event.first;
+        let rows:number=event.rows;
+        let pageNumber:number=first/rows;
+        this.paginationOptions={'pageNumber':pageNumber,'pageSize':this.pageSize,'sortField':event.sortField,'sortOrder':event.sortOrder};
+        this.loading = true;
+        this.rmanContReleaseLinesVService.getAllRmanContReleaseLinesV(this.paginationOptions,{ 'dealArrangementId': this.arrIdK }).then((rmanContReleaseLinesVList:any) => {
+            this.datasource = rmanContReleaseLinesVList.content;
+            if (this.pTransHeaderId != null) {
+              this.rmanContReleaseLinesVList = rmanContReleaseLinesVList.content.filter((item: any) => item.transHeaderId == this.pTransHeaderId);
+              //console.log('Initial Cond');
+            } else {
+              //console.log('Second cond');
+              this.rmanContReleaseLinesVList = rmanContReleaseLinesVList.content;
+              this.isSerached = 0;
+            }
+             this.totalElements=rmanContReleaseLinesVList.totalElements;
+             this.pageSize=rmanContReleaseLinesVList.size;
+             this.loading = false;
+        });
+
+    }
+
+
+    showDialogToAdd() {
+
+        this.newRmanContReleaseLinesV = true;
+        this.rmanContReleaseLinesV = new RmanContReleaseLinesVImpl();
+        this.displayDialog = true;
+
+    }
+
+
+    save() {
+
+        if (this.newRmanContReleaseLinesV) {
+            this.rmanContReleaseLinesVService.saveRmanContReleaseLinesV(this.rmanContReleaseLinesV).then((response:any) => {
+                 this.getAllRmanContReleaseLinesV();
+            });
+        }
+        else {
+            this.rmanContReleaseLinesVService.updateRmanContReleaseLinesV(this.rmanContReleaseLinesV).then((response:any) => {
+                 this.getAllRmanContReleaseLinesV();
+            });
+        }
+
+        this.rmanContReleaseLinesV = new RmanContReleaseLinesVImpl();
+
+        this.displayDialog = false;
+
+    }
+
+
+    delete(rmanContReleaseLinesV:any) {
+        this.rmanContReleaseLinesV=rmanContReleaseLinesV;
+
+        //this.rmanContReleaseLinesV = null;
+        this.displayDialog = false;
+
+        if (window.confirm('Are you sure you want to delete this record?')) {
+           this.rmanContReleaseLinesVList.splice(this.findSelectedRmanContReleaseLinesVIndex(), 1);
+           this.rmanContReleaseLinesVService.deleteRmanContReleaseLinesV(this.rmanContReleaseLinesV).then(response => {
+               this.rmanContReleaseLinesV = new RmanContReleaseLinesVImpl();
+               this.getAllRmanContReleaseLinesV();
+               //this.rmanContReleaseLinesVList.splice(this.findSelectedRmanContReleaseLinesVIndex(), 1);
+              //this.rmanContReleaseLinesV = null;
+              // this.displayDialog = false;
+           });
+        }
+
+    }
+
+    editRow(rmanContReleaseLinesV:any) {
+        this.newRmanContReleaseLinesV = false;
+        this.rmanContReleaseLinesV = this.cloneRmanContReleaseLinesV(rmanContReleaseLinesV);
+        this.displayDialog = true;
+
+    }
+
+
+    findSelectedRmanContReleaseLinesVIndex(): number {
+        return this.rmanContReleaseLinesVList.indexOf(this.selectedRmanContReleaseLinesV);
+    }
+
+    onRowSelect(event:any) {
+
+    }
+
+    cloneRmanContReleaseLinesV(c: RmanContReleaseLinesV): RmanContReleaseLinesV {
+        let rmanContReleaseLinesV = new RmanContReleaseLinesVImpl();
+        for(let prop in c) {
+            rmanContReleaseLinesV[prop] = c[prop];
+        }
+        return rmanContReleaseLinesV;
+    }
+
+    hideColumnMenu: boolean=true;
+
+    toggleColumnMenu(){
+        if(this.hideColumnMenu)
+        {
+            this.hideColumnMenu= false;
+        }else
+        {
+            this.hideColumnMenu=true;
+        }
+    }
+
+    showFilter: boolean= false;
+
+    toggleFilterBox(){
+        if(this.showFilter)
+        {
+            this.showFilter= false;
+        }else
+        {
+            this.showFilter=true;
+        }
+    }
+
+    showDialogToSearch() {
+
+        this.rmanContReleaseLinesVSearch=new RmanContReleaseLinesVImpl();
+
+        if (this.isSerached==0) {
+            this.rmanContReleaseLinesVSearch=new RmanContReleaseLinesVImpl();
+        }
+        this.displaySearchDialog = true;
+
+    }
+
+    search() {
+
+        this.isSerached=1;
+		this.rmanContReleaseLinesV=this.rmanContReleaseLinesVSearch;
+		this.getAllRmanContReleaseLinesV();
+    }
+
+    onBeforeToggle(evt: any) {
+      //console.log('event test', evt);
+      this.collapsed = evt.collapsed;
+    }
+
+
+
+
+}
+
+
+export class RmanContReleaseLinesVImpl implements RmanContReleaseLinesV {
+    constructor(public transHeaderId?:any,public transLineId?:any,public productGroup?:any,public sourceLineNumber?:any,public sourceHeader?:any,public revenue?:any,public releaseCogs?:any,public cogs?:any,public ruleName?:any,public releaseLevel?:any,public elementType?:any,public applyType?:any,public productName?:any,public dealArrangementId?:any,public event?:any,public releaseType?:any,public templateName?:any,public productCategory?:any,public releaseRevenue?:any,public releaseLineId?:any,public customerPayment?:any) {}
+}
+
+interface ILabels {
+     [index: string]: string;
+}

@@ -1,0 +1,59 @@
+interface ILabels {
+         [index: string]: string;
+}
+
+export class RmanArrgWaterFallRepV2Labels {
+
+        fieldLabels: ILabels;
+
+    constructor() {
+
+    this.fieldLabels = {};
+
+        this.fieldLabels["period7"] = "Feb-19";
+        this.fieldLabels["dealArrangementNumber"] = "Arrangement Number";
+        this.fieldLabels["period8"] = "Mar-19";
+        this.fieldLabels["period5"] = "Dec-18";
+        this.fieldLabels["revManagerId"] = "Rev Manager ID";
+        this.fieldLabels["period6"] = "Jan-19";
+        this.fieldLabels["currentPeriod"] = "Current Period Name";
+        this.fieldLabels["period3"] = "Oct-18";
+        this.fieldLabels["period4"] = "Nov-18";
+        this.fieldLabels["msaName"] = "MSA Name";
+        this.fieldLabels["period1"] = "Aug-18";
+        this.fieldLabels["period2"] = "Sep-18";
+        this.fieldLabels["elementType"] = "Element Type";
+        this.fieldLabels["dealArrangementName"] = "Arrangement Name";
+        this.fieldLabels["contractQuantity"] = "Contract Quantity";
+        this.fieldLabels["future"] = "Future";
+        this.fieldLabels["period9"] = "Apr-19";
+        this.fieldLabels["productDescription"] = "Product Description";
+        this.fieldLabels["sno"] = "SNO";
+        this.fieldLabels["unitSellingPrice"] = "Contract Unit Price";
+        this.fieldLabels["dealName"] = "Deal Name";
+        this.fieldLabels["createdBy"] = "Created By";
+        this.fieldLabels["period12"] = "Jul-19";
+        this.fieldLabels["msaNumber"] = "MSA Number";
+        this.fieldLabels["period11"] = "Jun-19";
+        this.fieldLabels["productGroup"] = "Product Group";
+        this.fieldLabels["dealLineNumber"] = "Deal Line Number";
+        this.fieldLabels["period10"] = "May-19";
+        this.fieldLabels["sourceLineNumber"] = "Source Line Number";
+        this.fieldLabels["legalEntityId"] = "Legal Entity ID";
+        this.fieldLabels["revAccountantId"] = "Rev Accountant ID";
+        this.fieldLabels["creationDate"] = "Creation Date";
+        this.fieldLabels["invoiceNumber"] = "Invoice Number";
+        this.fieldLabels["solution"] = "Solution";
+        this.fieldLabels["productName"] = "Product Name";
+        this.fieldLabels["dealArrangementId"] = "Deal Arrangement ID";
+        this.fieldLabels["productType"] = "Product Type";
+        this.fieldLabels["revenueStartDate"] = "Revenue Start Date";
+        this.fieldLabels["legalEntityName"] = "Legal Entity Name";
+        this.fieldLabels["invoiceLineNumber"] = "Invoice Line Number";
+        this.fieldLabels["orderNumber"] = "SO Line Number";
+        this.fieldLabels["orderedQuantity"] = "SO Line Quantity";
+        this.fieldLabels["distributionAmount"] = "Distribution Amount";
+        this.fieldLabels["revenueEndDate"] = "Revenue End Date";
+    }
+
+}

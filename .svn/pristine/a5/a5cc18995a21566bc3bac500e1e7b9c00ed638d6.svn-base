@@ -1,0 +1,660 @@
+
+  <div class="content-section implementation">
+  </div>
+
+  <p-confirmDialog width="425"></p-confirmDialog>
+  
+            <p-panel header="Allocations" (onBeforeToggle)="onBeforeToggle($event)">
+              <p-header>
+                <div class="pull-right icons-list" *ngIf="collapsed">
+                  <p-toggleButton class="ui-inputswitch" onLabel="Order" offLabel="Quote" onIcon="fa fa-toggle-on fa-sm" offIcon="fa fa-toggle-off fa-sm" [(ngModel)]="quoteOrderSwitch" (ngModelChange)="onQuoteOrderSwitch()"></p-toggleButton> 
+                  <a  (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+                  <a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>     
+                  <a  (click)="ProspectiveAnalysis()" class="icon-prospective" title="Prospective"></a>
+                  <a  (click)="executeRetrospectiveProcess()" class="icon-retrospective" title="Retrospective"></a>
+                  <!--<a  (click)="reallocation()" class="icon-reallocation" title="Reallocation"></a>-->
+                  <a  (click)="reset(dt) || reset(table)" title="Reset"><em class="fa fa-refresh"></em></a>
+                  <ng-container *ngIf="!disableExport"><a  (click)="exportExcel()" title="Export"><em class="fa fa-external-link"></em></a>
+                  </ng-container>
+                  <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                    <div class="user-popup">
+                      <div class="content overflow">
+                        <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+                        <label for="selectall">Select All</label>
+                        <a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+                        <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                          <ng-template let-col let-index="index" pTemplate="item">
+                            <div *ngIf="col.drag">
+                            <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+                             (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                              <div class="drag">
+                                <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+                                <label>{{col.header}}</label>
+                              </div>
+                            </div>
+                            </div>
+                            <div *ngIf="!col.drag">
+                            <div class="ui-helper-clearfix">
+                              <div>
+                                <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+                                <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                              </div>
+                            </div>
+                            </div>
+                          </ng-template>
+                          </p-listbox>
+                      </div>
+                      <div class="pull-right">
+                        <a class="configColBtn" (click)="saveColumns()">Save</a>
+                        <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </p-header>
+              <div class="x-scroll">
+                <p-table class="ui-datatable arrangementMgrTbl" #dt id="alloc-dt" [loading]="loading" [columns]="columns" [value]="arrgContractAllocationsVList" selectionMode="multiple" [(selection)]="selectedDeals"
+                (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" (onLazyLoad)="getArrgContractAllocationsV($event)" [lazy]="true" [paginator]="showPaginator" [rows]="pageSize"
+                [totalRecords]="totalElements"  scrollable="false" [resizableColumns]="true" columnResizeMode="expand" >
+              
+              	<ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col>
+                    <col *ngFor="let col of columns">
+                  </colgroup>
+                </ng-template>
+               
+                <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                  <tr>
+                    <th class="select-box"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                    <ng-container *ngFor="let col of columns">
+                      <th *ngIf="col.type=='text' ||col.type=='date' || col.type=='symbol' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                      <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                    </ng-container>
+
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-arrgContractAllocationsV let-columns="columns">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td class="select-box">
+                      <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                    </td>
+                    <ng-container *ngFor="let col of columns" >
+                      <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                        {{rowData[col.field]}}
+                      </td>
+                    
+                      <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                        {{rowData[col.field]}}
+                      </td>
+                    
+                      <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                        {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                      </td>
+                    
+                      <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                        {{rowData[col.field] | round}}
+                      </td>
+
+                      <td *ngIf="col.type == 'symbol'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                        <span *ngIf="rowData[col.field]=='RED'"><i class="fa fa-circle red-color" aria-hidden="true"></i></span>
+                        <span *ngIf="rowData[col.field]=='GREEN'"><i class="fa fa-circle green-color" aria-hidden="true"></i></span>
+                        <span *ngIf="rowData[col.field]=='YELLOW'"><i class="fa fa-circle yellow-color" aria-hidden="true"></i></span>
+                      </td>
+                    </ng-container>
+                          
+                  </tr>                 
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                  <tr>
+                    <td></td>
+                    <ng-container *ngFor="let col of columns">
+                      <td *ngIf="col.footer=='empty'"></td>
+                      <td *ngIf="col.footer=='totals'" class="number">Totals: </td>
+                      <td *ngIf="col.footer=='totalListAmount'" class="number">{{totalListAmount | round}}</td>
+                      <td *ngIf="col.footer=='lineAmountTotal'" class="number">{{lineAmountTotal | round}}</td>
+                      <td *ngIf="col.footer=='vcTotal'" class="number">{{vcTotal | round}}</td>
+                      <td *ngIf="col.footer=='allocableNetTotal'" class="number">{{allocableNetTotal | round}}</td>
+                      <td *ngIf="col.footer=='fvTotal'" class="number">{{fvTotal | round}}</td>
+                      <td *ngIf="col.footer=='allocationTotal'" class="number">{{allocationTotal | round}}</td>
+                      <td *ngIf="col.footer=='cvInOutAmountTotal'" class="number">{{cvInOutAmountTotal | round}}</td>
+                      <td *ngIf="col.footer=='allocationFcTotal'" class="number">{{allocationFcTotal | round}}</td>
+                      <td *ngIf="col.footer=='espTotal'" class="number">{{espTotal | round}}</td>
+                      <td *ngIf="col.footer=='espInstTotal'" class="number">{{espInstTotal | round}}</td>
+                      <td *ngIf="col.footer=='statusTotal'" class="text">
+                          <span *ngIf="statusTotal=='RED'"><i class="fa fa-circle red-color" aria-hidden="true"></i></span>
+                          <span *ngIf="statusTotal=='GREEN'"><i class="fa fa-circle green-color" aria-hidden="true"></i></span>
+                          <span *ngIf="statusTotal=='YELLOW'"><i class="fa fa-circle yellow-color" aria-hidden="true"></i></span>
+                      </td>
+                      <td *ngIf="col.footer=='commentsTotal'" class="text"><span *ngIf="commentsTotal !=null">Lines Failing: {{commentsTotal}}</span></td>
+                    </ng-container>
+
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage" let-columns>
+                    <div class="no-results-data">
+                        <p>{{noData}}</p>
+                    </div>
+                </ng-template>
+              </p-table>
+
+              </div>
+            </p-panel>
+          
+  <p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade"
+    [modal]="true">
+    <form (ngSubmit)="search()">
+      <div class="ui-grid ui-grid-responsive ui-fluid">
+        <div class="ui-g-12">
+          <div class="ui-g-6">
+            <span class="md-inputfield">
+              <span class="selectSpan">SO#</span>
+              <input pInputText class="textbox" placeholder="SO#" name="dealNumber" id="dealNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsVSearch.dealNumber"/>
+            </span>
+          </div> 
+          <div class="ui-g-6 pull-right">
+            <span class="md-inputfield">
+              <span class="selectSpan">SO Line#</span>
+              <input pInputText name="dealLineNumber" class="textbox" placeholder="SO Line#" id="dealLineNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsVSearch.dealLineNumber"/>
+            </span>
+          </div>   
+        </div>
+      </div>
+    </form>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="submit" class="primary-btn" pButton label="Search" (click)="search()"></button>
+        <button type="button" class="secondary-btn" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+        
+      </div>
+    </p-footer>
+  </p-dialog>
+  <p-dialog header="ArrgContractAllocationsV" width="500" [(visible)]="displayDialog" [draggable]="true" 
+    showEffect="fade" [modal]="true">
+    <form (ngSubmit)="save()">
+      <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="arrgContractAllocationsV">
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="dealArrangementId">{{columns['dealArrangementId']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="dealArrangementId" id="dealArrangementId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.dealArrangementId"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="dealHeaderId">{{columns['dealHeaderId']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="dealHeaderId" id="dealHeaderId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.dealHeaderId"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="dealNumber">{{columns['dealNumber']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="dealNumber" id="dealNumber" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.dealNumber"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="dealLineNumber">{{columns['dealLineNumber']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="dealLineNumber" id="dealLineNumber" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.dealLineNumber"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="dealLineId">{{columns['dealLineId']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="dealLineId" id="dealLineId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.dealLineId"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="productName">{{columns['productName']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="productName" id="productName" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.productName"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="uomCode">{{columns['uomCode']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="uomCode" id="uomCode" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.uomCode"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="quantity">{{columns['quantity']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="quantity" id="quantity" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.quantity"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="dealCurrencyCode">{{columns['dealCurrencyCode']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="dealCurrencyCode" id="dealCurrencyCode" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.dealCurrencyCode"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="trxCurrencyCode">{{columns['trxCurrencyCode']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="trxCurrencyCode" id="trxCurrencyCode" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.trxCurrencyCode"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="repCurrCode">{{columns['repCurrCode']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="repCurrCode" id="repCurrCode" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.repCurrCode"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="unitListPrice">{{columns['unitListPrice']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="unitListPrice" id="unitListPrice" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.unitListPrice"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="unitSellingPrice">{{columns['unitSellingPrice']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="unitSellingPrice" id="unitSellingPrice" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.unitSellingPrice"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="lineAmount">{{columns['lineAmount']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="lineAmount" id="lineAmount" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.lineAmount"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="elementType">{{columns['elementType']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="elementType" id="elementType" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.elementType"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="accountingScope">{{columns['accountingScope']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="accountingScope" id="accountingScope" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.accountingScope"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="bundleFlag">{{columns['bundleFlag']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="bundleFlag" id="bundleFlag" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.bundleFlag"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="parentLineId">{{columns['parentLineId']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="parentLineId" id="parentLineId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.parentLineId"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="parentLineNumber">{{columns['parentLineNumber']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="parentLineNumber" id="parentLineNumber" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.parentLineNumber"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="solution">{{columns['solution']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="solution" id="solution" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.solution"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="productGroup">{{columns['productGroup']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="productGroup" id="productGroup" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.productGroup"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="productType">{{columns['productType']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="productType" id="productType" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.productType"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="fmvRuleName">{{columns['fmvRuleName']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="fmvRuleName" id="fmvRuleName" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.fmvRuleName"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="fmvCategory">{{columns['fmvCategory']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="fmvCategory" id="fmvCategory" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.fmvCategory"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="fmvType">{{columns['fmvType']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="fmvType" id="fmvType" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.fmvType"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="fmvMin">{{columns['fmvMin']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="fmvMin" id="fmvMin" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.fmvMin"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="fmvMean">{{columns['fmvMean']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="fmvMean" id="fmvMean" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.fmvMean"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="fmvMax">{{columns['fmvMax']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="fmvMax" id="fmvMax" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.fmvMax"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="bundleAttribitionList">{{columns['bundleAttribitionList']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="bundleAttribitionList" id="bundleAttribitionList" required [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="arrgContractAllocationsV.bundleAttribitionList" />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="bundleAttribitionNet">{{columns['bundleAttribitionNet']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="bundleAttribitionNet" id="bundleAttribitionNet" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.bundleAttribitionNet"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="fmvAmount">{{columns['fmvAmount']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="fmvAmount" id="fmvAmount" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.fmvAmount"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="allocationAmount">{{columns['allocationAmount']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="allocationAmount" id="allocationAmount" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.allocationAmount"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="cvInOutAmount">{{columns['cvInOutAmount']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="cvInOutAmount" id="cvInOutAmount" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.cvInOutAmount"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="pobGrouping">{{columns['pobGrouping']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="pobGrouping" id="pobGrouping" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.pobGrouping"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="allocationInclusive">{{columns['allocationInclusive']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="allocationInclusive" id="allocationInclusive" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.allocationInclusive"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="accountingStandard">{{columns['accountingStandard']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="accountingStandard" id="accountingStandard" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.accountingStandard"
+            />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="totalCost">{{columns['totalCost']}}</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText name="totalCost" id="totalCost" required [ngModelOptions]="{standalone: true}" [(ngModel)]="arrgContractAllocationsV.totalCost"
+            />
+          </div>
+        </div>
+
+      </div>
+    </form>
+    <footer>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+        <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+      </div>
+    </footer>
+  </p-dialog>
+  <!--Prospective Deals Dialog for modifying Quantity and Net Price Details-->
+
+  <p-dialog id="prosp" header="Prospective Change" width="1000"  [draggable]="true" [(visible)]="displayProspectiveDialog"  showEffect="fade" [modal]="true">
+    <form [formGroup]="allocationsForm">
+      <div class="ui-grid ui-grid-responsive ui-fluid">
+        <div class="ui-g-12">
+          <div class="ui-g-6">
+            <span class="md-inputfield">
+              <span class="selectSpan">Revenue Contract Number<span class="red-color">*</span>
+            </span>
+              <input id="input" type="text" class="textbox" placeholder="Revenue Contract Number" size="50" pInputText [(ngModel)]="arrgNumber" formControlName="arrangementNumber" />
+              <div *ngIf="formErrors.arrangementNumber" class="ui-message ui-messages-error ui-corner-all">
+                {{ formErrors.arrangementNumber }}
+              </div>
+            </span>
+          </div>
+          <div class="ui-g-6 pull-right">
+            <span class="md-inputfield">
+              <span class="selectSpan">Revenue Contract Name<span class="red-color">*</span>
+            </span>
+              <input id="input" type="text" class="textbox" placeholder="Revenue Contract Name" size="50" pInputText [(ngModel)]="arrgName" formControlName="arrangementName" />
+              <div *ngIf="formErrors.arrangementName" class="ui-message ui-messages-error ui-corner-all">
+                {{ formErrors.arrangementName }}
+              </div>
+            </span>
+          </div>
+        </div>
+      </div>
+
+
+      <p-table #table class="ui-datatable arrangementMgrTbl" [value]="prospectiveDealsList" [lazy]="true"  scrollable="true"   [paginator]="false" [rows]="rowCount"
+      [totalRecords]="totalRecords">
+
+        <ng-template pTemplate="header" class="arrangementMgrTblHead">
+          <tr>
+            <th><a>Line #</a></th>
+            <th><a>Product Name</a></th>
+            <th><a>UOM</a></th>
+            <th><a>Quantity</a></th>
+            <th><a>Deal Currency</a></th>
+            <th><a>Exchange Rate</a></th>
+            <th><a>Unit List Price</a></th>
+            <th><a>Unit Selling Price</a></th>
+            <th><a>Contract Start Date</a></th>
+            <th><a>Contract End Date</a></th>
+            <th><a>Service Start Date</a></th>
+            <th><a>Service End Date</a></th>
+            <th><a>Line Amount</a></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-col let-rowData let-prospectiveDeals>
+          <tr [pSelectableRow]="rowData">
+
+            <td>{{prospectiveDeals.dealLineNumber}}</td>
+            <td>{{prospectiveDeals.productName}}</td>
+            <td>{{prospectiveDeals.uomCode}}</td>
+            <td pEditableColumn>
+              <div class="editable-td">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <input pInputText type="text" formControlName="undeliveredQty" [(ngModel)]="prospectiveDeals.undeliveredQty">
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{prospectiveDeals.undeliveredQty}}
+                </ng-template>
+              </p-cellEditor>
+            </div>
+            </td>
+            <td>{{prospectiveDeals.dealCurrencyCode}}</td>
+            <td>{{prospectiveDeals.conversionRate}}</td>
+            <td>{{prospectiveDeals.unitListPrice | round}}</td>
+            <td pEditableColumn>
+                <div class="editable-td">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <input pInputText type="text" formControlName="unitSellingPrice" [(ngModel)]="prospectiveDeals.unitSellingPrice">
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{prospectiveDeals.unitSellingPrice | round}}
+                </ng-template>
+              </p-cellEditor>
+              </div>
+            </td>
+			<!-- 
+				Changed the PropspectiveDeals Date fields to display in the UI
+				contractStartDate,contractEndDate,serviceStartDate and serviceEndDate
+				as expected.
+				#AYAR-403 by chandra kota on 2021-JUN-01
+			--> 
+            <td>
+              <span>
+                <!--{{prospectiveDeals.contractStartDate | date:'MM/dd/yy'}}-->
+                <p-calendar required="true" [ngModelOptions]="{standalone: true}" [monthNavigator]="true" class="prosp-calendar"
+                [yearNavigator]="true"  yearRange="2000:2100" [(ngModel)]="prospectiveDeals.contractStartDate" [showIcon]="false" appendTo="body"></p-calendar>
+              </span>
+            </td>
+            <td>
+              <span>
+                <!--{{prospectiveDeals.contractEndDate | date:'MM/dd/yy'}}-->
+                <p-calendar required="true" [ngModelOptions]="{standalone: true}" [monthNavigator]="true" class="prosp-calendar"
+                [yearNavigator]="true" yearRange="2000:2100" [(ngModel)]="prospectiveDeals.contractEndDate" [showIcon]="false" appendTo="body"></p-calendar>
+              </span>
+            </td>
+            <td>
+              <span>
+                <!--{{prospectiveDeals.serviceStartDate | date:'MM/dd/yy'}}-->
+                <p-calendar required="true" [ngModelOptions]="{standalone: true}" [monthNavigator]="true" class="prosp-calendar"
+                  [yearNavigator]="true" yearRange="2000:2100"  [(ngModel)]="prospectiveDeals.serviceStartDate" [showIcon]="false" appendTo="body"></p-calendar>
+              </span>
+            </td>
+            <td>
+              <span>
+                <!--{{prospectiveDeals.serviceEndDate | date:'MM/dd/yy'}}-->
+                <p-calendar required="true" [ngModelOptions]="{standalone: true}" [monthNavigator]="true" class="prosp-calendar"
+                [yearNavigator]="true" yearRange="2000:2100"  [(ngModel)]="prospectiveDeals.serviceEndDate" [showIcon]="false" appendTo="body"></p-calendar>
+              </span>
+            </td>
+            <td>{{prospectiveDeals.undeliveredQty * rowData.unitSellingPrice | number : '1.2-2'}}</td>
+
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+          <tr *ngIf="!columns">
+            <td class="no-data">{{noData}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      <p-paginator [rows]="9" id="paginator-c" [totalRecords]="totalRecords" (onPageChange)="paginate($event)">
+        </p-paginator>
+    </form>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="submit" pButton class="primary-btn" label="Save" (click)="processTheProspectiveDeals()" [disabled]="(!allocationsForm.valid && prospectiveDealsList.length!= 0)"></button>
+        <button type="button" pButton class="secondary-btn" (click)="displayProspectiveDialog=false" label="Cancel"></button>
+      </div>
+    </p-footer>
+
+  </p-dialog>

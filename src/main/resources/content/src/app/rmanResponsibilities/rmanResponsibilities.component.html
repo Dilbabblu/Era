@@ -1,0 +1,270 @@
+
+	<div class="content-section implementation">
+	</div>
+	<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+
+	<div class="card-wrapper">
+		<div class="container-fluid">
+		  <div class="row">
+			<div class="col-md-12">
+			  <div class="card-block">
+
+	<p-panel header="Manage Responsibilities"  [toggleable]="false" (onBeforeToggle)="onBeforeToggle($event)">
+
+		<p-header>
+		<div class="pull-right icons-list" *ngIf="collapsed">
+		<a (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+		<a  *isAuthorized="['write','RL']" (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+		<a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+		<a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+		<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+            <div class="user-popup">
+                <div class="content overflow">
+                    <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+                    <label for="selectall">Select All</label>
+                    <a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+                    <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                        <ng-template let-col let-index="index" pTemplate="item">
+                            <div *ngIf="col.drag">
+                                <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                                    <div class="drag">
+                                        <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+                                        <label>{{col.header}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="!col.drag">
+                                <div class="ui-helper-clearfix">
+                                    <div>
+                                        <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+                                        />
+                                        <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-listbox>
+                </div>
+                <div class="pull-right">
+                    <a class="configColBtn" (click)="saveColumns()">Save</a>
+                    <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                </div>
+            </div>
+        </div>
+		</div>
+		</p-header>
+		<div class="x-scroll">
+		<p-table #dt [loading]="loading" class="ui-datatable arrangementMgrTbl" id="manageRes-dt" [value]="rmanResponsibilitiesList" selectionMode="single"
+		(onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnSelect()" (onLazyLoad)="getRmanResponsibilities($event)" [lazy]="true" 
+		[paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"  
+		scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+
+		<ng-template pTemplate="colgroup" let-columns>
+			<colgroup>
+				<col>
+				<col *ngFor="let col of columns">
+			</colgroup>
+		</ng-template>
+
+
+		<ng-template pTemplate="header" class="arrangementMgrTblHead">
+			<tr>
+				<th></th>
+				<ng-container *ngFor="let col of columns">
+					<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+					<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+						title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+				</ng-container>
+			</tr>
+		</ng-template>
+
+		<ng-template pTemplate="body" let-rowData let-rmanResponsibilities let-columns="columns">
+			<tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+				<td>
+					<a  *isAuthorized="['write','RL']" (click)="editRow(rmanResponsibilities)" class="icon-edit"> </a>
+					<a  *isAuthorized="['write','RL']" (click)="delete(rmanResponsibilities)" class="icon-delete"> </a>
+				</td>
+				<ng-container *ngFor="let col of columns">
+					<td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field]}}
+					</td>
+
+					<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field]}}
+					</td>
+
+					<td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field] | date: 'MM/dd/yyyy'}}
+					</td>
+
+					<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field] | round}}
+					</td>
+					
+					<td *ngIf="col.type == 'link'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+						<a *isAuthorized="['write','RL']" class="link-active" [routerLink]="['/admin/rmanRolePermissions', rmanResponsibilities.responsibilityId, rmanResponsibilities.responsibilityName]">{{responsibilityColumns['assignPermissions']}}</a>
+					</td>
+				</ng-container>
+
+			</tr>
+		</ng-template>
+
+		<ng-template pTemplate="emptymessage" let-columns>
+			<tr *ngIf="!columns">
+				<td class="no-data">{{noData}}</td>
+			</tr>
+		</ng-template>
+
+		</p-table>
+		</div>
+	</p-panel>
+	</div>
+	</div>
+	</div>
+	</div>
+	</div>
+
+	<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true">
+		<form >
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+                        <span class="md-inputfield">
+							 <span class="selectSpan">{{responsibilityColumns['responsibilityName']}}</span>
+							 <input pInputText  name="responsibilityName" class="textbox" id="responsibilityName" placeholder="Responsibility Name" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilitiesSearch.responsibilityName" />
+						</span>
+                    </div>
+				</div>
+
+			</div>
+
+		</form>
+		<p-footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+					<button type="submit" pButton  class="primary-btn" (click)="search()" label="Search"></button>
+					<button type="button" pButton class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+				</div>
+		</p-footer>
+	</p-dialog>
+	<p-dialog header="{{(newRmanResponsibilities) ? 'Create New Responsibility' : 'Edit Responsibility'}}" width="800" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true"  [blockScroll]="true" (onHide)="cancelAddEdit()">
+	<form (ngSubmit)="save()" [formGroup]="responsibilitesForm" novalidate>
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanResponsibilities">
+                <div class="ui-g-12">
+                    <div class="ui-g-6">
+                         <span class="md-inputfield">
+							<span class="selectSpan">{{responsibilityColumns['responsibilityName']}}<span class="red-color">*</span></span>
+							 <input pInputText  name="responsibilityName" class="textbox" placeholder="Responsibility Name" id="responsibilityName"    [(ngModel)]="rmanResponsibilities.responsibilityName" formControlName="name"/>
+						 <div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.name }}
+						</div>
+					</span>
+                    </div>
+                    <div class="ui-g-6 pull-right">
+                         <span class="md-inputfield">
+							<span class="selectSpan">{{responsibilityColumns['description']}}</span> 
+							<input pInputText  name="description"  id="description" class="textbox" placeholder="Description"  [ngModelOptions]="{standalone: true}"  [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.description" />
+						</span>
+                    </div>
+				</div>
+				<div class="ui-g-12">
+                    <div class="ui-g-6">
+					<span class="selectSpan">Start Date</span>
+                         <p-calendar showAnim="slideDown" inputStyleClass="textbox" name="startDateActive"  id="startDateActive" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030" appendTo="body"  [(ngModel)]="rmanResponsibilities.startDateActive" dateFormat="yy-mm-dd" placeholder="Start Date*" formControlName="activeDate">
+
+						 </p-calendar>
+						 <div *ngIf="formErrors.activeDate" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.activeDate }}
+						</div>
+                    </div>
+                    <div class="ui-g-6 pull-right">
+					<span class="selectSpan">End Date</span>
+                         <p-calendar showAnim="slideDown" inputStyleClass="textbox"  name="endDateActive"  id="endDateActive" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030" appendTo="body"  [ngModelOptions]="{standalone: true}"  [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.endDateActive" dateFormat="yy-mm-dd" placeholder="End Date "></p-calendar>
+                    </div>
+				</div>
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+						<span class="selectSpan"> Enabled Flag </span>
+						<p-dropdown  #dropdownRef [options]="rmanLookupsV" appendTo="body"  [(ngModel)]="rmanResponsibilities.enabledFlag" name="enabledFlag"  [filter]="true" formControlName="flag">
+						</p-dropdown>
+						<div *ngIf="formErrors.flag" class="ui-message ui-messages-error ui-corner-all">
+						  {{ formErrors.flag }}
+						</div>
+					  </div>
+				</div>
+					<div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="responsibilityId">{{responsibilityColumns['responsibilityId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="responsibilityId"  id="responsibilityId"  [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.responsibilityId" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute1">{{responsibilityColumns['attribute1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute1"  id="attribute1" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.attribute1" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute2">{{responsibilityColumns['attribute2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute2"  id="attribute2" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.attribute2" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute3">{{responsibilityColumns['attribute3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute3"  id="attribute3" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.attribute3" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute4">{{responsibilityColumns['attribute4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute4"  id="attribute4" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.attribute4" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute5">{{responsibilityColumns['attribute5']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute5"  id="attribute5" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.attribute5" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="creationDate">{{responsibilityColumns['creationDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="creationDate"  id="creationDate" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.creationDate" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="createdBy">{{responsibilityColumns['createdBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="createdBy"  id="createdBy" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.createdBy" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="lastUpdateDate">{{responsibilityColumns['lastUpdateDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lastUpdateDate"  id="lastUpdateDate" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.lastUpdateDate" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="lastUpdatedBy">{{responsibilityColumns['lastUpdatedBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lastUpdatedBy"  id="lastUpdatedBy" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanResponsibilities.lastUpdatedBy" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton label="Save" class="primary-btn" (click)="save()" [disabled]="!responsibilitesForm.valid"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancelAddEdit()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+
+
+<div class="modal fade dialogueBox" id="FieldsMandatory" role="dialog" data-backdrop="static" data-keyboard="false" >
+<div class="modal-dialog modal-sm">
+        <div class="modal-content">
+	<div class="modal-header">
+	  <button type="button" class="close" data-dismiss="modal">&times;</button>
+	  <h4 class="modal-title">{{'Error'}}</h4>
+	</div>
+	<form class="form-horizontal">
+	<div class="modal-body clearfix">
+	<div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+
+     <p *ngIf="showMsg==34">Please enter Responsibility Name</p>
+	 <p *ngIf="showMsg==35">Please enter Start Date </p>
+
+	 </div>
+
+	 </div>
+	<div class="modal-footer" style="padding:3px;">
+	  <button class="btn btn-primary pull-right"  data-dismiss="modal">OK</button>
+	 </div>
+	</form>
+	</div>
+	</div>
+	</div>
+

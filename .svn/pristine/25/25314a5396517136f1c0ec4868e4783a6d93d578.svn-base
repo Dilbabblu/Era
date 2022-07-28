@@ -1,0 +1,311 @@
+<div class="card-wrapper" *ngIf="displayAdvancedSearch">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<p-panel header="Advanced Search" class="search_panel">
+						<div class="tab-panels">
+							<label>Revenue Contract Creation Date</label>
+							<div class="row">
+								<div class="col-md-4">
+									<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="selectStartDate" [monthNavigator]="true" [yearNavigator]="true"
+									 yearRange="1950:2030" appendTo="body" dateFormat="yy-mm-dd" placeholder="Select From Date" [(ngModel)]="startDate">
+									</p-calendar>
+								</div>
+								<div class="col-md-4">
+									<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="selectEndDate" [monthNavigator]="true" [yearNavigator]="true"
+									 yearRange="1950:2030" appendTo="body" dateFormat="yy-mm-dd" placeholder="Select To Date" [(ngModel)]="endDate">
+									</p-calendar>
+								</div>
+							</div>
+							<br/>
+							<label>Revenue Contract Modified Date</label>
+							<div class="row">
+								<div class="col-md-4">
+									<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="selectModStartDate" [monthNavigator]="true" [yearNavigator]="true"
+									 yearRange="1950:2030" appendTo="body" dateFormat="yy-mm-dd" placeholder="Select From Date" [(ngModel)]="modStartDate">
+									</p-calendar>
+								</div>
+								<div class="col-md-4">
+									<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="selectModEndDate" [monthNavigator]="true" [yearNavigator]="true"
+									 yearRange="1950:2030" appendTo="body" dateFormat="yy-mm-dd" placeholder="Select To Date" [(ngModel)]="modEndDate">
+									</p-calendar>
+								</div>
+							</div>
+
+							<br/>
+							<div class="row d-content">
+								<div class="col-md-12" class="text-right">
+									<button type="submit" (click)="commonSearch()" pButton class="primary-btn" label="Search"></button>
+									<button type="reset" class="secondary-btn" pButton (click)="onResettingDateRanges()" label="Reset"></button>
+								</div>
+							</div>
+						</div>
+					</p-panel>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<h2>Revenue Contract Results</h2>
+					<div class="search__container">
+						<form (ngSubmit)="commonSearch()">
+							<input pInputText class="" name="searchKey" id="searchKey" [(ngModel)]="globalSearch" placeholder="Search here..." />
+							<a class="globalSearchBtn" (click)="commonSearch()">
+								<em class="fa fa-search" aria-hidden="true"></em>
+							</a>
+							<a *ngIf="searched" class="globalSearchBtnx" (click)="onResetGlobalSearch()">
+								<em class="fa fa-times" aria-hidden="true"></em>
+							</a>
+						</form>
+					</div>
+
+					<div class="pull-right icons-list">
+						<a (click)="onClickAdvanceSearch($event)" class="add-column">
+							<em class="fa fa-search" *ngIf="!displayAdvancedSearch"></em>
+							<em class="fa fa-times" *ngIf="displayAdvancedSearch"></em>Advanced Search</a>
+
+						<a (click)="onEnablingFilters($event)" class="clear-filters">
+							<span *ngIf="!isToggled">
+								<em class="fa fa-check-square-o"></em>Enable Filters</span>
+							<span *ngIf="isToggled">
+								<em class="fa fa-times"></em>Clear Filters</span>
+						</a>
+						<a (click)="onAddingColumns($event)" class="add-column">
+							<em class="fa fa-cog"></em>Columns</a>
+						<a *isAuthorized="['upload','FILEUPLOAD']" (click)="importFile()" title="Import">
+							<em class="fa fa-upload"></em>
+						</a>
+						<a (click)="reset(dt)" title="Reset">
+							<em class="fa fa-refresh"></em>
+						</a>
+						<ng-container *ngIf="!disableExport">
+							<a *isAuthorized="['write','','AM']" (click)="exportExcel()" title="Export">
+								<em class="fa fa-external-link"></em>
+							</a>
+						</ng-container>
+
+
+						<div id="add-column-popup" *ngIf="!showAddColumns">
+							<div class="user-popup">
+								<div class="content overflow">
+									<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+									<label for="selectall">Select All</label>
+									<a class="close" title="Close" (click)="closeAddColumns($event)">&times;</a>
+									<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+										<ng-template let-col let-index="index" pTemplate="item">
+											<div *ngIf="col.drag">
+												<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+													<div class="drag">
+														<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+														<label>{{col.header}}</label>
+													</div>
+												</div>
+											</div>
+											<div *ngIf="!col.drag">
+												<div class="ui-helper-clearfix">
+													<div>
+														<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+														/>
+														<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+													</div>
+												</div>
+											</div>
+										</ng-template>
+									</p-listbox>
+
+								</div>
+								<div class="pull-right pt-2">
+									<a class="configColBtn" (click)="saveColumns()">Save</a>
+									<a class="configColBtn conf-cancel" (click)="closeAddColumns($event)">Cancel</a>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+
+
+					<div class="x-scroll">
+						<form>
+							<p-table #dt class="ui-datatable arrangementMgrTbl revenueContractTbl" id="revenueResults-dt" [value]="rmanArrangementsAllVList"
+							 [loading]="loading" (onLazyLoad)="getRmanArrangementsAllV($event)" [lazy]="true" [paginator]="showPaginator" [rows]="pageSize"
+							 [totalRecords]="totalElements" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand" (onColReorder)="onColReorder($event)"
+							 exportFilename="Rman_Arrangements.csv">
+
+								<ng-template pTemplate="colgroup" let-columns>
+									<colgroup>
+										<col *ngFor="let col of columns">
+									</colgroup>
+								</ng-template>
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+
+									<tr>
+										<th *ngFor="let col of columns" [ngStyle]="{'display': col.display}" pResizableColumn>
+											<a *ngIf="col.type=='text' ||col.type=='date' || col.type=='link'; else number" title="{{col.header}}">{{col.header}}
+												<span>
+													<em class="fa fa-angle-up" (click)="onsorting(col.field,'asc')"></em>
+													<em class="fa fa-angle-down" (click)="onsorting(col.field,'desc')"></em>
+												</span>
+											</a>
+
+											<ng-template #number>
+												<a class="number" title="{{col.header}}">{{col.header}}
+													<span>
+														<em class="fa fa-angle-up" (click)="onsorting(col.field,'asc')"></em>
+														<em class="fa fa-angle-down" (click)="onsorting(col.field,'desc')"></em>
+													</span>
+												</a>
+											</ng-template>
+										</th>
+
+									</tr>
+
+									<tr *ngIf="isToggled">
+										<ng-container *ngFor="let col of columns">
+
+											<th [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>
+												<input pInputText type="text" class="table-textbox" name="{{col.field}}" [(ngModel)]="rmanSearchObj[col.field]" />
+												<button type="submit" (click)="commonSearch()" class="pi pi-search"></button>
+											</th>
+										</ng-container>
+
+									</tr>
+								</ng-template>
+
+								<ng-template pTemplate="body" let-rowData let-rmanArrangementsAllV>
+									<tr [pSelectableRow]="rowData">
+
+										<ng-container *ngFor="let col of columns">
+											<td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+												{{rowData[col.field]}}
+											</td>
+
+											<td *ngIf="col.type == 'link'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+												<span>
+													<a href="#" [routerLink]="['/rmanArrangementsAllV', 'rmanArrangementsOverView', rmanArrangementsAllV.arrangementId,rmanArrangementsAllV.dealFlag]"
+													 title="{{rowData[col.field]}}">{{rowData[col.field]}}</a>
+												</span>
+											</td>
+
+											<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+												{{rowData[col.field]}}
+											</td>
+
+											<td *ngIf="col.type == 'date'" title="{{rowData[col.field] |date:'yyyy-MM-dd'}}" [ngStyle]="{'display': col.display}">
+												{{rowData[col.field] | date:'yyyy-MM-dd'}}
+											</td>
+
+											<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+												{{rowData[col.field] | round}}
+											</td>
+										</ng-container>
+
+
+									</tr>
+								</ng-template>
+
+								<ng-template pTemplate="emptymessage" let-columns>
+									<div class="no-results-data">
+										<p>{{noData}}</p>
+									</div>
+								</ng-template>
+							</p-table>
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="content-section implementation">
+</div>
+
+<div class="lds-roller" style="top: 0px;" *ngIf="uploadLoading">
+	<div></div>
+	<div></div>
+	<div></div>
+	<div></div>
+	<div></div>
+	<div></div>
+	<div></div>
+	<div></div>
+</div>
+<p-dialog header="Deal Arrangement" id="dealArrangement" width="800" [(visible)]="displayDealDialog" [draggable]="true"
+ showEffect="fade" [blockScroll]="true" [modal]="true" (onHide)="onHide($event)">
+	<ng-template ad-cm></ng-template>
+</p-dialog>
+
+<p-dialog header="Select Upload File Type" width="450" [(visible)]="displaySelectMode" [draggable]="true" showEffect="fade"
+ [modal]="true">
+
+	<div class="ui-md-12">
+		<div class="row" class="ml-0">
+			<div class="ui-md-4">
+				<p-radioButton name="group1" value="PSTBOOK" label="Bookings" [(ngModel)]=smode inputId="opt2" (onClick)="onPostBooking($event)"></p-radioButton>
+			</div>
+			<div class="ui-md-4">
+				<p-radioButton name="group1" value="SHIPMENTS" label="Shipments" [(ngModel)]=smode inputId="opt4" (onClick)="onShipments($event)"></p-radioButton>
+			</div>
+			<div class="ui-md-4">
+				<p-radioButton name="group1" value="PSTBILL" label="Invoices" [(ngModel)]=smode inputId="opt3" (onClick)="onInvoices($event)"></p-radioButton>
+			</div>
+			<div class="ui-md-4">
+				<p-radioButton name="group1" value="QUOTES" label="Quotes" [(ngModel)]=smode inputId="opt4" (onClick)="onQuotes($event)"></p-radioButton>
+			</div>
+			<div class="ui-md-4">
+				<p-radioButton name="group1" value="CONTRELEASE" label="Contingencies" [(ngModel)]=smode inputId="opt5" (onClick)="onContingencyRelease($event)"></p-radioButton>
+			</div>
+			<div class="ui-md-4">
+				<p-radioButton name="group1" value="USAGES" label="Usages" [(ngModel)]=smode inputId="opt6" (onClick)="onUsages($event)"></p-radioButton>
+			</div>
+		</div>
+	</div>
+</p-dialog>
+
+<p-dialog header="Upload  Bookings " #bookingsUpload width="500" [(visible)]="_uploadService.displayPBDialog" [draggable]="true" showEffect="fade"
+ [modal]="true" (onAfterHide)="cancel()">
+	<p-fileUpload id="upload-bookings-input" name="file" customUpload="true" (uploadHandler)="fileUploadHandler($event, 'upload/documents/BOOK', 'book')"
+	 accept=".csv" invalidFileTypeMessageSummary="{0}:Invalid file Type"></p-fileUpload>
+	<progress-bar></progress-bar>
+</p-dialog>
+<p-dialog header="Upload  Shipments " #shipmentsUpload width="500" [(visible)]="_uploadService.displayshipmentsDialog" [draggable]="true"
+ showEffect="fade" [modal]="true" (onAfterHide)="cancel()">
+	<p-fileUpload id="upload-bookings-input" name="file" customUpload="true" (uploadHandler)="fileUploadHandler($event, 'upload/documents/SHIP', 'ship')"
+	 accept=".csv" invalidFileTypeMessageSummary="{0}:Invalid file Type"> </p-fileUpload>
+	<progress-bar></progress-bar>
+</p-dialog>
+<p-dialog header="Upload Invoices" #invoicesUpload width="500" [(visible)]="_uploadService.displayInvDialog" [draggable]="true" showEffect="fade"
+ [modal]="true" (onAfterHide)="cancel()">
+	<p-fileUpload id="upload-invoices-input" name="file" customUpload="true" (uploadHandler)="fileUploadHandler($event, 'upload/documents/INV', 'inv')"
+	 accept=".csv" invalidFileTypeMessageSummary="{0}:Invalid file Type"> </p-fileUpload>
+	<progress-bar></progress-bar>
+</p-dialog>
+<p-dialog header="Upload Quotes" #quotesUpload width="500" [(visible)]="_uploadService.displayQuotesDialog" [draggable]="true" showEffect="fade"
+ [modal]="true" (onAfterHide)="cancel()">
+	<p-fileUpload id="upload-quotes-input" name="file" customUpload="true" (uploadHandler)="fileUploadHandler($event, '/upload/documents/QUOTE', 'quote')"
+	 accept=".csv" invalidFileTypeMessageSummary="{0}:Invalid file Type"> </p-fileUpload>
+	<progress-bar></progress-bar>
+</p-dialog>
+<p-dialog header="Upload Contingencies" #contRelUpload width="500" [(visible)]="_uploadService.displayContRelDialog" [draggable]="true" showEffect="fade"
+ [modal]="true" (onAfterHide)="cancel()">
+	<p-fileUpload id="upload-contRel-input" name="file" customUpload="true" (uploadHandler)="fileUploadHandler($event, '/upload/documents/VCR', 'vcr')"
+	 accept=".csv" invalidFileTypeMessageSummary="{0}:Invalid file Type"> </p-fileUpload>
+	<progress-bar></progress-bar>
+</p-dialog>
+<p-dialog header="Upload Usages" #usageUpload width="500" [(visible)]="_uploadService.displayUsageDialog" [draggable]="true" showEffect="fade"
+ [modal]="true" (onAfterHide)="cancel()">
+	<p-fileUpload id="upload-usage-input" name="file" customUpload="true" (uploadHandler)="fileUploadHandler($event, 'upload/usageFile', 'usage')"
+	 accept=".csv" invalidFileTypeMessageSummary="{0}:Invalid file Type"> </p-fileUpload>
+	<progress-bar></progress-bar>
+</p-dialog>

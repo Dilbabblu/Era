@@ -1,0 +1,418 @@
+<div class="content-section implementation">
+</div>
+
+<p-panel header="View Holds & Events" class="row-active" (onBeforeToggle)="onBeforeToggle($event)">
+	<p-header>
+		<div class="pull-right icons-list" *ngIf="collapsed">
+			<a (click)="onConfiguringColumns($event)" class="add-column">
+				<em class="fa fa-cog"></em>Columns</a>
+			<a *isAuthorized="['write','ADDCONT']" (click)="showDialogToAdd()" title="Add">
+				<em class="fa fa-plus-circle"></em>
+			</a>
+			<a (click)="reset(dt)" title="Reset">
+				<em class="fa fa-refresh"></em>
+			</a>
+
+			<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+				<div class="user-popup">
+					<div class="content overflow">
+						<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+						<label for="selectall">Select All</label>
+						<a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+						<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+							<ng-template let-col let-index="index" pTemplate="item">
+								<div *ngIf="col.drag">
+									<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+										<div class="drag">
+											<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+											<label>{{col.header}}</label>
+										</div>
+									</div>
+								</div>
+								<div *ngIf="!col.drag">
+									<div class="ui-helper-clearfix">
+										<div>
+											<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+											/>
+											<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+										</div>
+									</div>
+								</div>
+							</ng-template>
+						</p-listbox>
+					</div>
+					<div class="pull-right">
+						<a class="configColBtn" (click)="saveColumns()">Save</a>
+						<a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</p-header>
+	<div class="x-scroll">
+		<p-table class="ui-datatable arrangementMgrTbl" id="rmanContTransToRel-dt" [loading]="loading" #dt [value]="rmanContTransToReleaseList"
+		 selectionMode="single" [(selection)]="selectedRmanContTransToRelease" (onLazyLoad)="getRmanContTransToRelease($event)"
+		 (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnSelect($event)" [paginator]="showPaginator" [rows]="pageSize"
+		 [totalRecords]="totalElements" scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+			<ng-template pTemplate="colgroup" let-columns>
+				<colgroup>
+					<col>
+					<col *ngFor="let col of columns">
+				</colgroup>
+			</ng-template>
+
+			<ng-template pTemplate="header" class="arrangementMgrTblHead">
+				<tr>
+					<th></th>
+					<ng-container *ngFor="let col of columns">
+						<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+						<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+						 title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+					</ng-container>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-rowData let-rmanContTransToRelease>
+				<tr [pSelectableRow]="rowData">
+					<td>
+						<span *isAuthorized="['write','RELCONT']" [ngClass]="{'noPointer': rmanContTransToRelease.status == 'C'}">
+							<a (click)="editRow(rmanContTransToRelease)" class="icon-edit" title="Edit"></a>
+						</span>
+					</td>
+					<ng-container *ngFor="let col of columns">
+						<td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+							{{rowData[col.field]}}
+						</td>
+
+						<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+							{{rowData[col.field]}}
+						</td>
+
+						<td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+							{{rowData[col.field] | date: 'MM/dd/yyyy'}}
+						</td>
+
+						<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+							{{rowData[col.field] | round}}
+						</td>
+					</ng-container>
+
+				</tr>
+
+			</ng-template>
+			<ng-template pTemplate="emptymessage" let-columns>
+				<div class="no-results-data">
+					<p>{{noData}}</p>
+				</div>
+			</ng-template>
+		</p-table>
+	</div>
+</p-panel>
+
+<rmanContTransLines-data (getAllRelease)="getAllRmanContTransToRelease()"></rmanContTransLines-data>
+
+<rmanContReleaseLinesV-data [pTransHeaderId]='pTransHeaderId'></rmanContReleaseLinesV-data>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+	<form (ngSubmit)="search()">
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield">
+						<input pInputText name="transLineId" id="releaseLinestransLineId" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToReleaseSearch.transLineId"
+						/>
+						<label for="ranking">{{columnLabels['transLineId']}}</label>
+					</span>
+				</div>
+			</div>
+
+		</div>
+
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+			<button type="submit" pButton label="Search"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+<p-dialog header="Edit Contingency To Release" width="1000" [draggable]="true" [(visible)]="displayDialog" showEffect="fade"
+ [modal]="true">
+
+	<form [formGroup]="transToReleaseForm">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanContTransToRelease">
+			<h4>Application Hierarchy</h4>
+			<hr/>
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan"> Release Level </span>
+					<p-dropdown [options]="rmanLookupsV2" name="applicationLevel" [ngModelOptions]="{standalone: true}" (onChange)="onSelectApplicationLevel($event.value)"
+					 [(ngModel)]="rmanContTransToRelease.applicationLevel"></p-dropdown>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan"> Element </span>
+					<p-dropdown [options]="rmanContProdNameLovV" name="element" [ngModelOptions]="{standalone: true}" [disabled]="rmanContTransToRelease.applicationLevel == 'POB'"
+					 [(ngModel)]="rmanContTransToRelease.element"></p-dropdown>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-6 ">
+					<span class="selectSpan"> Source Header Id </span>
+					<p-dropdown [options]="rmanContSourceLov" name="sourceHeaderId" [disabled]="rmanContTransToRelease.applicationLevel == 'ARRANGEMENT'"
+					 [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.sourceHeaderId" (onChange)="onSelectSourceHeader($event.value)"></p-dropdown>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan"> Product Group </span>
+					<p-dropdown [options]="rmanContProdGroupV1" name="attribute3" [ngModelOptions]="{standalone: true}" [disabled]="rmanContTransToRelease.applicationLevel == 'POB'"
+					 [(ngModel)]="rmanContTransToRelease.attribute3"></p-dropdown>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan"> Source Line Id </span>
+					<p-dropdown [options]="rmanContSourceLov1" name="sourceLineId" [disabled]="rmanContTransToRelease.applicationLevel == 'ARRANGEMENT'"
+					 [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.sourceLineId"></p-dropdown>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan"> Product Category </span>
+					<p-dropdown [options]="rmanContProdCategoryV1" name="attribute2" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.attribute2"
+					 [disabled]="rmanContTransToRelease.applicationLevel == 'POB'"></p-dropdown>
+				</div>
+
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan"> Post Allocation Contingency </span>
+					<p-dropdown [options]="rmanLookupsV" name="attribute29" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.attribute29"
+					 [disabled]="true"></p-dropdown>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan"> Product Name </span>
+					<p-dropdown [options]="rmanContProdNameV1" name="productName" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.productName"
+					 [disabled]="rmanContTransToRelease.applicationLevel == 'POB'"></p-dropdown>
+				</div>
+
+
+			</div>
+
+			<div class="ui-g-12">
+
+
+				<div class="ui-g-6">
+					<span class="selectSpan"> Cont Event Type </span>
+					<p-dropdown [options]="rmanLookupsV3" name="contEventType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.contEventType"
+					 [disabled]="true"></p-dropdown>
+				</div>
+			</div>
+		</div>
+
+		<div class="ui-g-12">
+		</div>
+
+		<h4>Contingency Details & Templates</h4>
+		<hr/>
+		<div class="ui-g-12">
+			<div class="ui-g-6">
+				<span class="selectSpan"> Name </span>
+				<p-dropdown [options]="rmanContHeaderV" name="ruleHeaderId" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.ruleHeaderId"
+				 [disabled]="true"></p-dropdown>
+			</div>
+			<div class="ui-g-6 pull-right">
+				<span class="selectSpan"> Template </span>
+				<p-dropdown [options]="rmanContLinkTemplateV" name="templateId" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.templateId"
+				 [disabled]="true"></p-dropdown>
+			</div>
+
+		</div>
+
+		<div class="ui-g-12">
+			<div class="ui-g-6">
+				<span class="md-inputfield">
+					<span class="selectSpan"> {{columnLabels['ranking']}} </span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['ranking']}}" name="ranking" id="releaseLinesranking" [ngModelOptions]="{standalone: true}"
+					 [(ngModel)]="rmanContTransToRelease.ranking" [disabled]="true" />
+				</span>
+			</div>
+			<div class="ui-g-6 pull-right">
+				<span class="md-inputfield">
+					<span class="selectSpan"> {{columnLabels['revenue']}} </span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['revenue']}}" id="releaseLinesrevenue" name="revenue" [ngModelOptions]="{standalone: true}"
+					 [(ngModel)]="rmanContTransToRelease.revenue" [disabled]="true" />
+				</span>
+			</div>
+		</div>
+
+
+		<div class="ui-g-12">
+			<div class="ui-g-6">
+				<span class="md-inputfield">
+					<span class="selectSpan"> {{columnLabels['ruleCategory']}} </span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['ruleCategory']}}" id="releaseLinesruleCategory" name="ruleCategory"
+					 [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.ruleCategory" [disabled]="true" />
+				</span>
+			</div>
+			<div class="ui-g-6 pull-right">
+				<span class="md-inputfield">
+					<span class="selectSpan"> {{columnLabels['cogs']}} </span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['cogs']}}" id="releaseLinescogs" name="cogs" [ngModelOptions]="{standalone: true}"
+					 [(ngModel)]="rmanContTransToRelease.cogs" [disabled]="true" />
+				</span>
+			</div>
+		</div>
+
+		<div class="ui-g-12">
+			<div class="ui-g-6">
+				<span class="md-inputfield">
+					<span class="selectSpan"> {{columnLabels['attribute28']}} </span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['attribute28']}}" id="releaseLinesattribute28" name="attribute28"
+					 [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.attribute28" [disabled]="true" />
+				</span>
+			</div>
+			<div class="ui-g-6 pull-right">
+				<span class="selectSpan"> Invoice Hold </span>
+				<p-dropdown [options]="rmanLookupsV" name="invoiceHold" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.invoiceHold"
+				 [disabled]="true"></p-dropdown>
+			</div>
+		</div>
+
+		<div class="ui-g-12">
+			<div class="ui-g-6">
+				<span class="selectSpan">{{columnLabels['applyType']}}</span>
+				<p-dropdown [options]="rmanLookupsV4" name="applyType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.applyType"></p-dropdown>
+			</div>
+			<div class="ui-g-6 pull-right">
+				<span class="md-inputfield">
+					<span class="selectSpan"> {{columnLabels['deferredMethod']}} </span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['deferredMethod']}}" id="releaseLinesdeferredMethod" name="deferredMethod"
+					 [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.deferredMethod" [disabled]="true" />
+				</span>
+			</div>
+
+		</div>
+
+		<div class="ui-g-12">
+			<div class="ui-g-6">
+				<span class="selectSpan"> Event </span>
+				<p-dropdown [options]="rmanLookupsV1" name="event" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.event"
+				 [disabled]="true"></p-dropdown>
+			</div>
+			<div class="ui-g-6 pull-right">
+				<span class="selectSpan"> Release Type </span>
+				<p-dropdown [options]="rmanLookupsV7" name="releaseType" [(ngModel)]="rmanContTransToRelease.releaseType" formControlName="releaseType"
+				 (onChange)="onContRelease($event.value,rmanContTransToRelease.applyType)"></p-dropdown>
+				<div *ngIf="formErrors.releaseType" class="ui-message ui-messages-error ui-corner-all">
+					{{ formErrors.releaseType }}
+				</div>
+			</div>
+
+
+		</div>
+
+		<div class="ui-g-12 ui-fluid">
+			<div class="ui-g-6">
+				<span class="md-inputfield">
+					<span class="selectSpan">{{columnLabels['autoReleaseDays']}}</span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['autoReleaseDays']}}" id="releaseLinesautoReleaseDays" name="autoReleaseDays"
+					 [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.autoReleaseDays" [disabled]="true" />
+				</span>
+			</div>
+			<div class="ui-g-6 pull-right">
+				<span class="md-inputfield">
+					<span class="selectSpan">{{columnLabels['releaseCogs']}}</span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['releaseCogs']}}" id="releaseLinesreleaseCogs" name="releaseCogs"
+					 [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.releaseCogs" [disabled]="rmanContTransToRelease.releaseType == 'FULL'"
+					/>
+				</span>
+			</div>
+
+
+		</div>
+
+		<div class="ui-g-12 ui-fluid">
+			<div class="ui-g-6">
+				<span class="md-inputfield">
+					<span class="selectSpan">{{columnLabels['maxDuration']}}</span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['maxDuration']}}" id="releaseLinesmaxDuration" name="maxDuration"
+					 [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.maxDuration" [disabled]="true" />
+				</span>
+			</div>
+			<div class="ui-g-6 pull-right">
+
+				<span class="md-inputfield">
+					<span class="selectSpan">{{columnLabels['releaseRevenue']}}</span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['releaseRevenue']}}" id="releaseLinesreleaseRevenue" name="releaseRevenue"
+					 [(ngModel)]="rmanContTransToRelease.releaseRevenue" formControlName="releaseRevenue" />
+					<div *ngIf="formErrors.releaseRevenue" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.releaseRevenue }}
+					</div>
+				</span>
+			</div>
+
+		</div>
+
+
+		<div class="ui-g-12 ui-fluid">
+			<div class="ui-g-6">
+				<span class="md-inputfield">
+					<span class="selectSpan">{{columnLabels['comments']}}</span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['comments']}}" id="releaseLinescomments" name="comments" [ngModelOptions]="{standalone: true}"
+					 [(ngModel)]="rmanContTransToRelease.comments" />
+				</span>
+			</div>
+			<div class="ui-g-6 pull-right">
+				<span class="md-inputfield">
+					<span class="selectSpan">{{columnLabels['attribute14']}}</span>
+					<input pInputText class="textbox" placeholder="{{columnLabels['attribute14']}}" id="releaseLinesattribute14" name="attribute14"
+					 [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.attribute14" />
+				</span>
+			</div>
+		</div>
+
+		<div class="ui-g-12 ui-fluid">
+			<div class="ui-g-6">
+				<span class="selectSpan">Release Date</span>
+				<p-calendar showAnim="slideDown" name="releaseDate" inputStyleClass="textbox" id="releaseDate" [monthNavigator]="true" [yearNavigator]="true"
+				 yearRange="1950:2030" [minDate]="minimumDate" [(ngModel)]="rmanContTransToRelease.releaseDate" dateFormat="yy-mm-dd"
+				 placeholder="Release Date" appendTo="body" formControlName="releaseDate"></p-calendar>
+
+				 <div *ngIf="formErrors.releaseDate" class="ui-message ui-messages-error ui-corner-all">
+					{{ formErrors.releaseDate }}
+				</div>
+
+			</div>
+		</div>
+
+
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" class="primary-btn" pButton label="Release" (click)="release()" [disabled]="(!transToReleaseForm.valid )"></button>
+			<button type="button" class="secondary-btn" pButton (click)="displayDialog=false" label="Cancel"></button>
+
+		</div>
+	</p-footer>
+</p-dialog>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+
+<p-dialog header="Prompt" width="400" [draggable]="true" [(visible)]="displayConditionDialog" showEffect="fade" [modal]="true">
+
+
+	<h5>Release revenue should be equal to Revenue value</h5>
+
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" class="primary-btn" pButton label="OK" (click)="displayConditionDialog=false"></button>
+			<button type="button" class="secondary-btn" pButton (click)="displayConditionDialog=false" label="Cancel"></button>
+
+		</div>
+	</p-footer>
+</p-dialog>

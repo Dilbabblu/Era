@@ -1,0 +1,206 @@
+<div class="content-section implementation">
+</div>
+<div class="card-wrapper">
+        <div class="container-fluid">
+                <div class="row">
+                        <div class="col-md-12">
+                                <div class="card-block">
+
+                                        <p-panel header="Currencies" [toggleable]="false" (onBeforeToggle)="onBeforeToggle($event)">
+                                                <p-header>
+
+                                                        <div class="pull-right icons-list" *ngIf="collapsed">
+                                                                <a (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+                                                                <a *isAuthorized="['write','MCURR']" (click)="showDialogToAdd()" title="Add">
+                                                                        <em class="fa fa-plus-circle"></em>
+                                                                </a>
+                                                                <a (click)="showDialogToSearch()" title="Search">
+                                                                        <em class="fa fa-search"></em>
+                                                                </a>
+                                                                <a (click)="reset(dt)" title="Reset">
+                                                                        <em class="fa fa-refresh"></em>
+                                                                </a>
+
+                                                                <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                                                                                <div class="user-popup">
+                                                                                  <div class="content overflow">
+                                                                                    <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+                                                                                    <label for="selectall">Select All</label>
+                                                                                    <a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+                                                                                    <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                                                                                      <ng-template let-col let-index="index" pTemplate="item">
+                                                                                        <div *ngIf="col.drag">
+                                                                                        <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+                                                                                         (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                                                                                          <div class="drag">
+                                                                                            <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+                                                                                            <label>{{col.header}}</label>
+                                                                                          </div>
+                                                                                        </div>
+                                                                                        </div>
+                                                                                        <div *ngIf="!col.drag">
+                                                                                        <div class="ui-helper-clearfix">
+                                                                                          <div>
+                                                                                            <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+                                                                                            <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                                                                                          </div>
+                                                                                        </div>
+                                                                                        </div>
+                                                                                      </ng-template>
+                                                                                      </p-listbox>
+                                                                            
+                                                                                  </div>
+                                                                            
+                                                                                  <div class="pull-right">
+                                                                                    <a class="configColBtn" (click)="saveColumns()">Save</a>
+                                                                                    <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                                                                                  </div>
+                                                                            
+                                                                                </div>
+                                                                              </div>
+                                                        </div>
+                                                </p-header>
+
+                                                <div class="x-scroll">
+                                                        <p-table #dt class="ui-datatable arrangementMgrTbl" [loading]="loading" id="rmanCurrencies-dt" [value]="rmanCurrencyList"
+                                                                selectionMode="single" (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanCurrency($event)"
+                                                                [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"
+                                                                scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand" >
+
+                                                                <ng-template pTemplate="colgroup" let-columns>
+                                                                                <colgroup>
+                                                                                  <col *ngFor="let col of columns">
+                                                                                </colgroup>
+                                                                              </ng-template>
+                                                                
+                                                                               
+                                                                              <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                                                                                <tr>
+                                                                                  <ng-container *ngFor="let col of columns">
+                                                                                    <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                                                                                    <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                                                                                  </ng-container>
+                                                                                </tr>
+                                                                              </ng-template>
+                                                                
+                                                                              <ng-template pTemplate="body" let-rowData let-rmanCurrency let-columns="columns">
+                                                                                <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                                                                                 
+                                                                                  <ng-container *ngFor="let col of columns" >
+                                                                                    <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                                                                                      {{rowData[col.field]}}
+                                                                                    </td>
+                                                                                  
+                                                                                    <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                                                                                      {{rowData[col.field]}}
+                                                                                    </td>
+                                                                                  
+                                                                                    <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                                                                                      {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                                                                                    </td>
+                                                                                  
+                                                                                    <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                                                                                      {{rowData[col.field] | round}}
+                                                                                    </td>
+                                                                                  </ng-container>
+                                                                                        
+                                                                                </tr>                 
+                                                                              </ng-template>
+                                                                
+                                                                <ng-template pTemplate="emptymessage" let-columns>
+                                                                        <tr *ngIf="!columns">
+                                                                                <td class="no-data">{{noData}}</td>
+                                                                        </tr>
+                                                                </ng-template>
+                                                        </p-table>
+                                                </div>
+
+                                        </p-panel>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+
+<p-dialog header="Search" width="600" [draggable]="true" [(visible)]="displaySearchDialog" showEffect="fade" [modal]="true" [blockScroll]="true">
+        <form>
+                <div class="ui-grid ui-grid-responsive ui-fluid">
+
+                        <div class="ui-g-12">
+                                <div class="ui-g-6">
+                                        <span class="md-inputfield">
+                                                <span class="selectSpan">Currency Code</span>
+                                                <input pInputText name="currencyCode" class="textbox" placeholder="Currency Code" id="currencyCode" [ngModelOptions]="{standalone: true}"
+                                                        [(ngModel)]="rmanCurrencySearch.currencyCode" />
+                                        </span>
+                                </div>
+                                <div class="ui-g-6 pull-right">
+                                        <span class="md-inputfield">
+                                                <span class="selectSpan">Name</span>
+                                                <input pInputText name="name" id="name" class="textbox" placeholder="Name" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanCurrencySearch.name"
+                                                />
+                                        </span>
+                                </div>
+                        </div>
+
+
+
+                </div>
+        </form>
+        <p-footer>
+                <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                        <button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+                        <button type="button" pButton class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+                </div>
+        </p-footer>
+
+</p-dialog>
+<p-dialog header="{{(newRmanCurrency) ? 'Create Currency' : 'Edit Currency'}}" width="500" [(visible)]="displayDialog" [draggable]="true" showEffect="fade"
+        [modal]="true" [blockScroll]="true" (onHide)="cancelAddEdit()">
+        <form (ngSubmit)="save()" [formGroup]="currencyForm">
+                <div class="ui-g ui-fluid" *ngIf="rmanCurrency">
+                        <div class="ui-g-12 form-group">
+                                <div class="ui-grid-row">
+                                        <div class="ui-g-12">
+
+                                                <div class="ui-g-6">
+                                                        <span class="md-inputfield">
+                                                                <span class="selectSpan"> Currency Code
+                                                                        <span class="red-color">*</span>
+                                                                </span>
+                                                                <input pInputText id="currencyCode" class="textbox" placeholder="Currency Code" name="currencyCode" required [(ngModel)]="rmanCurrency.currencyCode"
+                                                                        formControlName="currencyCode" />
+                                                                <div *ngIf="formErrors.currencyCode" class="ui-message ui-messages-error ui-corner-all">
+                                                                        {{ formErrors.currencyCode }}
+                                                                </div>
+                                                        </span>
+                                                </div>
+                                                <div class="ui-g-6 pull-right">
+                                                        <span class="md-inputfield">
+                                                                <span class="selectSpan"> Name
+                                                                        <span class="red-color">*</span>
+                                                                </span>
+                                                                <input pInputText id="name" name="name" class="textbox" placeholder="Name" required [(ngModel)]="rmanCurrency.name" formControlName="name"
+                                                                />
+                                                                <div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+                                                                        {{ formErrors.name }}
+                                                                </div>
+                                                        </span>
+                                                </div>
+
+
+                                        </div>
+                                </div>
+                        </div>
+
+                </div>
+        </form>
+        <p-footer>
+                <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                        <button type="submit" pButton class="primary-btn" [disabled]="!currencyForm.valid" label="Save" (click)="save()"></button>
+                        <button type="button" pButton class="secondary-btn" (click)="cancelAddEdit()" label="Cancel"></button>
+                </div>
+        </p-footer>
+</p-dialog>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

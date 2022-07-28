@@ -1,0 +1,348 @@
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card-block">
+<p-panel header="Manage Legal Entities" (onBeforeToggle)="onBeforeToggle($event)">
+	<p-header>
+		<div class="pull-right icons-list" *ngIf="collapsed">
+        <a (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+		<a  *isAuthorized="['write','LE']" (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+		<a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+		<a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+        <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+            <div class="user-popup">
+                <div class="content overflow">
+                    <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+                    <label for="selectall">Select All</label>
+                    <a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+                    <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                        <ng-template let-col let-index="index" pTemplate="item">
+                            <div *ngIf="col.drag">
+                                <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                                    <div class="drag">
+                                        <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+                                        <label>{{col.header}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="!col.drag">
+                                <div class="ui-helper-clearfix">
+                                    <div>
+                                        <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+                                        />
+                                        <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-listbox>
+                </div>
+                <div class="pull-right">
+                    <a class="configColBtn" (click)="saveColumns()">Save</a>
+                    <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                </div>
+            </div>
+        </div>
+		</div>
+        </p-header>
+        
+        <div class="x-scroll">
+        <p-table class="ui-datatable arrangementMgrTbl" #dt id="rmanLegalEntities-dt" [loading]="loading" [value]="rmanLegalEntitiesList" selectionMode="single"  
+        (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanLegalEntities($event)" [lazy]="true" [paginator]="true"
+        [rows]="pageSize" [totalRecords]="totalElements"  scrollable="true" 
+        [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+
+                <ng-template pTemplate="colgroup" let-columns>
+                    <colgroup>
+                        <col>
+                        <col *ngFor="let col of columns">
+                    </colgroup>
+                </ng-template>
+
+
+                <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                    <tr>
+                        <th></th>
+                        <ng-container *ngFor="let col of columns">
+                            <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                            <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+                                title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                        </ng-container>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-rmanLegalEntities let-columns="columns">
+                    <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td>
+                            <a  *isAuthorized="['write','LE']" (click)="editRow(rmanLegalEntities)" class="icon-edit" title="Edit"> </a>
+                            <a  *isAuthorized="['write','LE']" (click)="delete(rmanLegalEntities)" class="icon-delete" title="Delete"> </a>
+                        
+                        </td>
+                        <ng-container *ngFor="let col of columns">
+                            <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                                {{rowData[col.field]}}
+                            </td>
+
+                            <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                                {{rowData[col.field]}}
+                            </td>
+
+                            <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                                {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                            </td>
+
+                            <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                                {{rowData[col.field] | round}}
+                            </td>
+                        </ng-container>
+
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage" let-columns>
+                    <tr *ngIf="!columns">
+                        <td class="no-data">{{noData}}</td>
+                    </tr>
+                </ng-template>
+
+             </p-table>
+             </div>
+
+</p-panel>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+	<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true">
+		<form >
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+		<div class="ui-g-12">
+            <div class="ui-g-6">
+                <span class="md-inputfield">
+                    <span class="selectSpan"> {{leaglEntityColumns['name']}} </span>
+                    <input pInputText name="name" id="name" class="textbox" placeholder="Name" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntitiesSearch.name" />
+                </span>
+            </div>
+			<div class="ui-g-6 pull-right">
+				<span class="selectSpan"> Functional Currency </span>
+				<p-dropdown [options]="rmanCurrency3" appendTo="body" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntitiesSearch.functionalCurrency" name="functionalCurrency" [filter]="true" ></p-dropdown>
+			</div>
+		</div>
+		<div class="ui-g-12">
+
+			<div class="ui-g-6">
+				<span class="selectSpan"> Reporting Currency </span>
+				<p-dropdown [options]="rmanCurrency2" appendTo="body" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntitiesSearch.reportingCurrency" name="reportingCurrency" [filter]="true" ></p-dropdown>
+			</div>
+
+			<div class="ui-g-6 pull-right">
+				<span class="selectSpan"> Allocation Currency </span>
+				<p-dropdown [options]="rmanCurrency" appendTo="body" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntitiesSearch.allocationCurrency" name="allocationCurrency" [filter]="true" ></p-dropdown>
+			</div>
+		</div>
+			</div>
+
+		</form>
+		<p-footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+                    <button type="button" pButton  class="secondary-btn" (click)="cancelSearch()" label="Cancel"></button>
+				</div>
+			</p-footer>
+	</p-dialog>
+	<p-dialog header="{{(newRmanLegalEntities) ? 'Create New Legal Entity' : 'Edit Legal Entity'}}" [draggable]="true" width="800" [(visible)]="displayDialog"  showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelAddEdit()">
+	<form (ngSubmit)="save()" [formGroup]="legalEntitiesForm" novalidate>
+		<div class="ui-g ui-g-responsive ui-fluid" *ngIf="rmanLegalEntities">
+
+		<div class="ui-g-12">
+            <div class="ui-g-6">
+                <span class="md-inputfield">
+                    <span class="selectSpan">{{leaglEntityColumns['name']}}<span class="red-color">*</span></span>
+                    <input pInputText name="name" id="name" class="textbox" placeholder="Name" [(ngModel)]="rmanLegalEntities.name" formControlName="name"/>
+				<div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+					{{ formErrors.name }}
+				</div>
+			</span>
+            </div>
+			<div class="ui-g-6 pull-right">
+				<span class="selectSpan"> Functional Currency </span>
+				<p-dropdown [options]="rmanCurrency3"  [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.functionalCurrency" name="functionalCurrency" [filter]="true" ></p-dropdown>
+			</div>
+		</div>
+		<div class="ui-g-12">
+
+			<div class="ui-g-6">
+				<span class="selectSpan"> Reporting Currency </span>
+				<p-dropdown [options]="rmanCurrency2"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.reportingCurrency" name="reportingCurrency" [filter]="true" ></p-dropdown>
+			</div>
+
+			<div class="ui-g-6 pull-right">
+				<span class="selectSpan"> Allocation Currency </span>
+				<p-dropdown [options]="rmanCurrency"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.allocationCurrency" name="allocationCurrency" [filter]="true" ></p-dropdown>
+			</div>
+		</div>
+		<div class="ui-g-12">
+			<div class="ui-g-6">
+                <span class="md-inputfield">
+                    <span class="selectSpan"> {{leaglEntityColumns['ledgerName']}} </span>
+                    <input pInputText  name="ledgerName"  id="ledgerName" class="textbox" placeholder="Ledger Name" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.ledgerName" formControlName="ledgerName"/>
+                    <div *ngIf="formErrors.ledgerName" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.ledgerName }}
+                    </div>
+                </span>
+            </div>
+			<div class="ui-g-6 pull-right">
+                <span class="md-inputfield">
+                    <span class="selectSpan"> {{leaglEntityColumns['calendar']}} </span>
+                    <input pInputText  name="calendar"  id="calendar" class="textbox" placeholder="Calendar" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.calendar" formControlName="calendar"/>
+                    <div *ngIf="formErrors.calendar" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.calendar }}
+                    </div>
+                </span>
+            </div>
+		</div>
+		<div class="ui-g-12">
+			 <div class="ui-g-6">
+               <span class="selectSpan"> Currency Code </span>
+				<p-dropdown [options]="rmanCurrency1"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.currencyCode" name="currencyCode" [filter]="true" ></p-dropdown>
+            </div> 
+			<div class="ui-g-6 pull-right">
+				<span class="selectSpan"> Enabled Flag <span class="red-color">*</span></span>
+				<p-dropdown [options]="rmanLookupsV"   [(ngModel)]="rmanLegalEntities.enabledFlag" name="enabledFlag" [filter]="true" appendTo="body" formControlName="flag">
+
+				</p-dropdown>
+				<div *ngIf="formErrors.flag" class="ui-message ui-messages-error ui-corner-all">
+					{{ formErrors.flag }}
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+	                <span class="md-inputfield">
+                        <span class="selectSpan">{{leaglEntityColumns['description']}}</span>
+                        <input pInputText  name="description"  class="textbox" placeholder="Description" id="description"  [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.description" formControlName="description"/>
+                        <div *ngIf="formErrors.description" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.description }}
+                        </div>
+                    </span>
+	            </div>
+
+
+			</div>
+
+		</div>
+
+
+
+		<div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="legalEntityId">{{leaglEntityColumns['legalEntityId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="legalEntityId"  id="legalEntityId" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.legalEntityId" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="creationDate">{{leaglEntityColumns['creationDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="creationDate"  id="creationDate" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.creationDate" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="createdBy">{{leaglEntityColumns['createdBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="createdBy"  id="createdBy" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.createdBy" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="lastUpdateDate">{{leaglEntityColumns['lastUpdateDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lastUpdateDate"  id="lastUpdateDate" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.lastUpdateDate" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="lastUpdatedBy">{{leaglEntityColumns['lastUpdatedBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lastUpdatedBy"  id="lastUpdatedBy" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.lastUpdatedBy" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute1">{{leaglEntityColumns['attribute1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute1"  id="attribute1" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.attribute1" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute2">{{leaglEntityColumns['attribute2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute2"  id="attribute2" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.attribute2" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute3">{{leaglEntityColumns['attribute3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute3"  id="attribute3" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.attribute3" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute4">{{leaglEntityColumns['attribute4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute4"  id="attribute4" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.attribute4" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute5">{{leaglEntityColumns['attribute5']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute5"  id="attribute5" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.attribute5" /></div>
+                    </div>
+
+
+
+
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="periodType">{{leaglEntityColumns['periodType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="periodType"  id="periodType" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.periodType" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="defRevAccountId">{{leaglEntityColumns['defRevAccountId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="defRevAccountId"  id="defRevAccountId" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.defRevAccountId" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="defRevCogsId">{{leaglEntityColumns['defRevCogsId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="defRevCogsId"  id="defRevCogsId" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.defRevCogsId" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="revAccountId">{{leaglEntityColumns['revAccountId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="revAccountId"  id="revAccountId" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.revAccountId" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="cogsAccountId">{{leaglEntityColumns['cogsAccountId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="cogsAccountId"  id="cogsAccountId" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.cogsAccountId" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="defCogsAccountId">{{leaglEntityColumns['defCogsAccountId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="defCogsAccountId"  id="defCogsAccountId" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanLegalEntities.defCogsAccountId" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!legalEntitiesForm.valid"></button>
+                <button type="button" pButton  class="secondary-btn" (click)="cancelAddEdit()" label="Cancel"></button>
+            </div>
+		</p-footer>
+	</p-dialog>
+
+
+	<div class="modal fade dialogueBox" id="FieldsMandatory" role="dialog" data-backdrop="static" data-keyboard="false" >
+<div class="modal-dialog modal-sm">
+        <div class="modal-content">
+	<div class="modal-header">
+	  <button type="button" class="close" data-dismiss="modal">&times;</button>
+	  <h4 class="modal-title">{{'Error'}}</h4>
+	</div>
+	<form class="form-horizontal">
+	<div class="modal-body clearfix">
+	<div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+
+     <p *ngIf="showMsg==22">Please enter Name</p>
+	 <p *ngIf="showMsg==23">Please select Enabled Flag</p>
+
+	 </div>
+
+	 </div>
+	<div class="modal-footer" style="padding:3px;">
+	  <button class="btn btn-primary pull-right"  data-dismiss="modal">OK</button>
+	 </div>
+	</form>
+	</div>
+	</div>
+	</div>
+
+			<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

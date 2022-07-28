@@ -1,0 +1,30 @@
+export interface RmanFmvRulesDefParaValue {
+    attribute10: any;
+    dealFlag: any;
+    attribute14: any;
+    attribute13: any;
+    ruleHeaderId: any;
+    attribute12: any;
+    attribute11: any;
+    lastUpdateDate: any;
+    parameterValueId: any;
+    parameterId: any;
+    attribute3: any;
+    createdBy: any;
+    attribute2: any;
+    lastUpdatedBy: any;
+    attribute1: any;
+    creationDate: any;
+    attribute9: any;
+    attribute8: any;
+    attribute7: any;
+    attribute6: any;
+    attribute5: any;
+    attribute4: any;
+    parameterGroup: any;
+    fmvRuleDefId: any;
+    attribute15: any;
+    qualifier: any;
+    andOr: any;
+    parameterValue: any;
+}

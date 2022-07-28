@@ -1,0 +1,160 @@
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper waterfall-detail-report">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+
+					<p-panel header="Forecasting Details Report" [toggleable]="false" (onBeforeToggle)=onBeforeToggle($event)>
+						<p-header>
+							<div class="pull-right icons-list">
+
+								<a (click)="goToOperationReports()" class="add-column">
+									<em class="fa fa-reply"></em>Back</a>
+									<p-toggleButton class="ui-inputswitch" onLabel="Line View" offLabel="Revenue Contract View" onIcon="fa fa-toggle-on fa-sm" offIcon="fa fa-toggle-off fa-sm" [(ngModel)]="arrgLevelSwitch" (ngModelChange)="onSwitch()"></p-toggleButton> 
+								<a (click)="onConfiguringColumns($event)" class="add-column">
+									<em class="fa fa-cog"></em>Columns</a>
+								<a (click)="showDialogToSearch()" title="Search">
+									<em class="fa fa-search"></em>
+								</a>
+								<a (click)="reset(dt)" title="Reset">
+									<em class="fa fa-refresh"></em>
+								</a>
+								<a (click)="exportCSVfile()" title="Export" *ngIf="!disableExport">
+									<em class="fa fa-external-link"></em>
+								</a>
+
+								<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+									<div class="user-popup">
+										<div class="content overflow">
+											<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+											<label for="selectall">Select All</label>
+											<a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+											<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+												<ng-template let-col let-index="index" pTemplate="item">
+													<div *ngIf="col.drag">
+														<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+															<div class="drag">
+																<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+																<label>{{col.header}}</label>
+															</div>
+														</div>
+													</div>
+													<div *ngIf="!col.drag">
+														<div class="ui-helper-clearfix">
+															<div>
+																<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+																/>
+																<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+															</div>
+														</div>
+													</div>
+												</ng-template>
+											</p-listbox>
+										</div>
+										<div class="pull-right">
+											<a class="configColBtn" (click)="saveColumns()">Save</a>
+											<a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</p-header>
+
+						<div class="x-scroll mb-2">
+							
+							<p-table class="ui-datatable arrangementMgrTbl" [loading]="loading" #dt id="waterfall-dt" [value]="arrgForecastRepList"
+							 selectionMode="single" (onRowSelect)="onRowSelect($event)" [lazy]="true" [paginator]="false" [rows]="rowCount" [totalRecords]="totalRecords"
+							 scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+
+								<ng-template pTemplate="colgroup" let-columns>
+									<colgroup>
+										<col *ngFor="let col of columns">
+									</colgroup>
+								</ng-template>
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th style="width:100px" *ngFor="let col of columns" pResizableColumn [ngStyle]="{'display': col.display, 'text-align':col.text}">
+											{{col.header}}
+										</th>
+
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-arrgForecastRep>
+									<tr [pSelectableRow]="rowData">
+										<td style="width:100px" *ngFor="let col of columns" [ngStyle]="{'display': col.display, 'text-align': col.text}">
+											<span title="{{arrgForecastRep[col.field]}}">{{isDateField(col.field) ? (arrgForecastRep[col.field]|date:'MM/dd/yyyy') : ([col.type]==
+												'number' ? (arrgForecastRep[col.field]|number:'1.2-2') : arrgForecastRep[col.field])}}</span>
+										</td>
+
+
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage">
+									<tr>
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+
+
+
+
+
+							</p-table>
+						</div>
+
+						<p-paginator [rows]="9" id="paginator-c" [totalRecords]="totalRecords" (onPageChange)="paginate($event)">
+						</p-paginator>
+
+					</p-panel>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<p-dialog header="Search" width="800" [visible]="displayDialog" [closable]="false" [draggable]="true" showEffect="fade"
+ [modal]="true">
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-12">
+					<span class="md-inputfield">
+						<span class="selectSpan">Revenue Contract Number</span>
+						<input pInputText name="from" id="from" class="textbox" placeholder="Revenue Contract Number" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="arrgId" />
+					</span>
+				</div>
+			</div>
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">From Period</span>
+						<p-autoComplete inputId="fromPeriodName" [(ngModel)]="fromPeriod" inputStyleClass="textbox" [ngModelOptions]="{standalone: true}"
+						 [suggestions]="fromPeriodArray" appendTo="body" (completeMethod)="searchPeriod($event)" [minLength]='3'></p-autoComplete>
+					</span>
+
+				</div>
+
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">To Period</span>
+						<p-autoComplete inputId="toPeriodName" [(ngModel)]="toPeriod" inputStyleClass="textbox" [ngModelOptions]="{standalone: true}"
+						 [suggestions]="fromPeriodArray" appendTo="body" (completeMethod)="searchPeriod($event)" [minLength]='3'></p-autoComplete>
+					</span>
+				</div>
+			</div>
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+			<button type="reset" pButton class="secondary-btn" (click)="reset(dt)" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>

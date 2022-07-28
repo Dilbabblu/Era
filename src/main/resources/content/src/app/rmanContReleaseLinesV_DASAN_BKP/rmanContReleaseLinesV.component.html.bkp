@@ -1,0 +1,194 @@
+<!-- <div class="ui-datatable ui-widget ui-datatable-reflow">
+<div class="ui-datatable-header ui-widget-header">
+<header>RmanContReleaseLinesV</header>
+</div>
+</div> -->
+<div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all" style="margin-top: 15px;border:0px solid #ffffff"></div>
+
+
+<p-panel header="Release Lines" [toggleable]="true" class="row-active" (onBeforeToggle)="onBeforeToggle($event)">
+<p-header>
+      <span class="masterData"><strong>{{masterData?.ruleCategory}}</strong></span>
+	<div class="pull-right" *ngIf="collapsed">
+		<a href="javascript:void(0)" (click)="reset(dt)" class="icon-reset" title="Reset"></a>
+		<a href="javascript:void(0)" (click)="exportExcel()" class="icon-export" title="Export"></a>
+	</div>
+</p-header>
+
+<p-table class="ui-datatable" [loading] = "loading" #dt [value]="rmanContReleaseLinesVList" selectionMode="single"   
+(onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanContReleaseLinesV($event)"  [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"
+       scrollable="true" >
+<ng-template pTemplate="header">
+   <tr>
+          <th style="width:100px">{{columns['releaseLevel']}}</th>
+          <th style="width:100px">{{columns['ruleName']}}</th>
+          <th style="width:100px">{{columns['templateName']}}</th>
+          <th style="width:100px">{{columns['sourceHeader']}}</th>
+          <th style="width:100px">{{columns['sourceLineNumber']}}</th>
+          <th style="width:100px">{{columns['elementType']}}</th>
+          <th style="width:100px">{{columns['productGroup']}}</th>
+          <th style="width:100px">{{columns['productCategory']}}</th>
+          <th style="width:100px">{{columns['productName']}}</th>
+          <th style="width:100px">{{columns['applyType']}}</th>
+          <th style="width:100px;text-align:right;">{{columns['revenue']}}</th>
+          <th style="width:100px;text-align:right;">{{columns['cogs']}}</th>
+          <th style="width:100px;text-align:right;">{{columns['releaseRevenue']}}</th>
+          <th style="width:100px;text-align:right;">{{columns['releaseCogs']}}</th>
+          <th style="width:100px">{{columns['event']}}</th>
+          <th style="width:100px">{{columns['releaseType']}}</th>
+          <th style="width:100px;text-align:center;">{{columns['customerPayment']}}</th>
+          <th style="width:100px">{{columns['releaseDate']}}</th>
+    </tr>
+ </ng-template>
+  <ng-template pTemplate="body" let-rowData let-rmanContReleaseLines>
+        <tr [pSelectableRow]="rowData">
+          <td style="width:100px" title="{{rmanContReleaseLines.releaseLevel}}">{{rmanContReleaseLines.releaseLevel}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.ruleName}}">{{rmanContReleaseLines.ruleName}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.templateName}}">{{rmanContReleaseLines.templateName}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.sourceHeader}}">{{rmanContReleaseLines.sourceHeader}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.sourceLineNumber}}">{{rmanContReleaseLines.sourceLineNumber}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.elementType}}">{{rmanContReleaseLines.elementType}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.productGroup}}">{{rmanContReleaseLines.productGroup}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.productCategory}}">{{rmanContReleaseLines.productCategory}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.productName}}">{{rmanContReleaseLines.productName}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.applyType}}">{{rmanContReleaseLines.applyType}}</td>
+          <td style="width:100px;text-align:right;" title="{{rmanContReleaseLines.revenue}}">{{rmanContReleaseLines.revenue}}</td>
+          <td style="width:100px;text-align:right;" title="{{rmanContReleaseLines.cogs}}">{{rmanContReleaseLines.cogs}}</td>
+          <td style="width:100px;text-align:right;" title="{{rmanContReleaseLines.releaseRevenue}}">{{rmanContReleaseLines.releaseRevenue}}</td>
+          <td style="width:100px;text-align:right;" title="{{rmanContReleaseLines.releaseCogs}}">{{rmanContReleaseLines.releaseCogs}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.event}}">{{rmanContReleaseLines.event}}</td>
+          <td style="width:100px" title="{{rmanContReleaseLines.releaseType}}">{{rmanContReleaseLines.releaseType}}</td>
+          <td style="width:100px;text-align:center;" title="{{rmanContReleaseLines.customerPayment}}">{{rmanContReleaseLines.customerPayment}}</td>
+          <td style="width:100px;text-align:center;" title="{{rmanContReleaseLines.releaseDate | date: 'dd/MM/yyyy'}}">{{rmanContReleaseLines.releaseDate | date: 'dd/MM/yyyy'}}</td>
+          
+                                              
+        </tr>
+        <!--
+                <p-column field=releaseLineId header="{{columns['releaseLineId']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=transLineId header="{{columns['transLineId']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=transHeaderId header="{{columns['transHeaderId']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=dealArrangementId header="{{columns['dealArrangementId']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        -->
+     </ng-template>
+     <ng-template pTemplate="emptymessage" let-columns>
+            <tr *ngIf="!columns">
+                  <td class="no-data">{{noData}}</td>
+            </tr>
+      </ng-template>
+                      </p-table>
+
+</p-panel>
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog"  showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="releaseLineId">{{columns['releaseLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseLineId"  name="releaseLineId" [(ngModel)]="rmanContReleaseLinesVSearch.releaseLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="releaseLevel">{{columns['releaseLevel']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseLevel"  name="releaseLevel" [(ngModel)]="rmanContReleaseLinesVSearch.releaseLevel" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanContReleaseLinesV" width="500" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanContReleaseLinesV">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="releaseLineId">{{columns['releaseLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseLineId" name="releaseLineId" required [(ngModel)]="rmanContReleaseLinesV.releaseLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="transLineId">{{columns['transLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="transLineId" name="transLineId" required [(ngModel)]="rmanContReleaseLinesV.transLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="transHeaderId">{{columns['transHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="transHeaderId" name="transHeaderId" required [(ngModel)]="rmanContReleaseLinesV.transHeaderId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementId">{{columns['dealArrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementId" name="dealArrangementId" required [(ngModel)]="rmanContReleaseLinesV.dealArrangementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="releaseLevel">{{columns['releaseLevel']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseLevel" name="releaseLevel" required [(ngModel)]="rmanContReleaseLinesV.releaseLevel" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="ruleName">{{columns['ruleName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="ruleName" name="ruleName" required [(ngModel)]="rmanContReleaseLinesV.ruleName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="templateName">{{columns['templateName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="templateName" name="templateName" required [(ngModel)]="rmanContReleaseLinesV.templateName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceHeader">{{columns['sourceHeader']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceHeader" name="sourceHeader" required [(ngModel)]="rmanContReleaseLinesV.sourceHeader" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceLineNumber">{{columns['sourceLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceLineNumber" name="sourceLineNumber" required [(ngModel)]="rmanContReleaseLinesV.sourceLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="elementType">{{columns['elementType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="elementType" name="elementType" required [(ngModel)]="rmanContReleaseLinesV.elementType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productGroup">{{columns['productGroup']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productGroup" name="productGroup" required [(ngModel)]="rmanContReleaseLinesV.productGroup" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productCategory">{{columns['productCategory']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productCategory" name="productCategory" required [(ngModel)]="rmanContReleaseLinesV.productCategory" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="productName">{{columns['productName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="productName" name="productName" required [(ngModel)]="rmanContReleaseLinesV.productName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="applyType">{{columns['applyType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="applyType" name="applyType" required [(ngModel)]="rmanContReleaseLinesV.applyType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revenue">{{columns['revenue']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revenue" name="revenue" required [(ngModel)]="rmanContReleaseLinesV.revenue" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="cogs">{{columns['cogs']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="cogs" name="cogs" required [(ngModel)]="rmanContReleaseLinesV.cogs" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="releaseRevenue">{{columns['releaseRevenue']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseRevenue" name="releaseRevenue" required [(ngModel)]="rmanContReleaseLinesV.releaseRevenue" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="releaseCogs">{{columns['releaseCogs']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseCogs" name="releaseCogs" required [(ngModel)]="rmanContReleaseLinesV.releaseCogs" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="event">{{columns['event']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="event" name="event" required [(ngModel)]="rmanContReleaseLinesV.event" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="releaseType">{{columns['releaseType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="releaseType" name="releaseType" required [(ngModel)]="rmanContReleaseLinesV.releaseType" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>

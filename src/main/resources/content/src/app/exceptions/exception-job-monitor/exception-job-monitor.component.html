@@ -1,0 +1,28 @@
+<div class="content-section implementation">
+</div>
+<p-panel header="Exceptions Monitor" [style]="{'margin-bottom':'20px'}" [toggleable]="true" (onBeforeToggle)="onBeforeToggle($event)">
+    <p-header>
+    </p-header>
+    <p-table #dt class="ui-datatable" [value]="rmanJobMonitorDetails" selectionMode="single" [rows]="10" scrollable="true" [lazy]="true" [rows]="10" [totalRecords]="10"   [paginator]="true">		
+          <ng-template pTemplate="header">
+            <tr>
+                <th style="width:100px;text-align:center">RUN_NAME</th>
+                <th style="width:100px;text-align:center">PID</th>
+                <th style="width:200px;text-align:center">START DATE</th>
+                <th style="width:200px;text-align:center">END DATE</th>
+                <th style="width:100px;text-align:center">STATUS</th>
+                <th style="width:100px;"></th>
+            </tr>
+          </ng-template>
+          <ng-template let-jobData pTemplate="body">
+              <tr>                  
+                  <td title="{{jobData.runName}}" style="width:100px;text-align:center">{{jobData.runName}}</td>
+                  <td title="{{jobData.pid}}" style="width:100px;text-align:center">{{jobData.pid}}</td>
+                  <td title="{{jobData.startDate}}" style="width:200px;text-align:center">{{jobData.startDate | datex: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                  <td title="{{jobData.endDate}}" style="width:200px;text-align:center">{{jobData.endDate| datex: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                  <td title="{{jobData.status}}" style="width:100px;text-align:center">{{jobData.status}}</td>
+                  <td style="width:100px;"><a href="#" style="color: #175E95;font-weight:700px;">View Log</a></td>
+              </tr>
+          </ng-template>
+    </p-table>
+</p-panel>

@@ -1,0 +1,455 @@
+<div class="content-section implementation">
+	<p-growl [(value)]="growlMsgs" [sticky]="true"></p-growl>
+</div>
+
+<p-panel header="Release Contingencies" class="row-active" [toggleable]="true" (onBeforeToggle)="onBeforeToggle($event)">
+	<p-header>
+		<div class="pull-right" *ngIf="collapsed">
+			<a href="javascript:void(0)" (click)="showDialogToAdd()" class="icon-add" title="Add" *ngIf="!isReadOnly"></a>
+			<a href="javascript:void(0)" (click)="showDialogToSearch()" class="icon-search" title="Search"></a>
+			<a href="javascript:void(0)" (click)="reset(dt)" class="icon-reset" title="Reset"></a>
+			<a href="javascript:void(0)" (click)="exportExcel()" class="icon-export" title="Export"></a>
+		</div>
+	</p-header>
+	<p-table class="ui-datatable" [loading]="loading" #dt [value]="rmanContTransToReleaseList" selectionMode="single" [(selection)]="selectedRmanContTransToRelease"
+	 (onLazyLoad)="getRmanContTransToRelease($event)" [lazy]="true" (onRowSelect)="onRowSelect($event)"  (onRowUnselect)="onRowUnSelect($event)" [paginator]="true" [rows]="pageSize"
+	 [totalRecords]="totalElements"  scrollable="true" >
+		<ng-template pTemplate="header">
+			<tr>
+				<th style="width:100px" *ngIf="!isReadOnly"></th>
+				<th style="width:100px">{{columns['applicationLevel']}}</th>
+				<th style="width:100px">{{columns['attribute4']}}</th>
+				<th style="width:100px">{{columns['attribute5']}}</th>
+				<th style="width:100px">{{columns['attribute6']}}</th>
+				<th style="width:100px">{{columns['attribute3']}}</th>
+				<th style="width:100px">{{columns['attribute2']}}</th>
+				<th style="width:100px">{{columns['productName']}}</th>
+				<th style="width:100px;text-align:center;">{{columns['attribute29']}}</th>
+				<th style="width:100px">{{columns['contEventType']}}</th>
+				<th style="width:100px">{{columns['attribute7']}}</th>
+				<th style="width:100px;text-align:right;">{{columns['ranking']}}</th>
+				<th style="width:100px">{{columns['ruleCategory']}}</th>
+				<th style="width:100px;text-align:center;">{{columns['attribute28']}}</th>
+				<th style="width:100px;text-align:right;">{{columns['attribute8']}}</th>
+				<th style="width:100px;text-align:right;">{{columns['revenue']}}</th>
+				<th style="width:100px;text-align:right;">{{columns['cogs']}}</th>
+				<th style="width:100px;text-align:center">{{columns['invoiceHold']}}</th>
+				<th style="width:100px">{{columns['applyType']}}</th>
+				<th style="width:100px">{{columns['deferredMethod']}}</th>
+				<!-- <th style="width:100px">{{columns['releaseType']}}</th>
+				<th style="width:100px">{{columns['releaseRevenue']}}</th>
+				<th style="width:100px">{{columns['releaseCogs']}}</th>
+				<th style="width:100px">{{columns['comments']}}</th>
+				<th style="width:100px">{{columns['attribute14']}}</th> -->
+
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-rowData let-rmanContTransToRelease>
+			<tr [pSelectableRow]="rowData">
+				<td style="width:100px" *ngIf="!isReadOnly">
+					<span [ngClass]="{'noPointer': rmanContTransToRelease.status == 'C'}">
+						<a href="javascript:void(0)" (click)="editRow(rmanContTransToRelease)" class="icon-edit" title="Edit"></a>
+					</span>
+				</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.applicationLevel}}">{{rmanContTransToRelease.applicationLevel}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.attribute4}}">{{rmanContTransToRelease.attribute4}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.attribute5}}">{{rmanContTransToRelease.attribute5}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.attribute6}}">{{rmanContTransToRelease.attribute6}}</td>
+				<!-- <td style="width:100px" title="{{rmanContTransToRelease.element}}">{{rmanContTransToRelease.element}}</td> -->
+				<td style="width:100px" title="{{rmanContTransToRelease.attribute3}}">{{rmanContTransToRelease.attribute3}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.attribute2}}">{{rmanContTransToRelease.attribute2}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.productName}}">{{rmanContTransToRelease.productName}}</td>
+				<td style="width:100px;text-align:center;" title="{{rmanContTransToRelease.attribute29}}">{{rmanContTransToRelease.attribute29}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.contEventType}}">{{rmanContTransToRelease.contEventType}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.attribute7}}">{{rmanContTransToRelease.attribute7}}</td>
+				<td style="width:100px;text-align:right;" title="{{rmanContTransToRelease.ranking}}">{{rmanContTransToRelease.ranking}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.ruleCategory}}">{{rmanContTransToRelease.ruleCategory}}</td>
+				<td style="width:100px;text-align:center;" title="{{rmanContTransToRelease.attribute28}}">{{rmanContTransToRelease.attribute28}}</td>
+				<td style="width:100px;text-align:right;" title="{{rmanContTransToRelease.attribute8}}">{{rmanContTransToRelease.attribute8}}</td>
+				<td style="width:100px;text-align:right;" title="{{rmanContTransToRelease.revenue}}">{{rmanContTransToRelease.revenue}}</td>
+				<td style="width:100px;text-align:right;" title="{{rmanContTransToRelease.cogs}}">{{rmanContTransToRelease.cogs}}</td>
+				<td style="width:100px;text-align:center;" title="{{rmanContTransToRelease.invoiceHold}}">{{rmanContTransToRelease.invoiceHold}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.applyType}}">{{rmanContTransToRelease.applyType}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.deferredMethod}}">{{rmanContTransToRelease.deferredMethod}}</td>
+				<!-- <td style="width:100px" title="{{rmanContTransToRelease.releaseType}}">{{rmanContTransToRelease.releaseType}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.releaseRevenue}}">{{rmanContTransToRelease.releaseRevenue}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.releaseCogs}}">{{rmanContTransToRelease.releaseCogs}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.comments}}">{{rmanContTransToRelease.comments}}</td>
+				<td style="width:100px" title="{{rmanContTransToRelease.attribute14}}">{{rmanContTransToRelease.attribute14}}</td> -->
+			</tr>
+			<!--
+				<p-column field=transHeaderId header="{{columns['transHeaderId']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+		<p-column field=transLineId header="{{columns['transLineId']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+
+		<p-column field=description header="{{columns['description']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+
+		<p-column field=maxDuration header="{{columns['maxDuration']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=event header="{{columns['event']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=percentage header="{{columns['percentage']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=application header="{{columns['application']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute1 header="{{columns['attribute1']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+
+
+		<p-column field=attribute4 header="{{columns['attribute4']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute5 header="{{columns['attribute5']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute6 header="{{columns['attribute6']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute7 header="{{columns['attribute7']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute8 header="{{columns['attribute8']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute9 header="{{columns['attribute9']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute10 header="{{columns['attribute10']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute11 header="{{columns['attribute11']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute12 header="{{columns['attribute12']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute13 header="{{columns['attribute13']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute15 header="{{columns['attribute15']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute16 header="{{columns['attribute16']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute17 header="{{columns['attribute17']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute18 header="{{columns['attribute18']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute19 header="{{columns['attribute19']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute20 header="{{columns['attribute20']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute21 header="{{columns['attribute21']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute22 header="{{columns['attribute22']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute23 header="{{columns['attribute23']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute24 header="{{columns['attribute24']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute25 header="{{columns['attribute25']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute30 header="{{columns['attribute30']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute27 header="{{columns['attribute27']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+
+
+
+		<p-column field=creationDate header="{{columns['creationDate']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+		<p-column field=createdBy header="{{columns['createdBy']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+		<p-column field=lastUpdateDate header="{{columns['lastUpdateDate']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+		<p-column field=lastUpdatedBy header="{{columns['lastUpdatedBy']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+
+
+		<p-column field=dealNum header="{{columns['dealNum']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=soHeaderId header="{{columns['soHeaderId']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=soLineId header="{{columns['soLineId']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+
+
+
+
+		<p-column field=avgContAcceptDur header="{{columns['avgContAcceptDur']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=status header="{{columns['status']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=autoReleaseDays header="{{columns['autoReleaseDays']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+		<p-column field=dealArrangementId header="{{columns['dealArrangementId']}}" [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+			-->
+		</ng-template>
+		<ng-template pTemplate="emptymessage" let-columns>
+			<tr *ngIf="!columns">
+				<td class="no-data">{{noData}}</td>
+			</tr>
+		</ng-template>
+	</p-table>
+
+</p-panel>
+<!-- 
+<div *ngIf="addFlag == true"> -->
+	<rmanContTransLines-data (getAllRelease)="getAllRmanContTransToRelease()"></rmanContTransLines-data>
+
+<!-- </div> -->
+<!-- <rmanContReleaseLines-data></rmanContReleaseLines-data> -->
+
+
+<rmanContReleaseLinesV-data [pTransHeaderId]='pTransHeaderId'></rmanContReleaseLinesV-data>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="false"  showEffect="fade"
+ [modal]="true">
+	<form (ngSubmit)="search()">
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield">
+						<input pInputText name="orderNumber" id="orderNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToReleaseSearch.attribute5"
+						/>
+						<label for="orderNumber">Order Number</label>
+					</span>
+				</div>
+				<div class="ui-g-5" pull-right>
+					<span class="md-inputfield">
+						<input pInputText name="contType" id="contType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToReleaseSearch.attribute4"
+						/>
+						<label for="contType">Contingency Type</label>
+					</span>
+				</div>
+			</div>
+
+		</div>
+
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+			<button type="submit" pButton label="Search" (click)="search()"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+<p-dialog header="Edit Contingency To Release" width="1000" [draggable]="false" [(visible)]="displayDialog" 
+ showEffect="fade" [modal]="true">
+
+	<form [formGroup]="transToReleaseForm">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanContTransToRelease">
+			<h4>Application Hierarchy</h4>
+			<hr/>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransToRelease.applicationLevel" class="selectSpan"> Release Level </span>
+					<p-dropdown [options]="rmanLookupsV2"  name="applicationLevel" [disabled]="true" [ngModelOptions]="{standalone: true}" (onChange)="onSelectApplicationLevel($event.value)"
+					 [(ngModel)]="rmanContTransToRelease.applicationLevel"></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransToRelease.element" class="selectSpan"> Element </span>
+					<p-dropdown [options]="rmanContProdNameLovV" name="element" [ngModelOptions]="{standalone: true}" [disabled]="rmanContTransToRelease.applicationLevel == 'POB'"
+					 [(ngModel)]="rmanContTransToRelease.element"></p-dropdown>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5 ">
+					<span *ngIf="rmanContTransToRelease.sourceHeaderId" class="selectSpan"> SO Number </span>
+					<p-dropdown [options]="rmanContSourceLov" name="sourceHeaderId" [disabled]="true"
+					  [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.sourceHeaderId" (onChange)="onSelectSourceHeader($event.value)"></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransToRelease.attribute3" class="selectSpan"> Product Group </span>
+					<p-dropdown [options]="rmanContProdGroupV1"  name="attribute3" [ngModelOptions]="{standalone: true}" [disabled]="rmanContTransToRelease.applicationLevel == 'POB'"
+					 [(ngModel)]="rmanContTransToRelease.attribute3"></p-dropdown>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransToRelease.sourceLineId" class="selectSpan"> SO Line Number</span>
+					<p-dropdown [options]="rmanContSourceLov1" name="sourceLineId" [disabled]="rmanContTransToRelease.applicationLevel == 'ARRANGEMENT'"
+					  [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.sourceLineId"></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransToRelease.attribute2" class="selectSpan"> Product Category </span>
+					<p-dropdown [options]="rmanContProdCategoryV1"  name="attribute2" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.attribute2"
+					 [disabled]="rmanContTransToRelease.applicationLevel == 'POB'"></p-dropdown>
+				</div>
+
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransToRelease.attribute29" class="selectSpan"> Post Allocation Contingency </span>
+					<p-dropdown [options]="rmanLookupsV" name="attribute29"  [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.attribute29"
+					 [disabled]="true"></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransToRelease.productName" class="selectSpan"> Product Name </span>
+					<p-dropdown [options]="rmanContProdNameV1" name="productName"  [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.productName"
+					 [disabled]="rmanContTransToRelease.applicationLevel == 'POB'"></p-dropdown>
+				</div>
+
+
+			</div>
+
+			<div class="ui-g-12">
+
+
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransToRelease.contEventType" class="selectSpan"> Cont Event Type </span>
+					<p-dropdown [options]="rmanLookupsV3" name="contEventType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.contEventType"
+					 [disabled]="true"></p-dropdown>
+				</div>
+			</div>
+		</div>
+
+		<div class="ui-g-12">
+		</div>
+
+		<h4>Contingency Details & Templates</h4>
+		<hr/>
+		<div class="ui-g-12">
+			<div class="ui-g-5">
+				<span *ngIf="rmanContTransToRelease.ruleHeaderId" class="selectSpan"> Name </span>
+				<p-dropdown [options]="rmanContHeaderV" name="ruleHeaderId" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.ruleHeaderId"
+				 [disabled]="true"></p-dropdown>
+			</div>
+			<div class="ui-g-5 pull-right">
+				<span *ngIf="rmanContTransToRelease.templateId" class="selectSpan"> Template </span>
+				<p-dropdown [options]="rmanContLinkTemplateV" name="templateId"  [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.templateId"
+				 [disabled]="true"></p-dropdown>
+			</div>
+
+		</div>
+
+		<div class="ui-g-12">
+			<div class="ui-g-5">
+				<span class="md-inputfield">
+					<input pInputText name="ranking" id="releaseLinesranking" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.ranking"
+					 [disabled]="true" />
+					<label for="ranking">{{columns['ranking']}}</label>
+				</span>
+			</div>
+			<div class="ui-g-5 pull-right">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesrevenue" name="revenue" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.revenue"
+					 [disabled]="true" />
+					<label for="revenue">{{columns['revenue']}}</label>
+				</span>
+			</div>
+		</div>
+
+
+		<div class="ui-g-12">
+			<div class="ui-g-5">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesruleCategory" name="ruleCategory" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.ruleCategory"
+					 [disabled]="true" />
+					<label for="ruleCategory">{{columns['ruleCategory']}}</label>
+				</span>
+			</div>
+			<div class="ui-g-5 pull-right">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinescogs" name="cogs" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.cogs"
+					 [disabled]="true" />
+					<label for="cogs">{{columns['cogs']}}</label>
+				</span>
+			</div>
+		</div>
+
+		<div class="ui-g-12">
+			<div class="ui-g-5">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesattribute28" name="attribute28" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.attribute28"
+					 [disabled]="true" />
+					<label for="attribute28">{{columns['attribute28']}}</label>
+				</span>
+			</div>
+			<div class="ui-g-5 pull-right">
+				<span *ngIf="rmanContTransToRelease.invoiceHold" class="selectSpan"> Invoice Hold </span>
+				<p-dropdown [options]="rmanLookupsV" name="invoiceHold" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.invoiceHold"
+				 [disabled]="true"></p-dropdown>
+			</div>
+		</div>
+
+		<div class="ui-g-12">
+			<div class="ui-g-5">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesapplyType" name="applyType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.applyType"
+					 [disabled]="true" />
+					<label for="applyType">{{columns['applyType']}}</label>
+				</span>
+			</div>
+			<div class="ui-g-5 pull-right">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesdeferredMethod" name="deferredMethod" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.deferredMethod"
+					 [disabled]="true" />
+					<label for="deferredMethod">{{columns['deferredMethod']}}</label>
+				</span>
+			</div>
+
+		</div>
+
+		<div class="ui-g-12">
+			<div class="ui-g-5">
+				<span *ngIf="rmanContTransToRelease.event" class="selectSpan"> Event </span>
+				<p-dropdown [options]="rmanLookupsV1" name="event"  [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.event"
+				 [disabled]="true"></p-dropdown>
+			</div>
+			<div class="ui-g-5 pull-right">
+				<span *ngIf="rmanContTransToRelease.releaseType" class="selectSpan"> Release Type </span>
+				<p-dropdown [options]="rmanLookupsV7" name="releaseType" [(ngModel)]="rmanContTransToRelease.releaseType"
+				 formControlName="releaseType" (onChange)="onContRelease($event.value,rmanContTransToRelease.applyType)"></p-dropdown>
+				<div *ngIf="formErrors.releaseType" class="ui-message ui-messages-error ui-corner-all">
+					{{ formErrors.releaseType }}
+				</div>
+			</div>
+
+
+		</div>
+
+		<div class="ui-g-12 ui-fluid">
+			<div class="ui-g-5">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesautoReleaseDays" name="autoReleaseDays" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.autoReleaseDays"
+					 [disabled]="true" />
+					<label for="autoReleaseDays">{{columns['autoReleaseDays']}}</label>
+				</span>
+			</div>
+			<div class="ui-g-5 pull-right">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesreleaseCogs" name="releaseCogs" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.releaseCogs"
+					 [disabled]="rmanContTransToRelease.releaseType == 'FULL'" />
+					<label for="releaseCogs">{{columns['releaseCogs']}}</label>
+				</span>
+			</div>
+
+
+		</div>
+
+		<div class="ui-g-12 ui-fluid">
+			<div class="ui-g-5">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesmaxDuration" name="maxDuration" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.maxDuration"
+					 [disabled]="true" />
+					<label for="maxDuration">{{columns['maxDuration']}}</label>
+				</span>
+			</div>
+			<div class="ui-g-5 pull-right">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesreleaseRevenue" name="releaseRevenue" [(ngModel)]="rmanContTransToRelease.releaseRevenue"
+					 formControlName="releaseRevenue" [disabled]="rmanContTransToRelease.releaseType == 'FULL'" (mouseleave)="releaseRevenueChange($event)"
+					/>
+					<div *ngIf="formErrors.releaseRevenue" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.releaseRevenue }}
+					</div>
+
+					<label for="releaseRevenue">{{columns['releaseRevenue']}}&nbsp;
+						<span style="color:red">*</span>
+					</label>
+				</span>
+			</div>
+
+		</div>
+
+
+		<div class="ui-g-12 ui-fluid">
+			<div class="ui-g-5">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinescomments" name="comments" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.comments"
+					/>
+					<label for="comments">{{columns['comments']}}</label>
+				</span>
+			</div>
+			<div class="ui-g-5 pull-right">
+				<span class="md-inputfield">
+					<input pInputText id="releaseLinesattribute14" name="attribute14" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTransToRelease.attribute14"
+					/>
+					<label for="attribute14">{{columns['attribute14']}}</label>
+				</span>
+			</div>
+		</div>
+
+
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton (click)="displayDialog=false" label="Cancel"></button>
+			<button type="submit" pButton label="Release" (click)="release()" [disabled]="(!transToReleaseForm.valid || conditionFlag)"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+
+<p-dialog header="Prompt" width="400" [draggable]="false" [(visible)]="displayConditionDialog"  showEffect="fade"
+ [modal]="true">
+
+
+	<h5>Release revenue should be equal to Revenue value</h5>
+
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton (click)="displayConditionDialog=false" label="Cancel"></button>
+			<button type="submit" pButton label="OK" (click)="displayConditionDialog=false"></button>
+		</div>
+	</p-footer>
+</p-dialog>

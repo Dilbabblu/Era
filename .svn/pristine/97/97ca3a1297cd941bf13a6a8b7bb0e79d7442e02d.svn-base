@@ -1,0 +1,232 @@
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card-block">
+          <p-panel header="Manage Customers" [toggleable]="false" (onBeforeToggle)="onBeforeToggle($event)">
+            <p-header>
+
+              <div class="pull-right icons-list" *ngIf="collapsed">
+                  <a (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+                <a *isAuthorized="['write','MCUST']" (click)="showDialogToAdd()" title="Add">
+                  <em class="fa fa-plus-circle"></em>
+                </a>
+                <a *isAuthorized="['upload','MCUST']" (click)="importFile()" title="Import">
+                  <em class="fa fa-upload"></em>
+                </a>
+                <a (click)="showDialogToSearch()" title="Search">
+                  <em class="fa fa-search"></em>
+                </a>
+                <a (click)="reset(dt)" title="Reset">
+                  <em class="fa fa-refresh"></em>
+                </a>
+
+                <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                    <div class="user-popup">
+                      <div class="content overflow">
+                        <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+                        <label for="selectall">Select All</label>
+                        <a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+                        <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                          <ng-template let-col let-index="index" pTemplate="item">
+                            <div *ngIf="col.drag">
+                            <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+                             (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                              <div class="drag">
+                                <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+                                <label>{{col.header}}</label>
+                              </div>
+                            </div>
+                            </div>
+                            <div *ngIf="!col.drag">
+                            <div class="ui-helper-clearfix">
+                              <div>
+                                <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+                                <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                              </div>
+                            </div>
+                            </div>
+                          </ng-template>
+                          </p-listbox>
+                
+                      </div>
+                
+                      <div class="pull-right">
+                        <a class="configColBtn" (click)="saveColumns()">Save</a>
+                        <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                      </div>
+                
+                    </div>
+                  </div>
+
+              </div>
+            </p-header>
+
+            <div class="x-scroll">
+              <p-table class="ui-datatable arrangementMgrTbl" #dt id="rmanCustomers-dt" [loading]="loading" [value]="rmanCustomersList"
+                selectionMode="single" (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanCustomers($event)" [lazy]="true"
+                [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand" >
+                
+                <ng-template pTemplate="colgroup" let-columns>
+                    <colgroup>
+                      <col *ngFor="let col of columns">
+                    </colgroup>
+                  </ng-template>
+    
+                   
+                  <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                    <tr>
+                      <ng-container *ngFor="let col of columns">
+                        <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                        <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                      </ng-container>
+                    </tr>
+                  </ng-template>
+    
+                  <ng-template pTemplate="body" let-rowData let-rmanCustomers let-columns="columns">
+                    <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                     
+                      <ng-container *ngFor="let col of columns" >
+                        <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                          {{rowData[col.field]}}
+                        </td>
+                      
+                        <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                          {{rowData[col.field]}}
+                        </td>
+                      
+                        <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                          {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                        </td>
+                      
+                        <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                          {{rowData[col.field] | round}}
+                        </td>
+                      </ng-container>
+                            
+                    </tr>                 
+                  </ng-template>
+                <ng-template pTemplate="emptymessage" let-columns>
+                  <tr *ngIf="!columns">
+                    <td class="no-data">{{noData}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </p-panel>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="lds-roller" style="top: 0px;" *ngIf="uploadLoading">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+<p-dialog header="Upload  Customers " width="500" [(visible)]="_uploadService.uploadDialog" [draggable]="true" showEffect="fade"
+  [modal]="true" (onAfterHide)="cancel()">
+  <p-fileUpload id="upload-bookings-input" name="file" customUpload="true" (uploadHandler)="fileUploadHandler($event, '/upload/customers')"
+    accept=".csv" invalidFileTypeMessageSummary="{0}:Invalid file Type">
+  </p-fileUpload>
+  <progress-bar></progress-bar>
+</p-dialog>
+<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" showEffect="fade" [draggable]="true" [modal]="true" [blockScroll]="true">
+  <form>
+    <div class="ui-grid ui-grid-responsive ui-fluid">
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">Customer Name</span>
+            <input pInputText name="customerName" id="customerName" class="textbox" placeholder="Customer Name" [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="rmanCustomersSearch.customerName" />
+          </span>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="md-inputfield">
+            <span class="selectSpan">Customer Number</span>
+            <input pInputText name="customerNumber" id="customerNumber" class="textbox" placeholder="Customer Number" [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="rmanCustomersSearch.customerNumber" />
+          </span>
+        </div>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+      <button type="button" pButton class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+    </div>
+  </p-footer>
+
+</p-dialog>
+<p-dialog header="{{(newRmanCustomers) ? 'Create Customers' : 'Edit Customers'}}" width="500" [(visible)]="displayDialog" [draggable]="true"
+  showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelAddEdit()">
+  <form (ngSubmit)="save()" [formGroup]="customerForm">
+    <div class="ui-g ui-fluid" *ngIf="rmanCustomers">
+      <div class="ui-g-12 form-group">
+        <div class="ui-grid-row">
+          <div class="ui-g-12">
+            <div class="ui-g-6">
+              <span class="md-inputfield">
+                <span class="selectSpan">Customer Name
+                  <span class="red-color">*</span>
+                </span>
+                <input pInputText id="customerName" name="customerName" class="textbox" placeholder="Customer Name" required [(ngModel)]="rmanCustomers.customerName"
+                  formControlName="customerName" />
+                <div *ngIf="formErrors.customerName" class="ui-message ui-messages-error ui-corner-all">
+                  {{ formErrors.customerName }}
+                </div>
+              </span>
+            </div>
+            <div class="ui-g-6 pull-right">
+              <span class="md-inputfield">
+                <span class="selectSpan">Customer Number
+                  <span class="red-color">*</span>
+                </span>
+                <input pInputText id="customerNumber" class="textbox" placeholder="Customer Number" name="customerNumber" required [(ngModel)]="rmanCustomers.customerNumber"
+                  formControlName="customerNumber" />
+                <div *ngIf="formErrors.customerNumber" class="ui-message ui-messages-error ui-corner-all">
+                  {{ formErrors.customerNumber }}
+                </div>
+
+
+              </span>
+            </div>
+          </div>
+          <div class="ui-g-12">
+            <div class="ui-g-6">
+              <span class="selectSpan">Select Status
+                <span class="red-color">*</span>
+              </span>
+              <p-dropdown [options]="rmancustomerStatus" id="status" formControlName="status" name="status" [(ngModel)]="rmanCustomers.status"
+                [filter]="true" appendTo="body">
+              </p-dropdown>
+              <div *ngIf="formErrors.status" class="ui-message ui-messages-error ui-corner-all">
+                {{ formErrors.status }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!customerForm.valid"></button>
+      <button type="button" pButton class="secondary-btn" (click)="cancelAddEdit()" label="Cancel"></button>
+    </div>
+  </p-footer>
+
+</p-dialog>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

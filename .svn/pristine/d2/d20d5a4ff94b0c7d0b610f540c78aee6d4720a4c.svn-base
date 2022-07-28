@@ -1,0 +1,500 @@
+<div class="content-section implementation">
+</div>
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+<div class="card-wrapper permission-sets">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card-block">
+          <h2>Roles and Permissions <span class="pull-right">Role : {{roleName}}</span></h2>
+          <div class="row">
+      <div class="col-3">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
+          <a class="nav-link" data-toggle="pill" href="#rcManager" role="tab">Module</a>
+          <a class="nav-link active" data-toggle="pill" href="#rcManager" (click)="onTabChange('rcManager')" role="tab">Revenue Contract Manager</a>
+          <a class="nav-link" data-toggle="pill" href="#rcManagerOverview" (click)="onTabChange('rcManagerOverview')" role="tab">Revenue Contract Manager Workbench</a>
+          <a class="nav-link" data-toggle="pill" href="#ssp" (click)="onTabChange('ssp')" role="tab">SSP Rules</a>
+          <a class="nav-link" data-toggle="pill" href="#configManager" (click)="onTabChange('configManager')" role="tab">Configuration Manager</a>
+          <a class="nav-link" data-toggle="pill" href="#admin" (click)="onTabChange('admin')" role="tab">Admin</a>
+          <a class="nav-link" data-toggle="pill" href="#jobs" (click)="onTabChange('jobs')" role="tab">Jobs</a>
+          <a class="nav-link" data-toggle="pill" href="#reports" (click)="onTabChange('reports')" role="tab">Reports</a>
+          <a class="nav-link" data-toggle="pill" href="#exceptions" (click)="onTabChange('exceptions')" role="tab">Exceptions</a>
+          <a class="nav-link" data-toggle="pill" href="#approvals" (click)="onTabChange('approvals')" role="tab">Approvals</a>
+        </div>
+      </div>
+      <div class="col-9">
+        <div class="tab-content" id="v-pills-tabContent">
+          <div class="tab-pane fade show active" id="rcManager" role="tabpanel" >
+            <div class="box-column-row" [innerHtml]="permTabHeaderHtml"></div>
+            <div class="box-column-row" *ngFor="let function of rcManagerFunctions; let i = index">
+              <div class="row">
+                <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-1-1-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                  <label for="on-off-toggle-1-1-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-1-2-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                  <label for="on-off-toggle-1-2-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-right">
+                  <div class="on-off-toggle">
+                    <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-1-3-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                    <label for="on-off-toggle-1-3-{{i}}" class="on-off-toggle__slider"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="showLoading">
+              <div class="lds-spinner-permissions">
+                  <ng-template [ngTemplateOutlet]="loading"></ng-template>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="tab-pane fade" id="rcManagerOverview" role="tabpanel">
+            <div class="box-column-row" [innerHtml]="permTabHeaderHtml"></div>
+            <div class="box-column-row" *ngFor="let function of rcManagerOverviewFunctions; let i = index">
+              <div class="row">
+                <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-2-1-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                  <label for="on-off-toggle-2-1-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-2-2-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                  <label for="on-off-toggle-2-2-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-right">
+                  <div class="on-off-toggle">
+                    <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-2-3-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                    <label for="on-off-toggle-2-3-{{i}}" class="on-off-toggle__slider"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="showLoading">
+              <div class="lds-spinner-permissions">
+                  <ng-template [ngTemplateOutlet]="loading"></ng-template>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="tab-pane fade" id="ssp" role="tabpanel">
+            <div class="box-column-row" [innerHtml]="permTabHeaderHtml"></div>
+            <div class="box-column-row" *ngFor="let function of sspRulesFunctions; let i = index">
+              <div class="row">
+                <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-3-1-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                  <label for="on-off-toggle-3-1-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-3-2-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                  <label for="on-off-toggle-3-2-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-right">
+                  <div class="on-off-toggle">
+                    <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-3-3-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                    <label for="on-off-toggle-3-3-{{i}}" class="on-off-toggle__slider"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="showLoading">
+              <div class="lds-spinner-permissions">
+                  <ng-template [ngTemplateOutlet]="loading"></ng-template>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="tab-pane fade" id="configManager" role="tabpanel">
+            <div class="box-column-row" [innerHtml]="permTabHeaderHtml"></div>
+            <div class="box-column-row" *ngFor="let function of configManagerFunctions; let i = index">
+              <div class="row">
+                <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-4-1-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                  <label for="on-off-toggle-4-1-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-4-2-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                  <label for="on-off-toggle-4-2-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-right">
+                  <div class="on-off-toggle">
+                    <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-4-3-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                    <label for="on-off-toggle-4-3-{{i}}" class="on-off-toggle__slider"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="showLoading">
+              <div class="lds-spinner-permissions">
+                  <ng-template [ngTemplateOutlet]="loading"></ng-template>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="tab-pane fade" id="admin" role="tabpanel">
+            <div class="box-column-row" [innerHtml]="permTabHeaderHtml"></div>
+            <div class="box-column-row" *ngFor="let function of adminRoleFunctions; let i = index">
+              <div class="row">
+                <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-5-1-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                  <label for="on-off-toggle-5-1-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-5-2-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                  <label for="on-off-toggle-5-2-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-right">
+                  <div class="on-off-toggle">
+                    <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-5-3-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                    <label for="on-off-toggle-5-3-{{i}}" class="on-off-toggle__slider"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="showLoading">
+              <div class="lds-spinner-permissions">
+                  <ng-template [ngTemplateOutlet]="loading"></ng-template>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="tab-pane fade" id="jobs" role="tabpanel">
+            <div class="box-column-row" [innerHtml]="permTabHeaderHtml"></div>
+            <div class="box-column-row" *ngFor="let function of jobsFunctions; let i = index">
+              <div class="row">
+                <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-6-1-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                  <label for="on-off-toggle-6-1-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-6-2-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                  <label for="on-off-toggle-6-2-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-right">
+                  <div class="on-off-toggle">
+                    <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-6-3-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                    <label for="on-off-toggle-6-3-{{i}}" class="on-off-toggle__slider"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="showLoading">
+              <div class="lds-spinner-permissions">
+                  <ng-template [ngTemplateOutlet]="loading"></ng-template>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="tab-pane fade" id="reports" role="tabpanel">
+            <div class="box-column-row" [innerHtml]="permTabHeaderHtml"></div>
+            <div id="accordion">
+              <div class="card permissions">
+                <div class="card-header" id="headingOne">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Operational Reports
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                  <div class="card-body">
+                    <span *ngFor="let function of reportsFunctions; let i = index">
+                    <div class="box-column-row" *ngIf="function.rmanFunctions.fType == 'OPERATIONAL'">
+                      <div class="row">
+                        <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                        <div class="col-md-2 text-center">
+                          <div class="on-off-toggle">
+                          <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-7-1-0-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                          <label for="on-off-toggle-7-1-0-{{i}}" class="on-off-toggle__slider"></label>
+                        </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                          <div class="on-off-toggle">
+                          <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-7-2-0-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                          <label for="on-off-toggle-7-2-0-{{i}}" class="on-off-toggle__slider"></label>
+                        </div>
+                        </div>
+                        <div class="col-md-2 text-right">
+                          <div class="on-off-toggle">
+                            <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-7-3-0-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                            <label for="on-off-toggle-7-3-0-{{i}}" class="on-off-toggle__slider"></label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </span>
+                  <ng-container *ngIf="showLoading">
+                    <div class="lds-spinner-permissions">
+                        <ng-template [ngTemplateOutlet]="loading"></ng-template>
+                    </div>
+                  </ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="card permissions">
+                <div class="card-header" id="headingTwo">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      Reconciliation Reports
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                  <div class="card-body">
+                    <span *ngFor="let function of reportsFunctions; let i = index">
+                    <div class="box-column-row" *ngIf="function.rmanFunctions.fType == 'RECONCILIATION'">
+                      <div class="row">
+                        <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                        <div class="col-md-2 text-center">
+                          <div class="on-off-toggle">
+                          <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-7-1-1-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                          <label for="on-off-toggle-7-1-1-{{i}}" class="on-off-toggle__slider"></label>
+                        </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                          <div class="on-off-toggle">
+                          <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-7-2-1-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                          <label for="on-off-toggle-7-2-1-{{i}}" class="on-off-toggle__slider"></label>
+                        </div>
+                        </div>
+                        <div class="col-md-2 text-right">
+                          <div class="on-off-toggle">
+                            <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-7-3-1-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                            <label for="on-off-toggle-7-3-1-{{i}}" class="on-off-toggle__slider"></label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    </span>
+                    <ng-container *ngIf="showLoading">
+                      <div class="lds-spinner-permissions">
+                          <ng-template [ngTemplateOutlet]="loading"></ng-template>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="card permissions">
+                <span *ngFor="let function of reportsFunctions; let i = index">
+                <div class="box-column-row" *ngIf="function.rmanFunctions.fType == 'ANALYTICAL'">
+                  <div class="row">
+                    <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                    <div class="col-md-2 text-center">
+                      <div class="on-off-toggle">
+                      <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-7-1-2-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                      <label for="on-off-toggle-7-1-2-{{i}}" class="on-off-toggle__slider"></label>
+                    </div>
+                    </div>
+                    <div class="col-md-2 text-center">
+                      <div class="on-off-toggle">
+                      <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-7-2-2-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                      <label for="on-off-toggle-7-2-2-{{i}}" class="on-off-toggle__slider"></label>
+                    </div>
+                    </div>
+                    <div class="col-md-2 text-right">
+                      <div class="on-off-toggle">
+                        <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-7-3-2-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                        <label for="on-off-toggle-7-3-2-{{i}}" class="on-off-toggle__slider"></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="exceptions" role="tabpanel">
+            <div class="box-column-row" [innerHtml]="permTabHeaderHtml"></div>
+            <div class="box-column-row" *ngFor="let function of exceptionsFunctions; let i = index">
+              <div class="row">
+                <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-8-1-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                  <label for="on-off-toggle-8-1-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-center">
+                  <div class="on-off-toggle">
+                  <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-8-2-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                  <label for="on-off-toggle-8-2-{{i}}" class="on-off-toggle__slider"></label>
+                </div>
+                </div>
+                <div class="col-md-2 text-right">
+                  <div class="on-off-toggle">
+                    <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-8-3-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                    <label for="on-off-toggle-8-3-{{i}}" class="on-off-toggle__slider"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="showLoading">
+              <div class="lds-spinner-permissions">
+                  <ng-template [ngTemplateOutlet]="loading"></ng-template>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="tab-pane fade" id="approvals" role="tabpanel">
+              <div class="box-column-row" [innerHtml]="permTabHeaderHtml"></div>
+              <div class="box-column-row" *ngFor="let function of approvalFunctions; let i = index">
+                <div class="row">
+                  <div class="col-md-6">{{function.rmanFunctions.name}}</div>
+                  <div class="col-md-2 text-center">
+                    <div class="on-off-toggle">
+                    <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-9-1-{{i}}" [(ngModel)]="function.read" (ngModelChange)="onReadPermChange(function)"/>
+                    <label for="on-off-toggle-9-1-{{i}}" class="on-off-toggle__slider"></label>
+                  </div>
+                  </div>
+                  <div class="col-md-2 text-center">
+                    <div class="on-off-toggle">
+                    <input class="on-off-toggle__input" type="checkbox" id="on-off-toggle-9-2-{{i}}" [(ngModel)]="function.write" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                    <label for="on-off-toggle-9-2-{{i}}" class="on-off-toggle__slider"></label>
+                  </div>
+                  </div>
+                  <div class="col-md-2 text-right">
+                    <div class="on-off-toggle">
+                      <input class="on-off-toggle__input" type="checkbox" checked="checked" id="on-off-toggle-9-3-{{i}}" [(ngModel)]="function.upload" (ngModelChange)="onWriteUploadPermChange(function)"/>
+                      <label for="on-off-toggle-9-3-{{i}}" class="on-off-toggle__slider"></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ng-container *ngIf="showLoading">
+                <div class="lds-spinner-permissions">
+                    <ng-template [ngTemplateOutlet]="loading"></ng-template>
+                </div>
+              </ng-container>
+            </div>
+        </div>
+
+
+        <div class="col-md-12">&nbsp;</div>
+        <div class="row">
+          <div class="col-md-12 text-right ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+            <ng-container *ngIf="saveLoading">
+              <div class="lds-spinner-save">
+                  <ng-template [ngTemplateOutlet]="loading"></ng-template>
+              </div>
+            </ng-container>
+            <button type="submit" pButton label="Save" class="primary-btn" [disabled]="!isPermChanged" (click)="save()"></button>
+            <button type="submit" pButton label="Reset" class="secondary-btn" (click)="discard()"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+        </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #loading>
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50px" height="50px"
+          viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" style="background: none; shape-rendering: auto;">
+          <g transform="rotate(0 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-1.375s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(30 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-1.25s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(60 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-1.125s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(90 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-1s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(120 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.875s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(150 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.75s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(180 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.625s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(210 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.5s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(240 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.375s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(270 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.25s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(300 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="-0.125s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+          <g transform="rotate(330 50 50)" class="">
+              <rect x="48" y="29" rx="2.88" ry="1.74" width="4" height="10" fill="#77868b" class="">
+                  <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1.5s" begin="0s"
+                      repeatCount="indefinite" class="" />
+              </rect>
+          </g>
+      </svg>
+    </ng-template>

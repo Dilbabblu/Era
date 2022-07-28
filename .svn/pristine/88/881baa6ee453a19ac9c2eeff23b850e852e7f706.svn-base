@@ -1,0 +1,387 @@
+<!-- <div class="ui-datatable ui-widget ui-datatable-reflow">
+<div class="ui-datatable-header ui-widget-header">
+<header>RmanContTransLines</header>
+</div>
+</div> -->
+
+<!-- 	<p-menubar [model]="items"></p-menubar>
+	<div class="ui-widget-header ui-helper-clearfix" [hidden]='!showFilter'  style="padding:4px 10px;border-bottom: 0 none">
+    <em class="fa fa-search" style="float:left;margin:4px 4px 0 0"></em>
+		<input #gb type="text" pInputText size="50" style="float:left" placeholder="Global Filter">
+	</div> 
+	 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+	 <!-- <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingThree">
+            <h4 class="panel-title"> <a role="button" data-toggle="collapse"  href="#collapseThree" aria-expanded="true" aria-controls="collapseThree"> Apply Contingencies </a> </h4>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
+            <div class="panel-body" style="padding-left: 1%;">
+               
+            </div>
+        </div>
+    </div> -->
+	<p-panel header="Apply Contingencies" [toggleable]="true" [style]="{'margin-bottom':'1em'}" (onBeforeToggle)=onBeforeToggle($event)>
+	
+	 <p-header>
+	 
+					<div class="pull-right" *ngIf="collapsed">
+					<a href="javascript:void(0)" (click)="showDialogToAdd()" class="icon-add" title="Add"></a>
+					<a href="javascript:void(0)" (click)="getAllRmanContTransLines()" class="icon-reset" title="Reset"></a>
+					<a href="javascript:void(0)" (click)="editRow(rmanContTransLines)" class="icon-edit" title="Edit"></a>
+					<a href="javascript:void(0)" (click)="delete(rmanContTransLines)" class="icon-delete" title="Delete"></a>
+					<a href="javascript:void(0)" (click)="ConfirmContApply(rmanContTransLines)" class="icon-edit" title="Confirm"></a>
+					</div>
+
+		</p-header>
+	<p-dataTable [value]="rmanContTransLinesList" selectionMode="single"     (onRowSelect)="onRowSelect($event)"  [paginator]="true" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements"    [globalFilter]="gb" resizableColumns="true" columnResizeMode="expand">
+        
+		<!-- <header style="display:{{(hideColumnMenu==true)?none:block}}">
+
+			<div style="text-align:left;">
+				<p-multiSelect [options]="columnOptions" [(ngModel)]="cols" [hidden]='hideColumnMenu'></p-multiSelect>
+			</div>
+		</header> -->
+		<!-- <p-column styleClass="col-button" [style]="{'width':'100px'}">
+                        <ng-template let-rmanContTransLines="rowData" pTemplate="body">
+                                <button type="button" pButton (click)="editRow(rmanContTransLines)" icon="fa-edit"></button>
+                                <button type="button" pButton (click)="delete(rmanContTransLines)" icon="fa-trash"></button>
+                        </ng-template>
+         </p-column> -->
+		       <p-column field=applicationLevel header="{{columns['applicationLevel']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true">
+            <!-- <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanLookupsV2(rmanContTransLines.rmanLookupsV2)}}</span>
+            </ng-template> -->
+        </p-column>
+		 <p-column field=sourceHeaderId header="{{columns['sourceHeaderId']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true">
+           <!--  <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanContSourceLov(rmanContTransLines.rmanContSourceLov)}}</span>
+            </ng-template> -->
+        </p-column>
+        <p-column field=sourceLineId header="{{columns['sourceLineId']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true">
+           <!--  <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanContSourceLov1(rmanContTransLines.rmanContSourceLov1)}}</span>
+            </ng-template> -->
+        </p-column>
+		        <p-column field=transHeaderId header="{{columns['transHeaderId']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+        <p-column field=transLineId header="{{columns['transLineId']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+        <p-column field=attribute30 header="{{columns['attribute30']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+		 <p-column field=element header="{{columns['element']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true">
+         </p-column>
+		<p-column field=productGroup header="{{columns['productGroup']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+	    <p-column field=productCategory header="{{columns['productCategory']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+	    <p-column field=productName header="{{columns['productName']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute29 header="{{columns['attribute29']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+		<p-column field=contEventType header="{{columns['contEventType']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true">
+            <!-- <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanLookupsV3(rmanContTransLines.rmanLookupsV3)}}</span>
+            </ng-template> -->
+        </p-column>
+		<p-column field=ruleHeaderId header="{{columns['ruleHeaderId']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="false">
+            <!-- <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanContHeaderV(rmanContTransLines.rmanContHeaderV)}}</span>
+            </ng-template> -->
+        </p-column>
+		<p-column field=ranking header="{{columns['ranking']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=ruleCategory header="{{columns['ruleCategory']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute28 header="{{columns['attribute28']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+		<p-column field=templateId header="{{columns['templateId']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true">
+            <!-- <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanContLinkTemplateV(rmanContTransLines.rmanContLinkTemplateV)}}</span>
+            </ng-template> -->
+        </p-column>
+	    <p-column field=revenue header="{{columns['revenue']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=cogs header="{{columns['cogs']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+		 <p-column field=invoiceHold header="{{columns['invoiceHold']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true">
+            <!-- <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanLookupsV(rmanContTransLines.rmanLookupsV)}}</span>
+            </ng-template> -->
+        </p-column>
+		<p-column field=applyType header="{{columns['applyType']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+		<p-column field=deferredMethod header="{{columns['deferredMethod']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+		<p-column field=event header="{{columns['event']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true">
+		<p-column field=autoReleaseDays header="{{columns['autoReleaseDays']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+            <!-- <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanLookupsV1(rmanContTransLines.rmanLookupsV1)}}</span>
+            </ng-template> -->
+        </p-column>
+		<p-column field=maxDuration header="{{columns['maxDuration']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+		<p-column field=comments header="{{columns['comments']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+		<p-column field=attribute14 header="{{columns['attribute14']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+        <p-column field=releaseType header="{{columns['releaseType']}}"  [style]="{'width':'100px'}" [hidden]="false" [sortable]="false" required="true"></p-column>
+
+        <p-column field=description header="{{columns['description']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column header="{{columns['contEventType']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true">
+            <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanLookupsV3(rmanContTransLines.rmanLookupsV3)}}</span>
+            </ng-template>
+        </p-column>
+
+        <p-column header="{{columns['event']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true">
+            <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanLookupsV1(rmanContTransLines.rmanLookupsV1)}}</span>
+            </ng-template>
+        </p-column>
+        <p-column field=percentage header="{{columns['percentage']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=application header="{{columns['application']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute1 header="{{columns['attribute1']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column header="{{columns['attribute2']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true">
+            <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanContProdNameLovV2(rmanContTransLines.rmanContProdNameLovV2)}}</span>
+            </ng-template>
+        </p-column>
+        <p-column header="{{columns['attribute3']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true">
+            <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformRmanContProdNameLovV1(rmanContTransLines.rmanContProdNameLovV1)}}</span>
+            </ng-template>
+        </p-column>
+        <p-column field=attribute4 header="{{columns['attribute4']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute5 header="{{columns['attribute5']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute6 header="{{columns['attribute6']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute7 header="{{columns['attribute7']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute8 header="{{columns['attribute8']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute9 header="{{columns['attribute9']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute10 header="{{columns['attribute10']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute11 header="{{columns['attribute11']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute12 header="{{columns['attribute12']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column header="{{columns['attribute13']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true">
+            <!-- <ng-template let-rmanContTransLines="rowData">
+                <span>{{transformContAdditionalInfo3LovV(rmanContTransLines.contAdditionalInfo3LovV)}}</span>
+            </ng-template> -->
+        </p-column>
+
+        <p-column field=attribute15 header="{{columns['attribute15']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute16 header="{{columns['attribute16']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute17 header="{{columns['attribute17']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute18 header="{{columns['attribute18']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute19 header="{{columns['attribute19']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute20 header="{{columns['attribute20']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute21 header="{{columns['attribute21']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute22 header="{{columns['attribute22']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute23 header="{{columns['attribute23']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute24 header="{{columns['attribute24']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute25 header="{{columns['attribute25']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute26 header="{{columns['attribute26']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=attribute27 header="{{columns['attribute27']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=creationDate header="{{columns['creationDate']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+        <p-column field=createdBy header="{{columns['createdBy']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+        <p-column field=lastUpdateDate header="{{columns['lastUpdateDate']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+        <p-column field=lastUpdatedBy header="{{columns['lastUpdatedBy']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="false"></p-column>
+
+
+        <p-column field=dealNum header="{{columns['dealNum']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=soHeaderId header="{{columns['soHeaderId']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=soLineId header="{{columns['soLineId']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+
+        <p-column field=releaseCogs header="{{columns['releaseCogs']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=releaseRevenue header="{{columns['releaseRevenue']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+
+        <p-column field=avgContAcceptDur header="{{columns['avgContAcceptDur']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+        <p-column field=dealArrangementId header="{{columns['dealArrangementId']}}"  [style]="{'width':'100px'}" [hidden]="true" [sortable]="false" required="true"></p-column>
+	</p-dataTable>
+	</p-panel>
+	               	               	<rmanContTransToRelease-data>loading..</rmanContTransToRelease-data>
+
+	
+	<!--  <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingTwo">
+            <h4 class="panel-title"> <a role="button" data-toggle="collapse"  href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"> Release Contingencies </a> </h4>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
+            <div class="panel-body" style="padding-left: 1%;">
+
+            </div>
+        </div>
+    </div> 
+
+	
+	
+					
+	</div>-->
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog"  showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="transLineId">{{columns['transLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText name="transLineId"  id="transLineId" [(ngModel)]="rmanContTransLinesSearch.transLineId" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton  (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanContTransLines" width="1000" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+	<!-- <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanContTransLines"> -->
+		<h4>Application Hierarchy</h4>
+		<hr/>
+
+		<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.applicationLevel" class="selectSpan"> Application Level </span>
+					<p-dropdown [options]="rmanLookupsV2" name="applicationLevel" [(ngModel)]="rmanContTransLines.applicationLevel" (onChange)="onSelectApplicationLevel($event.value)" [filter]="true" ></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.sourceHeaderId" class="selectSpan"> Source Header Id </span>
+					<p-dropdown [options]="rmanContSourceLov" name="sourceHeaderId" [disabled]="rmanContTransLines.applicationLevel == 'ARRANGEMENT'" [(ngModel)]="rmanContTransLines.sourceHeaderId" (onChange)="onSelectSourceHeader($event.value)" [filter]="true" ></p-dropdown>
+				</div>
+		</div>
+		
+		<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.sourceLineId" class="selectSpan"> Source Line Id </span>
+					<p-dropdown [options]="rmanContSourceLov1" name="sourceLineId"  [disabled]="rmanContTransLines.applicationLevel == 'ARRANGEMENT'" [(ngModel)]="rmanContTransLines.sourceLineId"  [filter]="true" ></p-dropdown>
+				</div>
+			
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.attribute30" class="selectSpan"> Standard </span>
+					<p-dropdown [options]="rmanLookupsV6" name="attribute30"   [(ngModel)]="rmanContTransLines.attribute30"  [filter]="true" ></p-dropdown>
+				</div>
+			
+		</div>
+		
+		<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.attribute29" class="selectSpan"> Post Allocation Contingency </span>
+					<p-dropdown [options]="rmanLookupsV" name="attribute29"   [(ngModel)]="rmanContTransLines.attribute29"  [filter]="true" ></p-dropdown>
+				</div>
+			
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.element" class="selectSpan"> Element </span>
+					<p-dropdown [options]="rmanContProdNameLovV" name="element" [(ngModel)]="rmanContTransLines.element" [filter]="true" ></p-dropdown>
+				</div>
+		</div>
+
+
+		<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.productGroup" class="selectSpan"> Product Group </span>
+					<p-dropdown [options]="rmanContProdGroupV1" name="productGroup"  [(ngModel)]="rmanContTransLines.productGroup"  [filter]="true" ></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.productCategory" class="selectSpan"> Product Category </span>
+					<p-dropdown [options]="rmanContProdCategoryV1" name="productCategory"   [(ngModel)]="rmanContTransLines.productCategory"  [filter]="true" ></p-dropdown>
+				</div>
+		</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.productName" class="selectSpan"> Product Name </span>
+					<p-dropdown [options]="rmanContProdNameV1" name="productName"   [(ngModel)]="rmanContTransLines.productName"  [filter]="true" ></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.contEventType" class="selectSpan"> Cont Event Type </span>
+					<p-dropdown [options]="rmanLookupsV3" name="contEventType"   [(ngModel)]="rmanContTransLines.contEventType"  [filter]="true" ></p-dropdown>
+				</div>
+			</div>
+
+		
+
+
+
+
+	 <h4>Contingency Details & Templates</h4>
+		<hr/>
+			 <div class="ui-g-12">
+			 	<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.ruleHeaderId" class="selectSpan"> Rule Header ID </span>
+					<p-dropdown [options]="rmanContHeaderV" name="ruleHeaderId" [(ngModel)]="rmanContTransLines.ruleHeaderId" (onChange)="onSelectContingency($event.value)" ></p-dropdown>
+				</div>
+			
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="ranking"  name="ranking"[(ngModel)]="rmanContTransLines.ranking" [disabled]="true" /><label for="ranking">{{columns['ranking']}}</label></span>
+				</div>
+			 </div>
+
+			 <div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield"><input pInputText id="ruleCategory" name="ruleCategory"  [(ngModel)]="rmanContTransLines.ruleCategory" [disabled]="true" /><label for="ruleCategory">{{columns['ruleCategory']}}</label></span>
+				</div>
+			 
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="attribute28" name="attribute28"  [(ngModel)]="rmanContTransLines.attribute28" [disabled]="true" /><label for="attribute28">{{columns['attribute28']}}</label></span>
+				</div>
+			 </div>
+
+			 <div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield"><input pInputText id="applyType" name="applyType"  [(ngModel)]="rmanContTransLines.applyType" [disabled]="true" /><label for="applyType">{{columns['applyType']}}</label></span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="deferredMethod" name="deferredMethod" [(ngModel)]="rmanContTransLines.deferredMethod" [disabled]="true" /><label for="deferredMethod">{{columns['deferredMethod']}}</label></span>
+				</div>
+			 </div>
+		
+
+
+			 <div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.contEventType" class="selectSpan"> Cont Event Type </span>
+					<p-dropdown [options]="rmanLookupsV3" name="contEventType"   [(ngModel)]="rmanContTransLines.contEventType"  [filter]="true" ></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.templateId" class="selectSpan"> Template ID </span>
+					<p-dropdown [options]="rmanContLinkTemplateV" name="templateId" [(ngModel)]="rmanContTransLines.templateId" (onChange)="onSelectContTemplate($event.value)" [disabled]="rmanContTransLines.ruleHeaderId ==null" ></p-dropdown>
+				</div>
+			 </div>
+
+
+			 <div class="ui-g-12">
+				<div class="ui-g-5">
+					  <span class="md-inputfield"><input pInputText id="revenue" name="revenue" [(ngModel)]="rmanContTransLines.revenue" [disabled]="true" /><label for="revenue">{{columns['revenue']}}</label></span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="cogs" name="cogs" [(ngModel)]="rmanContTransLines.cogs" [disabled]="true" /><label for="cogs">{{columns['cogs']}}</label></span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span *ngIf="rmanContTransLines.invoiceHold" class="selectSpan"> Invoice Hold </span>
+					<p-dropdown [options]="rmanLookupsV" name="invoiceHold" [(ngModel)]="rmanContTransLines.invoiceHold" [disabled]="true" ></p-dropdown>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanContTransLines.event" class="selectSpan"> Event </span>
+					<p-dropdown [options]="rmanLookupsV1" name="event" [(ngModel)]="rmanContTransLines.event" (onChange)="onSelecttAutoReleaseEvent($event.value)" ></p-dropdown>
+				</div>
+			</div>
+
+
+
+			<div class="ui-g-12">
+				
+				<div class="ui-g-5">
+				  <span class="md-inputfield"><input pInputText id="autoReleaseDays" name="autoReleaseDays" [(ngModel)]="rmanContTransLines.autoReleaseDays" [disabled]="rmanContTransLines.event != 'Auto'" /><label for="autoReleaseDays">{{columns['autoReleaseDays']}}</label></span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="comments" name="comments" [(ngModel)]="rmanContTransLines.comments" /><label for="comments">{{columns['comments']}}</label></span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+				  <span class="md-inputfield"><input pInputText id="maxDuration" name="maxDuration" [(ngModel)]="rmanContTransLines.maxDuration" /><label for="maxDuration">{{columns['maxDuration']}}</label></span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield"><input pInputText id="attribute14" name="attribute14" [(ngModel)]="rmanContTransLines.attribute14" /><label for="attribute14">{{columns['attribute14']}}</label></span>
+				</div>
+				
+			</div>
+
+			
+		
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</p-footer>
+	</p-dialog>

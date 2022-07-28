@@ -1,0 +1,232 @@
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+					<p-panel *isAuthorized="['write','RUNJOB']" id="jobs_concurrent" header="Run Jobs">
+						<div class="ui-grid ui-grid-responsive ui-fluid">
+							<div class="ui-g-12">
+
+								<div class="ui-g-6">
+									<span class="selectSpan"></span>
+									<p-dropdown [options]="programs" [(ngModel)]="selectedProgram"></p-dropdown>
+								</div>
+								<div class="ui-g-2">
+									<button type="submit" pButton class="primary-btn" label="Run Job" [disabled]="!selectedProgram" (click)="submitConcurrentProgram()"></button>
+								</div>
+							</div>
+						</div>
+					</p-panel>
+					<p-panel header="File Upload Log Info" [toggleable]="false" [style]="{'margin-bottom':'20px'}" (onBeforeToggle)="onBeforeToggle($event)">
+						<p-header>
+							<div class="pull-right icons-list" *ngIf="collapsed">
+								<a (click)="reset(dt)" title="Reset">
+									<em class="fa fa-refresh"></em>
+								</a>
+							</div>
+						</p-header>
+						<div class="x-scroll">
+							<p-table #dt class="ui-datatable arrangementMgrTbl" [value]="fileLog" [loading]="loading" (onLazyLoad)="getAllUploadLogs($event)"
+							 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th>
+											<a>Job Id</a>
+										</th>
+										<th>
+											<a>Job Name</a>
+										</th>
+										<th>
+											<a class="number">Total Processed Records</a>
+										</th>
+										<th>
+											<a class="number">Total Success Records</a>
+										</th>
+										<th>
+											<a class="number">Total Failed Records</a>
+										</th>
+										<th>
+											<a>Start Date</a>
+										</th>
+										<th>
+											<a>End Date</a>
+										</th>
+										<th>
+											<a>Uploaded By</a>
+										</th>
+										<th>
+											<a>Job Status</a>
+										</th>
+										<th *isAuthorized="['write','FUL']">
+											<a>Uploaded File</a>
+										</th>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-filelogs>
+									<tr [pSelectableRow]="rowData">
+										<td title="{{filelogs.jobId}}">{{filelogs.jobId}}</td>
+										<td title="{{filelogs.jobName}}"> {{filelogs.jobName}} </td>
+										<td title="{{filelogs.totalProcessRecords}}" class="number"> {{filelogs.totalProcessRecords}} </td>
+										<td title="{{filelogs.totalSuccessRecords}}" class="number"> {{filelogs.totalSuccessRecords}} </td>
+										<td title="{{filelogs.totalFailedRecords}}" class="number"> {{filelogs.totalFailedRecords}} </td>
+										<td title="{{filelogs.startDate|date: 'MM/dd/yyyy h:mm:ss a'}}">{{filelogs.startDate|date: 'MM/dd/yyyy h:mm:ss a'}}</td>
+										<td title="{{filelogs.finishedDate|date: 'MM/dd/yyyy h:mm:ss a'}}">{{filelogs.finishedDate|date: 'MM/dd/yyyy h:mm:ss a'}}</td>
+										<td title="{{filelogs.attribute2}}">{{filelogs.attribute2}}</td>
+										<td title="{{filelogs.jobStatus}}">{{filelogs.jobStatus}}</td>
+										<td *isAuthorized="['write','FUL']" title="Download">
+											<a class="download-icon" (click)="downloadFile(filelogs)" title="Download">
+												<em class="fa fa-download"></em>
+											</a>
+										</td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage" let-columns>
+									<tr *ngIf="!columns">
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+
+					</p-panel>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p-dialog header="Contingency Release Program" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade"
+	 [modal]="true" [blockScroll]="true">
+		<form [formGroup]="contReleaseForm" invalidate>
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+						<span class="selectSpan"> Name <span class="red-color">*</span></span>
+						<p-dropdown class="ml-auto" [options]="rmanContHeaderV" name="sspGrule" id="sspGrule" [(ngModel)]="headerId"
+						 [filter]="true" formControlName="sspGrule" appendTo="body">
+						</p-dropdown>
+						<div *ngIf="formErrors.sspGrule" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.sspGrule }}
+						</div>
+					</div>
+					<div class="ui-g-6 pull-right">
+						<span class="selectSpan">From Date <span class="red-color">*</span></span>
+						<p-calendar showAnim="slideDown" name="FromDate" inputStyleClass="textbox" id="FromDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+						 appendTo="body" [(ngModel)]="fromDate" dateFormat="yy-mm-dd" placeholder="From Date" formControlName="FromDate"
+						 (ngModelChange)="dateCheck($event)"></p-calendar>
+						<div *ngIf="formErrors.FromDate" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.FromDate }}
+						</div>
+					</div>
+				</div>
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+							<span class="selectSpan">To Date<span class="red-color">*</span></span>
+							<p-calendar showAnim="slideDown" name="ToDate" inputStyleClass="textbox" id="ToDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030" formControlName="ToDate"
+							 appendTo="body" [(ngModel)]="toDate" dateFormat="yy-mm-dd" placeholder="To Date" 
+							 (ngModelChange)="dateCheck($event)"></p-calendar>
+								<div *ngIf="formErrors.ToDate" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.ToDate }}
+					</div>
+					<div *ngIf="dateFlag">
+						<span class="red-color">To date should be greater then From date</span>
+					</div>
+					</div>
+					<div class="ui-g-6 pull-right">
+						<span class="md-inputfield">
+							<span class="selectSpan">Customer Number<span class="red-color"></span></span>
+								<p-autoComplete [(ngModel)]="customerNumber" inputStyleClass="textbox" [suggestions]="filteredCustomerNumberList" (completeMethod)="filterCustomerNumber($event)" styleClass="wid100"
+										[minLength]="1" (onFocus)="customerNamePlaceHolder = 'Type atleast 1 character, ex: 1'" (onBlur)="customerNamePlaceHolder = ''" placeholder="{{customerNamePlaceHolder}}" id="customerNumber" appendTo="body" formControlName="customerNumber">
+								</p-autoComplete>
+								<div *ngIf="formErrors.customerNumber" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.customerNumber }}
+							</div>
+						</span>
+				</div>
+				</div>
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+						<span class="md-inputfield">
+							<span class="selectSpan">Product Group<span class="red-color"></span></span>
+								<p-autoComplete [(ngModel)]="productGroup" inputStyleClass="textbox" [suggestions]="filteredProductGroupList" (completeMethod)="filterProductGroup($event)" styleClass="wid100"
+										[minLength]="1" (onFocus)="productGroupPlaceHolder = 'Type atleast 1 character, ex: a'" (onBlur)="productGroupPlaceHolder = ''" placeholder="{{productGroupPlaceHolder}}" id="productGroup" appendTo="body" formControlName="productGroup">
+								</p-autoComplete>
+								<div *ngIf="formErrors.productGroup" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.productGroup }}
+							</div>
+						</span>
+					</div>
+					<div class="ui-g-6 pull-right">
+						<span class="md-inputfield">
+							<span class="selectSpan">Product Family<span class="red-color"></span></span>
+								<p-autoComplete [(ngModel)]="productFamily" inputStyleClass="textbox" [suggestions]="filteredProductFamilyList" (completeMethod)="filterProductFamily($event)" styleClass="wid100"
+										[minLength]="1" (onFocus)="productFamilyPlaceHolder = 'Type atleast 1 character, ex: a'" (onBlur)="productFamilyPlaceHolder = ''" placeholder="{{productFamilyPlaceHolder}}" id="productFamily" appendTo="body" formControlName="productFamily">
+								</p-autoComplete>
+								<div *ngIf="formErrors.productFamily" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.productFamily }}
+							</div>
+						</span>
+					</div>
+				</div>
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+						<span class="md-inputfield">
+							<span class="selectSpan">Product Line<span class="red-color"></span></span>
+								<p-autoComplete [(ngModel)]="productLine" inputStyleClass="textbox" [suggestions]="filteredProductLineList" (completeMethod)="filterProductLine($event)" styleClass="wid100"
+										[minLength]="1" (onFocus)="productLinePlaceHolder = 'Type atleast 1 character, ex: a'" (onBlur)="productLinePlaceHolder = ''" placeholder="{{productLinePlaceHolder}}" id="productLine" appendTo="body" formControlName="productLine">
+								</p-autoComplete>
+								<div *ngIf="formErrors.productLine" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.productLine }}
+							</div>
+						</span>
+					</div>
+					<div class="ui-g-6 pull-right">
+						<span class="md-inputfield">
+							<span class="selectSpan">Order Number<span class="red-color"></span></span>
+								<input pInputText type="text" class="textbox" placeholder="Order PO" name="orderNumber" id="orderNumber"
+									  formControlName="orderNumber" [(ngModel)]="orderNumber"/>
+								<div *ngIf="formErrors.orderNumber" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.orderNumber }}
+							</div>
+						</span>
+					</div>
+				</div>
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+						<span class="md-inputfield">
+							<span class="selectSpan">Customer PO<span class="red-color"></span></span>
+								<input pInputText type="text" class="textbox" placeholder="Customer PO" name="customerPo" id="customerPo"
+									  formControlName="customerPo" [(ngModel)]="customerPo"/>
+								<div *ngIf="formErrors.customerPo" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.customerPo }}
+							</div>
+						</span>
+					</div>
+
+					<div class="ui-g-6 pull-right">
+						<span class="selectSpan">Release Date<span class="red-color">*</span></span>
+						<p-calendar showAnim="slideDown" name="releaseDate" inputStyleClass="textbox" id="releaseDate" [monthNavigator]="true" [yearNavigator]="true"
+						 yearRange="1950:2030" [minDate]="minimumDate" [(ngModel)]="releaseDate" dateFormat="yy-mm-dd"
+						 placeholder="Release Date" appendTo="body" formControlName="releaseDate"></p-calendar>
+		
+						 <div *ngIf="formErrors.releaseDate" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.releaseDate }}
+						</div>
+		
+					</div>
+
+
+				</div>
+			</div>
+
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton class="primary-btn" label="Release" [disabled]="!contReleaseForm.valid" (click)="release()"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancelSearch()" label="Cancel"></button>
+			</div>
+		</p-footer>	
+</p-dialog>

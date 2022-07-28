@@ -1,0 +1,8 @@
+ <canvas id="barchart" *ngIf="chartReady && barChartLabels.length!=0" baseChart height="200"
+    [datasets]="barChartData"
+    [labels]="barChartLabels"
+    [options]="barChartOptions"
+    [plugins]="barChartPlugins"
+    [legend]="barChartLegend"
+    [chartType]="barChartType" (chartClick)="onBarClick($event)">
+  </canvas>

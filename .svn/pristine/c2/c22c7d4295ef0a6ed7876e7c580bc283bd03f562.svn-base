@@ -1,0 +1,312 @@
+	<div class="content-section implementation">
+	</div>
+
+	<div class="card-wrapper">
+		<div class="container-fluid">
+		  <div class="row">
+			<div class="col-md-12">
+			  <div class="card-block">
+	<p-panel header="SSP Rules" class="row-active" (onBeforeToggle)=onBeforeToggle($event)>
+
+		<p-header>
+			<div class="pull-right icons-list">
+				<a  *isAuthorized="['write','SSP']" (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+				<a  *isAuthorized="['upload','SSP']" (click)="importFile()" title="Import"><em class="fa fa-upload"></em></a>
+				<a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+				<a  *isAuthorized="['write','SSP']" (click)="approve()" title="Approve"><em class="fa fa-check-square-o"></em></a>
+				<a  *isAuthorized="['write','SSP']" (click)="reject()" title="Reject"><em class="fa fa-times"></em></a>
+				<a  *isAuthorized="['write','SSP']" (click)="approveAll()" title="Approve All"><em>Approve All</em></a>
+				<a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+				<a  *isAuthorized="['write','SSP']" (click)="exportExcel()" title="Export"><em class="fa fa-external-link"></em></a>
+				<a [routerLink]="['/fairValues','sspBooks']" title="Go to SSP Books"><em class="fa fa-reply"></em></a>
+			</div>
+		</p-header>
+
+		<div class="x-scroll">
+		<p-table #dt [loading]="loading" class="ui-datatable arrangementMgrTbl" id="ssprules-dt" [value]="rmanFmvRulesDefList" selectionMode="single" [(selection)]="selectedRmanFmvRulesDef"
+		 (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnSelect()" (onLazyLoad)="getRmanFmvRulesDef($event)" [lazy]="true"
+		 [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"  scrollable="true">
+
+			<ng-template pTemplate="header" class="arrangementMgrTblHead">
+				<tr>
+					<th class="w-100"></th>
+					<th class="w-100"><a >{{columns['fmvRuleName']}}</a></th>
+					<th class="w-100"><a >{{columns['fmvCategory']}}</a></th>
+					<th class="w-100"><a >{{columns['fmvType']}}</a></th>
+					<th class="w-100"><a >{{columns['fmvRuleStatus']}}</a></th>
+					<th class="w-100 text-right"><a  class="number">{{columns['fmvPrice']}}</a></th>
+					<th class="w-100 text-right"><a  class="number">{{columns['min']}}</a></th>
+					<th class="w-100 text-right"><a  class="number">{{columns['median']}}</a></th>
+					<th class="w-100 text-right"><a  class="number">{{columns['max']}}</a></th>
+					<th class="w-100 text-left"><a >{{columns['quarterStartDate']}}</a></th>
+
+					<th class="w-100 text-left"><a >{{columns['quarterEndDate']}}</a></th>
+					<th class="w-100 text-left"><a >{{columns['attribute2']}}</a></th>
+
+
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-rowData let-rmanFmvRulesDef>
+				<tr [pSelectableRow]="rowData">
+					<td class="w-100">
+						<span [ngClass]="{'noPointer': rmanFmvRulesDef.fmvRuleStatus == 'APPROVED'}">
+							<a  *isAuthorized="['write','SSP']" (click)="editRow(rmanFmvRulesDef)" class="icon-edit"> </a>
+						</span>
+						<span [ngClass]="{'noPointer': rmanFmvRulesDef.fmvRuleStatus == 'APPROVED'}">
+							<a  *isAuthorized="['write','SSP']" (click)="delete(rmanFmvRulesDef)" class="icon-delete"> </a>
+						</span>
+					</td>
+					<td title="{{rmanFmvRulesDef.fmvRuleName}}" class="w-100">{{rmanFmvRulesDef.fmvRuleName}}</td>
+					<td title="{{rmanFmvRulesDef.fmvCategory}}" class="w-100">{{rmanFmvRulesDef.fmvCategory}}</td>
+					<td title="{{rmanFmvRulesDef.fmvType}}" class="w-100">{{rmanFmvRulesDef.fmvType}}</td>
+					<td class="w-100">{{rmanFmvRulesDef.fmvRuleStatus}}</td>
+					<td class="w-100 text-right">{{rmanFmvRulesDef.fmvPrice | number :'1.2-2'}}</td>
+					<td class="w-100 text-right">{{rmanFmvRulesDef.min | number :'1.2-2'}}</td>
+					<td class="w-100 text-right">{{rmanFmvRulesDef.median | number :'1.2-2'}}</td>
+					<td class="w-100 text-right">{{rmanFmvRulesDef.max | number :'1.2-2'}}</td>
+					<td class="w-100 text-left">{{rmanFmvRulesDef.quarterStartDate | date: 'MM/dd/yyyy'}}</td>
+					<td class="w-100 text-left">{{rmanFmvRulesDef.quarterEndDate | date: 'MM/dd/yyyy'}}</td>
+					<td class="w-100 text-left">{{rmanFmvRulesDef.attribute2}}</td>
+
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="emptymessage" let-columns>
+				<tr *ngIf="!columns">
+					<td class="no-data">{{noData}}</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+	</p-panel>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+	<rmanFmvRulesDefParaValue-data (notifyPameterExist)="getNotifyParameterExist($event)">loading..</rmanFmvRulesDefParaValue-data>
+	<div class="lds-roller" style="top: 0px;" *ngIf="uploadLoading"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+	<p-dialog header="Upload  SSP Rules " width="500" [(visible)]="_uploadService.uploadDialog" [draggable]="true" 
+	showEffect="fade" [modal]="true" (onAfterHide)="Uploadcancel()" >
+	<p-fileUpload id="upload-bookings-input" name="file" 
+		customUpload="true" (uploadHandler)="fileUploadHandler($event, '/upload/ssprules')"
+	  	accept=".csv"  invalidFileTypeMessageSummary="{0}:Invalid file Type">
+	</p-fileUpload>
+	<progress-bar></progress-bar>
+  </p-dialog>
+
+	<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade"
+	 [modal]="true" [blockScroll]="true">
+		<form novalidate>
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+						<span class="md-inputfield">
+							<span class="selectSpan">{{columns['fmvRuleName']}}</span>
+							<input pInputText name="fmvRuleName" class="textbox" placeholder="SSP Rule Name" id="fmvRuleName" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFmvRulesDefSearch.fmvRuleName"
+							/>
+						</span>
+					</div>
+					<div class="ui-g-6 pull-right">
+						<span class="selectSpan"> SSP Rule Status</span>
+						<p-dropdown [options]="rmanLookupsV2" name="fmvRuleStatus" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFmvRulesDefSearch.fmvRuleStatus"
+						 [filter]="true" appendTo="body"></p-dropdown>
+					</div>
+				</div>
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+							<span class="selectSpan">Start Date</span>
+						<p-calendar showAnim="slideDown" name="quarterStartDate" inputStyleClass="textbox" id="quarterStartDate" [monthNavigator]="true" [yearNavigator]="true"
+						 yearRange="1950:2030" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFmvRulesDefSearch.quarterStartDate" dateFormat="yy-mm-dd"
+						 placeholder="Start Date" appendTo="body"></p-calendar>
+					</div>
+					<div class="ui-g-6 pull-right">
+							<span class="selectSpan">End Date</span>
+						<p-calendar showAnim="slideDown" name="quarterEndDate" inputStyleClass="textbox" id="quarterEndDate" [monthNavigator]="true" [yearNavigator]="true"
+						 yearRange="1950:2030" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanFmvRulesDefSearch.quarterEndDate" dateFormat="yy-mm-dd"
+						 placeholder="End Date" appendTo="body"></p-calendar>
+					</div>
+				</div>
+			</div>
+
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancelSearch()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+	<p-dialog header="{{(newRmanFmvRulesDef) ? 'Create SSP Rule' : 'Edit SSP Rule'}}" width="700" [(visible)]="displayDialog"
+	 [draggable]="true"  showEffect="fade" [modal]="true" [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancel()">
+		<form (ngSubmit)="save()" [formGroup]="fairValuesForm" novalidate>
+			<div class="ui-g ui-fluid" *ngIf="rmanFmvRulesDef">
+				<div class="ui-g-12 form-group">
+					<div class="ui-grid-row">
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="md-inputfield">
+									<span class="selectSpan">{{columns['fmvRuleName']}}<span class="red-color">*</span></span>
+									<input pInputText type="text" class="textbox" placeholder="SSP Rule Name" name="fmvRuleName" id="fmvRuleName" [readonly]="editFlag" [(ngModel)]="rmanFmvRulesDef.fmvRuleName"
+									 formControlName="name" />
+									<div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.name }}
+									</div>
+								</span>
+							</div>
+
+							<div class="ui-g-6 pull-right">
+								<span class="selectSpan"> FMV Type </span>
+								<p-dropdown [options]="rmanLookupsV1" name="fmvType" id="fmvType" [disabled]="editFlag" [(ngModel)]="rmanFmvRulesDef.fmvType"
+								 [filter]="true" formControlName="type">
+								</p-dropdown>
+								<div *ngIf="formErrors.type" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.type }}
+								</div>
+							</div>
+
+						</div>
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="selectSpan"> FMV Category </span>
+								<p-dropdown [options]="rmanLookupsV" name="fmvCategory" id="fmvCategory" [disabled]="editFlag" [(ngModel)]="rmanFmvRulesDef.fmvCategory"
+								 [filter]="true" formControlName="category">
+								</p-dropdown>
+								<div *ngIf="formErrors.category" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.category }}
+								</div>
+							</div>
+							<div class="ui-g-6 pull-right">
+								<span class="md-inputfield">
+									<span class="selectSpan">{{columns['fmvRuleStatus']}}<span class="red-color">*</span></span>
+									<input pInputText name="fmvRuleStatus" class="textbox" placeholder="SSP Rule Status" id="fmvRuleStatus" [(ngModel)]="rmanFmvRulesDef.fmvRuleStatus" formControlName="status"
+									 [readonly]="true" />
+									<div *ngIf="formErrors.status" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.status }}
+									</div>
+								</span>
+							</div>
+						</div>
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="md-inputfield">
+									<span class="selectSpan">{{columns['min']}}<span class="red-color">*</span></span>
+									<input pInputText name="min" id="min" class="textbox" placeholder="Min" [(ngModel)]="rmanFmvRulesDef.min" formControlName="minimum" />
+									<div *ngIf="formErrors.minimum" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.minimum }}
+									</div>
+								</span>
+							</div>
+							<div class="ui-g-6 pull-right">
+								<span class="md-inputfield">
+									<span class="selectSpan">{{columns['max']}}<span class="red-color">*</span></span>
+									<input pInputText name="max" id="max" class="textbox" placeholder="Max" required [(ngModel)]="rmanFmvRulesDef.max" formControlName="maximum" />
+									<div *ngIf="formErrors.maximum" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.maximum }}
+									</div>
+								</span>
+							</div>
+						</div>
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="md-inputfield">
+									<span class="selectSpan">{{columns['median']}}<span class="red-color">*</span></span>
+									<input pInputText name="median" id="median" class="textbox" placeholder="Median" [(ngModel)]="rmanFmvRulesDef.median" (keyup)="medianValueChange($event)" formControlName="med" />
+									<div *ngIf="formErrors.med" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.med }}
+									</div>
+									<div *ngIf="medError" class="ui-message ui-messages-error ui-corner-all">
+										{{ medErrorValue }}
+									</div>
+								</span>
+							</div>
+							<div class="ui-g-6 pull-right">
+								<span class="md-inputfield">
+									<span class="selectSpan">{{columns['fmvPrice']}}<span class="red-color">*</span></span>
+									<input pInputText name="fmvPrice"  class="textbox" placeholder="SSP Price" id="fmvPrice" required [(ngModel)]="rmanFmvRulesDef.fmvPrice" (keyup)="priceValueChange($event)" formControlName="price" />
+									<div *ngIf="formErrors.price" class="ui-message ui-messages-error ui-corner-all">
+										{{ formErrors.price }}
+									</div>
+									<div *ngIf="priceError" class="ui-message ui-messages-error ui-corner-all">
+										{{ priceErrorValue }}
+									</div>
+								</span>
+							</div>
+						</div>
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="selectSpan">Start Date <span class="red-color">*</span></span>
+								<p-calendar showAnim="slideDown" name="quarterStartDate" inputStyleClass="textbox" id="quarterStartDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+								 appendTo="body" [(ngModel)]="rmanFmvRulesDef.quarterStartDate" dateFormat="mm/dd/yy" placeholder="Start Date*" formControlName="quarterStartDate"></p-calendar>
+								<div *ngIf="formErrors.quarterStartDate" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.quarterStartDate }}
+								</div>
+
+							</div>
+
+
+							<div class="ui-g-6 pull-right">
+									<span class="selectSpan">End Date
+											<span class="red-color">*</span>
+									</span>
+									<p-calendar showAnim="slideDown" name="quarterEndDate" inputStyleClass="textbox" id="quarterEndDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030" formControlName="quarterEndDate"
+									 appendTo="body" [(ngModel)]="rmanFmvRulesDef.quarterEndDate" dateFormat="mm/dd/yy" placeholder="End Date*" ></p-calendar>
+										<div *ngIf="formErrors.quarterEndDate" class="ui-message ui-messages-error ui-corner-all">
+									{{ formErrors.quarterEndDate }}
+							</div>
+							</div>
+						</div>
+						<div class="ui-g-12">
+							<div class="ui-g-6">
+								<span class="selectSpan"> Currency <span class="red-color">*</span> </span>
+								<p-dropdown [options]="rmanCurrency"  name="attribute2" id="attribute2" [(ngModel)]="rmanFmvRulesDef.attribute2" formControlName="currencyAttribute" [filter]="true" >
+								</p-dropdown>	
+
+							   <div *ngIf="formErrors.currencyAttribute" class="ui-message ui-messages-error ui-corner-all">
+								   {{ formErrors.currencyAttribute }}
+							   </div>
+						
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!(fairValuesForm.valid) || (editFlag) || (medError) || (priceError)"></button>
+				<button type="button" pButton class="secondary-btn" (click)="cancel()" label="Cancel"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+<div class="modal fade dialogueBox" id="FieldsMandatory" role="dialog" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">{{'Error'}}</h4>
+			</div>
+			<form class="form-horizontal">
+				<div class="modal-body clearfix">
+					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+
+						<p *ngIf="showMsg==1">Please enter FMV Rule name</p>
+						<p *ngIf="showMsg==2">Please enter FMV Category</p>
+						<p *ngIf="showMsg==3">Please enter FMV Type</p>
+						<p *ngIf="showMsg==4">Please enter FMV Rule Status</p>
+
+
+					</div>
+
+				</div>
+				<div class="modal-footer" class="p-3">
+					<button class="btn btn-primary pull-right" data-dismiss="modal">OK</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

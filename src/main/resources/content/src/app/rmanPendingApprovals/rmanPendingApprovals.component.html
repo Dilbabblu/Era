@@ -1,0 +1,229 @@
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+
+					<p-tabView>
+						<p-tabPanel *isAuthorized="['read','PREQ']" header="Pending Requests" [selected]="true">
+							<p-panel header="Pending Requests" [toggleable]="false" [style]="{'margin-bottom':'20px'}">
+
+								<div class="x-scroll">
+									<p-table #dt class="ui-datatable arrangementMgrTbl" [value]="rmanPendingApprovalsList" [loading]="pendingLoading" (onLazyLoad)="getRmanPendingApprovals($event)"
+									 [lazy]="true" [paginator]="true" [rows]="pendingPageSize" [totalRecords]="pendingTotalElements" scrollable="true">
+
+										<ng-template pTemplate="header" class="arrangementMgrTblHead">
+											<tr>
+												<th>Revenue Contract Number</th>
+												<th>Revenue Contract Status</th>
+												<th class="text-right">Revenue Contract Amount</th>
+												<th>Created Date</th>
+												<th>Created By</th>
+												<th>Action</th>
+											</tr>
+										</ng-template>
+										<ng-template pTemplate="body" let-rowData let-rmanPendingApprovals>
+											<tr>
+												<td title="{{rmanPendingApprovals.revenueContractNumber}}" class="star-icon">
+													<span>
+														<a href="#" [routerLink]="['/rmanArrangementsAllV', 'rmanArrangementsOverView', rmanPendingApprovals.revenueContractNumber,'Y']">{{rmanPendingApprovals.revenueContractNumber}}</a>
+													</span>
+												</td>
+												<td title="{{rmanPendingApprovals.revenueContractStatus}}">{{rmanPendingApprovals.revenueContractStatus}}</td>
+												<td title="{{rmanPendingApprovals.revenueContractAmount | round}}" class="number"> {{rmanPendingApprovals.revenueContractAmount | round}} </td>
+												<td title="{{rmanPendingApprovals.creationDate}}"> {{rmanPendingApprovals.creationDate | date: 'MM/dd/yyyy'}} </td>
+												<td title="{{rmanPendingApprovals.fullName}}">{{rmanPendingApprovals.fullName}}</td>
+												<td>
+													<a *isAuthorized="['write','PREQ']" title="Approve" class="star-icon" (click)="approve(rmanPendingApprovals)">
+														<em class="fa fa-check-square-o" aria-hidden="true"></em>
+													</a>
+													<a *isAuthorized="['write','PREQ']" title="Request for more Info" class="star-icon" (click)="moreInfo(rmanPendingApprovals)">
+														<em class="fa fa-info-circle" aria-hidden="true"></em>
+													</a>
+													<a *isAuthorized="['write','PREQ']" title="Delegate" class="star-icon" (click)="delegate(rmanPendingApprovals)">
+														<em class="fa fa-share-square-o" aria-hidden="true"></em>
+													</a>
+												</td>
+											</tr>
+										</ng-template>
+										<ng-template pTemplate="emptymessage">
+											<tr>
+												<td class="no-data">{{noData}}</td>
+											</tr>
+										</ng-template>
+									</p-table>
+								</div>
+
+							</p-panel>
+
+						</p-tabPanel>
+						<p-tabPanel *isAuthorized="['read','OREQ']" header="Outstanding Requests">
+							<p-panel header="Outstanding Requests" [toggleable]="false" [style]="{'margin-bottom':'20px'}">
+
+								<div class="x-scroll">
+									<p-table #dt class="ui-datatable arrangementMgrTbl" [value]="rmanOutstandingApprovalsList" [loading]="loading" (onLazyLoad)="getRmanOutstandingApprovals($event)"
+									 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true">
+
+										<ng-template pTemplate="header" class="arrangementMgrTblHead">
+											<tr>
+												<th>Revenue Contract Number</th>
+												<th>Revenue Contract Status</th>
+												<th class="text-right">Revenue Contract Amount</th>
+												<th>Created Date</th>
+												<th>Created By</th>
+												<th>Action</th>
+											</tr>
+										</ng-template>
+										<ng-template pTemplate="body" let-rowData let-rmanOutstandingApprovals>
+											<tr>
+												<td title="{{rmanOutstandingApprovals.revenueContractNumber}}" class="star-icon">
+													<span>
+														<a href="#" [routerLink]="['/rmanArrangementsAllV', 'rmanArrangementsOverView', rmanOutstandingApprovals.revenueContractNumber,'Y']">{{rmanOutstandingApprovals.revenueContractNumber}}</a>
+													</span>
+												</td>
+												<td title="{{rmanOutstandingApprovals.revenueContractStatus}}">{{rmanOutstandingApprovals.revenueContractStatus}}</td>
+												<td title="{{rmanOutstandingApprovals.revenueContractAmount | round}}" class="number"> {{rmanOutstandingApprovals.revenueContractAmount | round}} </td>
+												<td title="{{rmanOutstandingApprovals.creationDate}}"> {{rmanOutstandingApprovals.creationDate | date: 'MM/dd/yyyy'}} </td>
+												<td title="{{rmanOutstandingApprovals.fullName}}">{{rmanOutstandingApprovals.fullName}}</td>
+												<td>
+													<a *isAuthorized="['write','OREQ']" title="Submit For Approval" (click)="submitForApproval(rmanOutstandingApprovals)" class="star-icon">Submit for Approval</a>
+												</td>
+											</tr>
+										</ng-template>
+										<ng-template pTemplate="emptymessage">
+											<tr>
+												<td class="no-data">{{noData}}</td>
+											</tr>
+										</ng-template>
+									</p-table>
+								</div>
+
+							</p-panel>
+
+
+						</p-tabPanel>
+					</p-tabView>
+
+
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p-dialog header="Submit for Approval" width="700" [(visible)]="displaySubmitDialog" [draggable]="true" showEffect="fade"
+ [modal]="true" [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancelSubmit()">
+	<form (ngSubmit)="submit()" novalidate>
+		<div class="ui-g ui-fluid">
+			<div class="ui-g-12 form-group">
+				<div class="ui-grid-row">
+					<div class="ui-g-12">
+						<div class="ui-g-12">
+							<span class="selectSpan">Comments</span>
+							<textarea rows="6" cols="80" pInputTextarea id="submitComments" class="submitComments" name="submitComments" [(ngModel)]="submitComments"
+							 placeholder="Enter Comments"></textarea>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Submit" (click)="submit()"></button>
+			<button type="button" pButton class="secondary-btn" (click)="cancelSubmit()" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+<p-dialog header="Approve" width="700" [(visible)]="displayApproveDialog" [draggable]="true" showEffect="fade" [modal]="true"
+ [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancelApprove()">
+	<form (ngSubmit)="saveApprove()" novalidate>
+		<div class="ui-g ui-fluid">
+			<div class="ui-g-12 form-group">
+				<div class="ui-grid-row">
+					<div class="ui-g-12">
+						<div class="ui-g-12">
+							<span class="selectSpan">Comments</span>
+							<textarea rows="6" cols="80" pInputTextarea id="comments" class="comments" name="comments" [(ngModel)]="comments" placeholder="Enter Comments"></textarea>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Approve" (click)="saveApprove()"></button>
+			<button type="button" pButton class="secondary-btn" (click)="cancelApprove()" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+<p-dialog header="Delegate" width="700" [(visible)]="displayDelegateDialog" [draggable]="true" showEffect="fade" [modal]="true"
+ [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancelDelegate()">
+	<form (ngSubmit)="processDelegate()" [formGroup]="delegateForm" novalidate>
+		<div class="ui-g ui-fluid">
+			<div class="ui-g-12 form-group">
+				<div class="ui-grid-row">
+					<div class="ui-g-12">
+						<div class="ui-g-12">
+							<span class="selectSpan">Select User
+								<span class="red-color">*</span>
+							</span>
+							<p-dropdown [options]="userLookup" name="user" placeholder="Select User" [(ngModel)]="delegatedUser" [filter]="true" appendTo="body"
+							 formControlName="user"></p-dropdown>
+
+							<div *ngIf="formErrors.user" class="ui-message ui-messages-error ui-corner-all">
+								{{ formErrors.user }}
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Delegate" (click)="processDelegate()"></button>
+			<button type="button" pButton class="secondary-btn" (click)="cancelDelegate()" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+<p-dialog header="Request for more Info" width="700" [(visible)]="displayDialog" [draggable]="true" showEffect="fade"
+ [modal]="true" [blockScroll]="true" (onAfterHide)="onHide($event)" (onHide)="cancelInfo()">
+	<form (ngSubmit)="requestForMoreInfo()" novalidate>
+		<div class="ui-g ui-fluid">
+			<div class="ui-g-12 form-group">
+				<div class="ui-grid-row">
+					<div class="ui-g-12">
+						<div class="ui-g-12">
+							<span class="selectSpan">Comments</span>
+							<textarea rows="6" cols="80" pInputTextarea id="moreInfoComments" class="moreInfoComments" name="moreInfoComments" [(ngModel)]="moreInfoComments"
+							 placeholder="Enter Comments"></textarea>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Request" (click)="requestForMoreInfo()"></button>
+			<button type="button" pButton class="secondary-btn" (click)="cancelInfo()" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

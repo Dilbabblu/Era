@@ -1,0 +1,480 @@
+<div class="content-section implementation">
+</div>
+<div class="card-wrapper">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+
+					<h2>POB Mappings</h2>
+
+					<div class="pull-right icons-list">
+						<a (click)="onConfiguringColumns($event)" class="add-column">
+							<em class="fa fa-cog"></em>Columns</a>
+						<a *isAuthorized="['write','MPOB']" (click)="showDialogToAdd()" title="Add">
+							<em class="fa fa-plus-circle"></em>
+						</a>
+						<a (click)="showDialogToSearch()" title="Search">
+							<em class="fa fa-search"></em>
+						</a>
+						<a (click)="reset(dt)" title="Reset">
+							<em class="fa fa-refresh"></em>
+						</a>
+						<a *isAuthorized="['write','MPOB']" (click)="exportExcel()" title="Export">
+							<em class="fa fa-external-link"></em>
+						</a>
+						<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+							<div class="user-popup">
+								<div class="content overflow">
+									<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+									<label for="selectall">Select All</label>
+									<a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+									<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+										<ng-template let-col let-index="index" pTemplate="item">
+											<div *ngIf="col.drag">
+												<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+													<div class="drag">
+														<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+														<label>{{col.header}}</label>
+													</div>
+												</div>
+											</div>
+											<div *ngIf="!col.drag">
+												<div class="ui-helper-clearfix">
+													<div>
+														<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+														/>
+														<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+													</div>
+												</div>
+											</div>
+										</ng-template>
+									</p-listbox>
+
+								</div>
+
+								<div class="pull-right">
+									<a class="configColBtn" (click)="saveColumns()">Save</a>
+									<a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+					<div class="x-scroll">
+						<p-table #dt class="ui-datatable arrangementMgrTbl" id="pobmappings-dt" [loading]="loading" [value]="rmanPobMappingList"
+						 selectionMode="single" (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanPobMapping($event)" [lazy]="true" [paginator]="true"
+						 [rows]="pageSize" [totalRecords]="totalElements" scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+							<ng-template pTemplate="colgroup" let-columns>
+								<colgroup>
+									<col>
+									<col *ngFor="let col of columns">
+								</colgroup>
+							</ng-template>
+							<ng-template pTemplate="header" class="arrangementMgrTblHead">
+								<tr>
+									<th></th>
+									<ng-container *ngFor="let col of columns">
+										<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+										<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+										 title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+									</ng-container>
+								</tr>
+							</ng-template>
+							<ng-template pTemplate="body" let-rowData let-rmanPobMapping let-columns="columns">
+								<tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+									<td>
+										<a *isAuthorized="['write','MPOB']" (click)="editRow(rmanPobMapping)" class="icon-edit"> </a>
+										<a *isAuthorized="['write','MPOB']" (click)="delete(rmanPobMapping)" class="icon-delete"> </a>
+									</td>
+									<ng-container *ngFor="let col of columns">
+										<td *ngIf="col.type == 'text' && col.field !='rmanLookupsV'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+											{{rowData[col.field]}}
+										</td>
+
+										<td *ngIf="col.type == 'text' && col.field =='rmanLookupsV'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+											{{transformRmanLookupsV(rowData[col.field])}}
+										</td>
+
+										<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+											{{rowData[col.field]}}
+										</td>
+
+										<td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+											{{rowData[col.field] | date: 'MM/dd/yyyy'}}
+										</td>
+
+										<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+											{{rowData[col.field] | round}}
+										</td>
+									</ng-container>
+
+								</tr>
+							</ng-template>
+							<ng-template pTemplate="emptymessage" let-columns>
+								<tr *ngIf="!columns">
+									<td class="no-data">{{noData}}</td>
+								</tr>
+							</ng-template>
+						</p-table>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true"
+ [blockScroll]="true">
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan">Mapping Type</span>
+					<p-dropdown [options]="rmanLookupsV" name="skuType" id="skuType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanPobMappingSearch.skuType"
+					 appendTo="body" [filter]="true"></p-dropdown>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Parent Product</span>
+						<input pInputText class="textbox" placeholder="Parent Product" name="parentSku" id="parentSku" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="rmanPobMappingSearch.parentSku" />
+					</span>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">POB Grouping</span>
+						<input pInputText class="textbox" placeholder="POB Grouping" name="pobGrouping" id="pobGrouping" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="rmanPobMappingSearch.pobGrouping" />
+					</span>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Product Name</span>
+						<input pInputText class="textbox" placeholder="Product Name" name="standaloneSubSku" id="standaloneSubSku" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="rmanPobMappingSearch.standaloneSubSku" />
+					</span>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan">Split Basis </span>
+					<p-dropdown [options]="rmanLookupsV1" name="splitBasis" id="splitBasis" [(ngModel)]="rmanPobMappingSearch.splitBasis" [ngModelOptions]="{standalone: true}"
+					 appendTo="body"></p-dropdown>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Split</span>
+						<input pInputText class="textbox" placeholder="Split" name="split" id="split" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanPobMappingSearch.split"
+						/>
+					</span>
+				</div>
+			</div>
+
+
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan">Start Date</span>
+					<p-calendar inputStyleClass="textbox" showAnim="slideDown" name="startDate" id="startDate" [ngModelOptions]="{standalone: true}"
+					 [(ngModel)]="rmanPobMappingSearch.startDate" dateFormat="yy-mm-dd" placeholder="Start Date" appendTo="body">
+					</p-calendar>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan">End Date</span>
+					<p-calendar inputStyleClass="textbox" showAnim="slideDown" name="endDate" id="endDate" [ngModelOptions]="{standalone: true}"
+					 [(ngModel)]="rmanPobMappingSearch.endDate" dateFormat="yy-mm-dd" placeholder="End Date" appendTo="body">
+					</p-calendar>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">Status</span>
+						<input pInputText class="textbox" placeholder="Status" name="status" id="status" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanPobMappingSearch.status"
+						/>
+					</span>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan">Legal Entity </span>
+					<p-dropdown [options]="rmanLegalEntities" name="attribute1" id="attribute1" [(ngModel)]="rmanPobMappingSearch.attribute1"
+					 [ngModelOptions]="{standalone: true}" appendTo="body"></p-dropdown>
+				</div>
+			</div>
+
+		</div>
+
+	</form>
+
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" class="primary-btn" pButton (click)="search()" label="Search"></button>
+			<button type="button" class="secondary-btn" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+<p-dialog header="{{(newRmanPobMapping)?'Create POB Mapping':'Edit POB Mapping'}}" width="800" [(visible)]="displayDialog"
+ [draggable]="true" showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelAddEdit()">
+	<form [formGroup]="pobMappingForm">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanPobMapping">
+
+
+			<div class="ui-g-12">
+
+
+				<div class="ui-g-6">
+					<span class="selectSpan">Mapping Type
+						<span class="red-color">*</span>
+					</span>
+					<p-dropdown [options]="rmanLookupsV" name="skuType" id="skuType" (onChange)="OnSelectSkuType($event)" [(ngModel)]="rmanPobMapping.skuType"
+					 [filter]="true" formControlName="skuType"></p-dropdown>
+					<div *ngIf="formErrors.skuType" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.skuType }}
+					</div>
+				</div>
+
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Product Name&nbsp;
+							<span class="red-color" *ngIf="pobMappingForm.controls['standaloneSubSku'].validator != null">*</span>
+						</span>
+						<input pInputText class="textbox" placeholder="Product Name" id="standaloneSubSku" [(ngModel)]="rmanPobMapping.standaloneSubSku"
+						 name="standaloneSubSku" formControlName="standaloneSubSku" readonly>
+						<div *ngIf="formErrors.standaloneSubSku" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.standaloneSubSku }}
+						</div>
+
+						<a class="searchinput" (click)="productSearchDialog(0,productsdt)">
+							<em class="fa fa-search"></em>
+						</a>
+					</span>
+				</div>
+
+			</div>
+
+			<div class="ui-g-12">
+
+
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">POB Grouping
+							<span class="red-color" *ngIf="pobMappingForm.controls['pobGrouping'].validator != null">*</span>
+						</span>
+						<input pInputText class="textbox" placeholder="POB Grouping" name="pobGrouping" id="pobGrouping" [(ngModel)]="rmanPobMapping.pobGrouping"
+						 formControlName="pobGrouping" />
+						<div *ngIf="formErrors.pobGrouping" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.pobGrouping }}
+						</div>
+
+					</span>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Parent product
+							<span class="red-color" *ngIf="pobMappingForm.controls['parentSku'].validator != null">*</span>
+						</span>
+						<input pInputText class="textbox" placeholder="Parent product" id="parentSku" [(ngModel)]="rmanPobMapping.parentSku" name="parentSku"
+						 readonly formControlName="parentSku">
+
+						<div *ngIf="formErrors.parentSku" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.parentSku }}
+						</div>
+						<span [ngClass]="{'noPointer': !rmanPobMapping.standaloneSubSku ||rmanPobMapping?.skuType=='POB Group'}">
+							<a class="searchinput" (click)="productSearchDialog(1,productsdt)">
+								<em class="fa fa-search"></em>
+							</a>
+						</span>
+					</span>
+				</div>
+
+			</div>
+
+
+
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan">Split Type
+						<span class="red-color" *ngIf="pobMappingForm.controls['splitBasis'].validator != null">*</span>
+					</span>
+					<p-dropdown [options]="rmanLookupsV1" name="splitBasis" id="splitBasis" [(ngModel)]="rmanPobMapping.splitBasis" (onChange)="OnSelectSplitBasis($event)"
+					 formControlName="splitBasis"></p-dropdown>
+					<div *ngIf="formErrors.splitBasis" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.splitBasis }}
+					</div>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Split
+							<span class="red-color" *ngIf="pobMappingForm.controls['split'].validator != null">*</span>
+						</span>
+						<input pInputText class="textbox" placeholder="Split" name="split" id="split" [(ngModel)]="rmanPobMapping.split" [readonly]="!rmanPobMapping.splitBasis"
+						 formControlName="split" />
+						<div *ngIf="formErrors.split" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.split }}
+						</div>
+					</span>
+				</div>
+			</div>
+
+
+
+			<div class="ui-g-12">
+
+
+				<div class="ui-g-6">
+					<span class="selectSpan">Start Date
+						<span class="red-color">*</span>
+					</span>
+					<p-calendar inputStyleClass="textbox" showAnim="slideDown" name="startDate" id="startDate" [monthNavigator]="true" [yearNavigator]="true"
+					 yearRange="1950:2030" [(ngModel)]="rmanPobMapping.startDate" dateFormat="yy-mm-dd" placeholder="Start Date*" formControlName="startDate"
+					 appendTo="body">
+						<div *ngIf="formErrors.startDate" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.startDate }}
+						</div>
+					</p-calendar>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan">End Date</span>
+					<p-calendar inputStyleClass="textbox" showAnim="slideDown" name="endDate" id="endDate" [monthNavigator]="true" [yearNavigator]="true"
+					 yearRange="1950:2030" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanPobMapping.endDate" dateFormat="yy-mm-dd"
+					 placeholder="End Date" appendTo="body"></p-calendar>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+
+
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">Status
+							<span class="red-color">*</span>
+						</span>
+						<input pInputText class="textbox" placeholder="Status" name="status" id="status" [(ngModel)]="rmanPobMapping.status" [readonly]="true"
+						 formControlName="status" />
+						<div *ngIf="formErrors.status" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.status }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan">Legal Entity
+						<span class="red-color">*</span>
+					</span>
+					<p-dropdown [options]="rmanLegalEntities" name="attribute1" id="attribute1" [(ngModel)]="rmanPobMapping.attribute1" appendTo="body"
+					 formControlName="legalEntityId"></p-dropdown>
+					<div *ngIf="formErrors.legalEntityId" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.legalEntityId }}
+					</div>
+				</div>
+
+			</div>
+
+
+
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!pobMappingForm.valid"></button>
+			<button type="button" pButton class="secondary-btn" (click)="cancelAddEdit()" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+
+
+<p-dialog header="Product Search" width="800" [(visible)]="displayItemSearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{productColumns['productName']}}</span>
+						<input pInputText name="productName" class="textbox" placeholder="Product Name" id="productName" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="rmanProductsSearch.productName" />
+					</span>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{productColumns['productDescription']}}</span>
+						<input pInputText name="productDescription" class="textbox" placeholder="Product Description" id="productDescription" [ngModelOptions]="{standalone: true}"
+						 [(ngModel)]="rmanProductsSearch.productDescription" />
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+				<button type="submit" pButton label="Search" class="primary-btn" (click)="searchProduct()"></button>
+				<button type="button" pButton label="Reset" class="secondary-btn" (click)="resetProducts(productsdt)"></button>
+			</div>
+
+
+		</div>
+		<div>
+			<div class="x-scroll">
+				<p-table class="ui-datatable arrangementMgrTbl" #productsdt [loading]="loading" class="row-active" [value]="rmanProductsList"
+				 selectionMode="single" [(selection)]="selectedProduct" (onRowSelect)="onRowProductSelect($event)" (onLazyLoad)="getRmanProducts($event)"
+				 [lazy]="true" [paginator]="true" [rows]="itemPageSize" [totalRecords]="itemTotalElements">
+					<ng-template pTemplate="header" class="arrangementMgrTblHead">
+						<tr>
+							<th>{{productColumns['productName']}}</th>
+							<th>{{productColumns['productDescription']}}</th>
+							<th>{{productColumns['productId']}}</th>
+							<th>{{productColumns['productOrgCode']}}</th>
+							<th>{{productColumns['allowRevrecWoInvoice']}}</th>
+
+
+						</tr>
+					</ng-template>
+					<ng-template pTemplate="body" let-rowData>
+						<tr [pSelectableRow]="rowData">
+
+							<td title="{{rowData.productName}}">{{rowData.productName}}</td>
+							<td title="{{rowData.productDescription}}">{{rowData.productDescription}}</td>
+							<td title="{{rowData.productId}}">{{rowData.productId}}</td>
+							<td title="{{rowData.productOrgCode}}">{{rowData.productOrgCode}}</td>
+							<td title="{{rowData.allowRevrecWoInvoice}}">{{rowData.allowRevrecWoInvoice}}</td>
+						</tr>
+					</ng-template>
+					<ng-template pTemplate="emptymessage" let-columns>
+						<tr *ngIf="!columns">
+							<td class="no-data">{{noData}}</td>
+						</tr>
+					</ng-template>
+				</p-table>
+			</div>
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton class="primary-btn" (click)="populate()" label="Ok"></button>
+			<button type="button" pButton class="secondary-btn" (click)="cancelProductSearch()" label="Cancel"></button>
+		</div>
+	</p-footer>
+
+</p-dialog>
+
+
+
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

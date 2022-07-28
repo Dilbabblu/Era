@@ -1,0 +1,61 @@
+<div class="ContentSideSections Implementation historyPopup">
+        <p-table class="ui-datatable arrangementMgrTbl" [value]="rmanOrdersAuditVList" (onLazyLoad)="getRmanOrdersAuditV($event)"
+                [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"  scrollable="true"
+                >
+                <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                        <tr>
+				<th>{{columns['customerPoNum']}}</th>
+                                <th>{{columns['orderNumber']}}</th>
+                                <th>{{columns['sourceLineNumber']}}</th>
+                                <th>{{columns['productName']}}</th>
+                                <th>{{columns['orginalOrderNumber']}}</th>
+                                <th>{{columns['orginalLineNumber']}}</th>
+                                <th>{{columns['lineAttribute12']}}</th>
+                                <th>{{columns['orderedQuantity']}}</th>
+                                <th>{{columns['unitListPrice']}}</th>
+                                <th>{{columns['unitSellingPrice']}}</th>
+                                <th>{{columns['extendedSellingAmount']}}</th>
+                                <th>{{columns['bookedDate']}}</th>
+                                <th>{{columns['actualFulfilledDate']}}</th>
+                                <th>{{columns['lineStatus']}}</th>
+                                <th>{{columns['cancelledQty']}}</th>
+                                <th>{{columns['cancelledDate']}}</th>
+                                <th>{{columns['serviceStartDate']}}</th>
+                                <th>{{columns['serviceEndDate']}}</th>
+                                <th>{{columns['lineAttribute5']}}</th>
+                                <th>{{columns['lineAttribute6']}}</th>
+                        </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-rmanOrders>
+                        <tr [pSelectableRow]="rowData">
+                        	<td title="{{rmanOrders.customerPoNum}}">{{rmanOrders.customerPoNum}}</td>
+                                <td title="{{rmanOrders.orderNumber}}">{{rmanOrders.orderNumber}}</td>
+                                <td title="{{rmanOrders.sourceLineNumber}}">{{rmanOrders.sourceLineNumber}}</td>
+                                <td title="{{rmanOrders.productName}}">{{rmanOrders.productName}}</td>
+                                <td title="{{rmanOrders.orginalOrderNumber}}">{{rmanOrders.orginalOrderNumber}}</td>
+                                <td title="{{rmanOrders.orginalLineNumber}}">{{rmanOrders.orginalLineNumber}}</td>
+                                <td title="{{rmanOrders.lineAttribute12}}">{{rmanOrders.lineAttribute12}}</td>
+                                <td title="{{rmanOrders.orderedQuantity }}">{{rmanOrders.orderedQuantity}}</td>
+                                <td title="{{rmanOrders.unitListPrice | number :'1.2-2'}}">{{rmanOrders.unitListPrice | number :'1.2-2'}}</td>
+                                <td title="{{rmanOrders.unitSellingPrice  | number :'1.2-2'}}">{{rmanOrders.unitSellingPrice  | number :'1.2-2'}}</td>
+                                <td title="{{rmanOrders.extendedSellingAmount | number : '1.2-2'}}">{{rmanOrders.extendedSellingAmount | number : '1.2-2'}}</td>
+                                <td title="{{rmanOrders.bookedDate | date: 'MM/dd/yyyy'}}">{{rmanOrders.bookedDate | date: 'MM/dd/yyyy'}}</td>
+                                <td title="{{rmanOrders.actualFulfilledDate | date: 'MM/dd/yyyy'}}">{{rmanOrders.actualFulfilledDate | date: 'MM/dd/yyyy'}}</td>
+                                <td title="{{rmanOrders.lineStatus}}">{{rmanOrders.lineStatus}}</td>
+                                <td title="{{rmanOrders.cancelledQty}}">{{rmanOrders.cancelledQty}}</td>
+                                <td title="{{rmanOrders.cancelledDate | date: 'MM/dd/yyyy'}}">{{rmanOrders.cancelledDate | date: 'MM/dd/yyyy'}}</td>
+                                <td title="{{rmanOrders.serviceStartDate | date: 'MM/dd/yyyy'}}">{{rmanOrders.serviceStartDate | date: 'MM/dd/yyyy'}}</td>
+                                <td title="{{rmanOrders.serviceEndDate | date: 'MM/dd/yyyy'}}">{{rmanOrders.serviceEndDate | date: 'MM/dd/yyyy'}}</td>
+				<td title="{{rmanOrders.lineAttribute5}}">{{rmanOrders.lineAttribute5}}</td>
+				<td title="{{rmanOrders.lineAttribute6}}">{{rmanOrders.lineAttribute6}}</td>
+
+                        </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage" let-columns>
+                        <tr *ngIf="!columns">
+                                        <td class="no-data">{{noData}}</td>
+                        </tr>
+                 </ng-template>
+        </p-table>
+
+</div>

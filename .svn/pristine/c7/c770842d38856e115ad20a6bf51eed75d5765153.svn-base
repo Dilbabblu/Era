@@ -1,0 +1,234 @@
+<style>
+  h4 {
+    margin-bottom: 0px !important;
+  }
+
+  hr {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+</style>
+
+<div class="ui-g">
+  <div class="panel-group totals-panel" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+      <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+        <div class="panel-body totals-panel-body">
+          <div class="ui-g text-center totals-headers">
+            <div class="c1"><label>Revenue Contract Value</label></div>
+            <div class="c1"><label>Bookings</label></div>
+            <div class="c1"><label>Delivered</label></div>
+            <div class="c1"><label>Billed</label></div>
+            <div class="c1"><label>Revenue Recognized</label></div>
+            <div class="c1"><label>Revenue Deferred</label></div>
+            <div class="c1"><label>COGS Recognized</label></div>
+            <div class="c1"><label>Gross Margin</label></div>
+          </div>
+          <div *ngIf="(rmanDealTotalLevels)" class="ui-g text-center totals-values">
+            <div class="c1"><label>{{rmanDealTotalLevels.arrangementamount | currency:'USD':true:'1.2-2'}}</label></div>
+            <div class="c1"><label>{{rmanDealTotalLevels.bookingsamount | currency:'USD':true:'1.2-2'}}</label></div>
+            <div class="c1"><label>{{rmanDealTotalLevels.shippedamount | currency:'USD':true:'1.2-2'}}</label></div>
+            <div class="c1"><label>{{rmanDealTotalLevels.billedamount | currency:'USD':true:'1.2-2'}}</label></div>
+            <div class="c1"><label>{{rmanDealTotalLevels.revrecognizeamount | currency:'USD':true:'1.2-2'}}</label></div>
+            <div class="c1"><label>{{rmanDealTotalLevels.revdeffered | currency:'USD':true:'1.2-2'}}</label></div>
+            <div class="c1"><label>{{rmanDealTotalLevels.cogsrev | currency:'USD':true:'1.2-2'}}</label></div>
+            <div class="c1"><label>{{rmanDealTotalLevels.grossmargin | currency:'USD':true:'1.2-2'}}</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ui-g-12 no-padding-left no-padding-right">
+      <div class="ui-g-6 no-padding-left">
+        <p-panel class="custom-panel" header="Revenue Contracts Info" [toggleable]="true" (onBeforeToggle)=onBeforeToggle($event)>
+          <p-header>
+          </p-header>
+          <div class="ui-g">
+            <div class="ui-g-6 overview-headers">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Revenue Contract#</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.dealArrangementNumber}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label for="attribute30">Revenue Contract Basis</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.dealArrangementBasis}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Customer#</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.endCustomerNumber}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Currency Code</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.arrangementCurrency}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Sales Channel Code</label></div>
+                <div class="ui-g-6"><span></span></div>
+              </div>
+            </div>
+            <div class="ui-g-6 overview-headers">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Revenue Contract Name</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.dealArrangementName}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Revenue Contract Source</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.dealArrangementSource}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Customer Name</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.endCustomerName}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Creation Date</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.creationDate | date: 'MM/dd/yyyy'}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                  <div class="ui-g-6"><label>Approval Status</label></div>
+                  <div class="ui-g-6"><span>{{rmanDealArrangements.attribute12}}</span></div>
+                </div>
+            </div>
+          </div>
+        </p-panel>
+
+        <p-panel class="custom-panel" header="Sales Info" [toggleable]="true">
+          <div class="ui-g overview-headers">
+            <div class="ui-g-6">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Sales Rep</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.salesContact}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Sales Region</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.salesNodeLevel2}}</span></div>
+              </div>
+
+            </div>
+            <div class="ui-g-6">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Sales Theater</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.salesNodeLevel1}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Sales Territory</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.salesNodeLevel3}}</span></div>
+              </div>
+
+            </div>
+          </div>
+        </p-panel>
+
+
+
+
+        <p-panel class="custom-panel" header="Allocations" [toggleable]="true">
+          <div class="ui-g overview-headers">
+            <div class="ui-g-6">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>MEA Flag</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.dealArrangementSaMe  == 'MEA' ? 'Y' : 'N'}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Allocation Date</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.attribute24}}</span></div>
+              </div>
+
+            </div>
+            <div class="ui-g-6">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Allocation Status</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.dealArrangementStatus}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Allocation History Version</label></div>
+                <div class="ui-g-6"><span></span></div>
+              </div>
+            </div>
+          </div>
+        </p-panel>
+
+        <p-panel class="custom-panel" header="Revenue" [toggleable]="true">
+
+          <div class="ui-g overview-headers">
+            <div class="ui-g-6">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Analyst</label></div>
+                <div class="ui-g-6"><span>{{analystName}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Group</label></div>
+                <div class="ui-g-6"><span></span></div>
+              </div>
+            </div>
+            <div class="ui-g-6">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Manager</label></div>
+                <div class="ui-g-6"><span>{{managerName}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Legal Entitiy</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.legalEntityName}}</span></div>
+              </div>
+            </div>
+          </div>
+        </p-panel>
+
+
+        <p-panel class="custom-panel" header="Master Revenue Contract" [toggleable]="true">
+
+
+          <div class="ui-g overview-headers">
+            <div class="ui-g-6">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Master Revenue Contract</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.masterArrgFlag}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Parent Revenue Contract</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.masterArrgName}}</span></div>
+              </div>
+            </div>
+            <div class="ui-g-6">
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Transaction Allowed</label></div>
+                <div class="ui-g-6"><span>{{rmanDealArrangements.allocationEligible}}</span></div>
+              </div>
+              <div class="ui-g-12">
+                <div class="ui-g-6"><label>Favourite Revenue Contract</label></div>
+                <div class="ui-g-6"><span></span></div>
+              </div>
+
+            </div>
+          </div>
+        </p-panel>
+      </div>
+
+
+      <div class="ui-g-6 pull-right no-padding-right">
+        <div class="panel panel-default">
+          <div class="ui-grid-row">
+            <div class="d-block" *ngIf="barChartLabels.length!=0">
+              <canvas baseChart height="200" [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
+            </div>
+         
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="ui-grid-row">
+            <div class="d-block" *ngIf="doughnutChartLabels.length!=0">
+              <canvas baseChart height="200" [data]="doughnutChartData" [labels]="doughnutChartLabels" [options]="doughnutChartOptions" [chartType]="doughnutChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p-dialog header="Deal Arrangement" [draggable]="true" id="dealArrangement" width="1000" [(visible)]="displayEditDialog"  showEffect="fade" [modal]="true"
+(onHide)="onHide($event)">
+    <ng-template ad-cm></ng-template>
+</p-dialog>
+

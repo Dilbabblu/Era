@@ -1,0 +1,651 @@
+<div class="content-section implementation">
+</div>
+<div class="card-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card-block">
+                    <p-panel header="Manage Entities" class="row-active" (onBeforeToggle)="onBeforeToggle($event)">
+                        <p-header>
+                            <div class="pull-right icons-list" *ngIf="collapsed">
+                                <a (click)="onConfiguringColumns($event)" class="add-column">
+                                    <em class="fa fa-cog"></em>Columns
+                                </a>
+                                <a *isAuthorized="['write','EN']" (click)="showDialogToAdd()" title="Add">
+                                    <em class="fa fa-plus-circle"></em>
+                                </a>
+                                <a (click)="showDialogToSearch()" title="Search">
+                                    <em class="fa fa-search"></em>
+                                </a>
+                                <a (click)="reset(dt)" title="Reset">
+                                    <em class="fa fa-refresh"></em>
+                                </a>
+                                <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                                    <div class="user-popup">
+                                        <div class="content overflow">
+                                            <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+                                            <label for="selectall">Select All</label>
+                                            <a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+                                            <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                                                <ng-template let-col let-index="index" pTemplate="item">
+                                                    <div *ngIf="col.drag">
+                                                        <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                                                            <div class="drag">
+                                                                <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+                                                                <label>{{col.header}}</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div *ngIf="!col.drag">
+                                                        <div class="ui-helper-clearfix">
+                                                            <div>
+                                                                <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+                                                                />
+                                                                <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
+                                            </p-listbox>
+                                        </div>
+                                        <div class="pull-right">
+                                            <a class="configColBtn" (click)="saveColumns()">Save</a>
+                                            <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-header>
+
+                        <div class="x-scroll">
+                            <p-table #dt class="ui-datatable arrangementMgrTbl" id="rmanEntities-dt" [loading]="loading" [value]="rmanEntitiesList" selectionMode="single"
+                                [(selection)]="selectedRmanEntities" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnSelect($event)"
+                                (onLazyLoad)="getRmanEntities($event)" [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"
+                                scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+                                <ng-template pTemplate="colgroup" let-columns>
+                                    <colgroup>
+                                        <col>
+                                        <col *ngFor="let col of columns">
+                                    </colgroup>
+                                </ng-template>
+                
+                
+                                <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                                    <tr>
+                                        <th></th>
+                                        <ng-container *ngFor="let col of columns">
+                                            <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                                            <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+                                                title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+                
+                                <ng-template pTemplate="body" let-rowData let-rmanEntities let-columns="columns">
+                                    <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                                        <td>
+                                            <a *isAuthorized="['write','EN']" (click)="editRow(rmanEntities)" class="icon-edit"> </a>
+                                            <a *isAuthorized="['write','EN']" (click)="delete(rmanEntities)" class="icon-delete"> </a>
+                                        
+                                        </td>
+                                        <ng-container *ngFor="let col of columns">
+                                            <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                                                {{rowData[col.field]}}
+                                            </td>
+                
+                                            <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                                                {{rowData[col.field]}}
+                                            </td>
+                
+                                            <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                                                {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                                            </td>
+                
+                                            <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                                                {{rowData[col.field] | round}}
+                                            </td>
+                                        </ng-container>
+                
+                                    </tr>
+                                </ng-template>
+                
+                                <ng-template pTemplate="emptymessage" let-columns>
+                                    <tr *ngIf="!columns">
+                                        <td class="no-data">{{noData}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </p-panel>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<rmanEntityParameters-data>loading..</rmanEntityParameters-data>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true"
+    [blockScroll]="true" (onHide)="cancelSearch()">
+    <form>
+        <div class="ui-grid ui-grid-responsive ui-fluid">
+            <div class="ui-g-12">
+                <div class="ui-g-6">
+                    <span class="md-inputfield">
+                        <span class="selectSpan">{{entitiesColumns['entityName']}}</span>
+                        <input pInputText name="entityName" id="entityName" class="textbox" placeholder="Entity Name" [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanEntitiesSearch.entityName" />
+                    </span>
+                </div>
+                <div class="ui-g-6 pull-right">
+                    <span class="md-inputfield">
+                        <span class="selectSpan">{{entitiesColumns['description']}}</span>
+                        <input pInputText name="description" id="description" class="textbox" placeholder="Description" [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanEntitiesSearch.description" />
+                    </span>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-6">
+                    <span class="md-inputfield">
+                        <span class="selectSpan">{{entitiesColumns['tableName']}}</span>
+                        <input pInputText name="tableName" id="tableName" class="textbox" placeholder="Table Name" [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanEntitiesSearch.tableName" />
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+            <button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+            <button type="button" pButton class="secondary-btn" (click)="cancelSearch()" label="Cancel"></button>
+        </div>
+    </p-footer>
+</p-dialog>
+<p-dialog header="{{(newRmanEntities) ? 'Create Entity' : 'Edit Entity'}}" width="800" [draggable]="true" [(visible)]="displayDialog"
+    showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelEdit()">
+    <form (ngSubmit)="save()" [formGroup]="entitiesForm" novalidate>
+        <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanEntities">
+            <div class="ui-g-12">
+                <div class="ui-g-6">
+                    <span class="md-inputfield">
+                        <span class="selectSpan">{{entitiesColumns['entityName']}}
+                            <span class="red-color">*</span>
+                        </span>
+                        <input pInputText name="entityName" class="textbox" placeholder="Entity Name" id="entityName" [(ngModel)]="rmanEntities.entityName"
+                            formControlName="name" />
+                        <div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.name }}
+                        </div>
+                    </span>
+                </div>
+                <div class="ui-g-6 pull-right">
+                    <span class="selectSpan"> Deal Flag </span>
+                    <p-dropdown [options]="rmanLookupsV4" appendTo="body" [(ngModel)]="rmanEntities.dealFlag" name="dealFlag" [filter]="true"
+                        formControlName="dFlag">
+
+                    </p-dropdown>
+                    <div *ngIf="formErrors.dFlag" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.dFlag }}
+                    </div>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-6">
+                    <span class="md-inputfield">
+                        <span class="selectSpan">{{entitiesColumns['entityCategory']}}
+                            <span class="red-color">*</span>
+                        </span>
+                        <input pInputText name="entityCategory" class="textbox" placeholder="Entity Category" id="entityCategory" [(ngModel)]="rmanEntities.entityCategory"
+                            formControlName="category" />
+                        <div *ngIf="formErrors.category" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.category }}
+                        </div>
+                    </span>
+                </div>
+                <div class="ui-g-6 pull-right">
+                    <span class="md-inputfield">
+                        <span class="selectSpan">{{entitiesColumns['description']}}</span>
+                        <input pInputText name="description" class="textbox" placeholder="Description" id="description" [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanEntities.description" />
+                    </span>
+                </div>
+            </div>
+            <div class="ui-g-12">
+
+                <div class="ui-g-6">
+                    <span class="selectSpan"> Post Booking </span>
+                    <p-dropdown [options]="rmanLookupsV" appendTo="body" [(ngModel)]="rmanEntities.postBooking" name="postBooking" [filter]="true"
+                        formControlName="pBooking">
+
+                    </p-dropdown>
+                    <div *ngIf="formErrors.pBooking" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.pBooking }}
+                    </div>
+                </div>
+                <div class="ui-g-6 pull-right">
+                    <span class="selectSpan"> Object Type </span>
+                    <p-dropdown [options]="rmanLookupsV3" appendTo="body" [(ngModel)]="rmanEntities.objectType" name="objectType" [filter]="true"
+                        formControlName="oType">
+
+                    </p-dropdown>
+                    <div *ngIf="formErrors.oType" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.oType }}
+                    </div>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-6">
+                    <span class="selectSpan">Start Date Active</span>
+                    <p-calendar showAnim="slideDown" name="startDateActive" inputStyleClass="textbox" id="startDateActive" [monthNavigator]="true"
+                        [yearNavigator]="true" yearRange="1950:2030" appendTo="body" [(ngModel)]="rmanEntities.startDateActive"
+                        dateFormat="yy-mm-dd" placeholder="Start Date Active*" formControlName="activeDate">
+
+                    </p-calendar>
+                    <div *ngIf="formErrors.activeDate" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.activeDate }}
+                    </div>
+                </div>
+                <div class="ui-g-6 pull-right">
+                    <span class="selectSpan">End Date Active</span>
+                    <p-calendar showAnim="slideDown" name="endDateActive" inputStyleClass="textbox" id="endDateActive" [monthNavigator]="true"
+                        [yearNavigator]="true" yearRange="1950:2030" appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.endDateActive"
+                        dateFormat="yy-mm-dd" placeholder="End Date Active"></p-calendar>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-6">
+                    <span class="md-inputfield">
+                        <span class="selectSpan">{{entitiesColumns['tableName']}}
+                            <span class="red-color">*</span>
+                        </span>
+                        <input pInputText name="tableName" id="tableName" class="textbox" placeholder="Table Name" [(ngModel)]="rmanEntities.tableName"
+                            formControlName="tName" />
+                        <div *ngIf="formErrors.tName" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.tName }}
+                        </div>
+                    </span>
+                </div>
+                <div class="ui-g-6 pull-right">
+                    <span class="selectSpan"> Audit Flag </span>
+                    <p-dropdown [options]="rmanLookupsV1" name="auditFlag" id="auditFlag" appendTo="body" [(ngModel)]="rmanEntities.auditFlag"
+                        [filter]="true" formControlName="aFlag">
+
+                    </p-dropdown>
+                    <div *ngIf="formErrors.aFlag" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.aFlag }}
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="entityId">{{entitiesColumns['entityId']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="entityId" id="entityId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.entityId"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute1">{{entitiesColumns['attribute1']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute1" id="attribute1" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute1"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute2">{{entitiesColumns['attribute2']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute2" id="attribute2" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute2"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute3">{{entitiesColumns['attribute3']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute3" id="attribute3" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute3"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute4">{{entitiesColumns['attribute4']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute4" id="attribute4" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute4"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute5">{{entitiesColumns['attribute5']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute5" id="attribute5" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute5"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute6">{{entitiesColumns['attribute6']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute6" id="attribute6" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute6"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute7">{{entitiesColumns['attribute7']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute7" id="attribute7" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute7"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute8">{{entitiesColumns['attribute8']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute8" id="attribute8" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute8"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute9">{{entitiesColumns['attribute9']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute9" id="attribute9" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute9"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute10">{{entitiesColumns['attribute10']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute10" id="attribute10" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute10"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute11">{{entitiesColumns['attribute11']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute11" id="attribute11" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute11"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute12">{{entitiesColumns['attribute12']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute12" id="attribute12" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute12"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute13">{{entitiesColumns['attribute13']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute13" id="attribute13" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute13"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute14">{{entitiesColumns['attribute14']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute14" id="attribute14" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute14"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute15">{{entitiesColumns['attribute15']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute15" id="attribute15" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute15"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute16">{{entitiesColumns['attribute16']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute16" id="attribute16" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute16"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute17">{{entitiesColumns['attribute17']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute17" id="attribute17" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute17"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute18">{{entitiesColumns['attribute18']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute18" id="attribute18" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute18"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute19">{{entitiesColumns['attribute19']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute19" id="attribute19" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute19"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute20">{{entitiesColumns['attribute20']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute20" id="attribute20" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute20"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute21">{{entitiesColumns['attribute21']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute21" id="attribute21" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute21"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute22">{{entitiesColumns['attribute22']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute22" id="attribute22" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute22"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute23">{{entitiesColumns['attribute23']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute23" id="attribute23" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute23"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute24">{{entitiesColumns['attribute24']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute24" id="attribute24" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute24"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute25">{{entitiesColumns['attribute25']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute25" id="attribute25" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute25"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute26">{{entitiesColumns['attribute26']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute26" id="attribute26" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute26"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute27">{{entitiesColumns['attribute27']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute27" id="attribute27" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute27"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute28">{{entitiesColumns['attribute28']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute28" id="attribute28" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute28"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute29">{{entitiesColumns['attribute29']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute29" id="attribute29" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute29"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="attribute30">{{entitiesColumns['attribute30']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="attribute30" id="attribute30" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.attribute30"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="creationDate">{{entitiesColumns['creationDate']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="creationDate" id="creationDate" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.creationDate"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="createdBy">{{entitiesColumns['createdBy']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="createdBy" id="createdBy" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanEntities.createdBy"
+                    />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="lastUpdateDate">{{entitiesColumns['lastUpdateDate']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="lastUpdateDate" id="lastUpdateDate" required [ngModelOptions]="{standalone: true}"
+                        [(ngModel)]="rmanEntities.lastUpdateDate" />
+                </div>
+            </div>
+            <div class="ui-grid-row" class="d-none">
+                <div class="ui-grid-col-4">
+                    <label for="lastUpdatedBy">{{entitiesColumns['lastUpdatedBy']}}</label>
+                </div>
+                <div class="ui-grid-col-8">
+                    <input pInputText name="lastUpdatedBy" id="lastUpdatedBy" required [ngModelOptions]="{standalone: true}"
+                        [(ngModel)]="rmanEntities.lastUpdatedBy" />
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </form>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+            <button type="submit" pButton label="Save" class="primary-btn" (click)="save()" [disabled]="!entitiesForm.valid"></button>
+            <button type="button" pButton class="secondary-btn" (click)="cancelEdit()" label="Cancel"></button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+
+<div class="modal fade dialogueBox" id="FieldsMandatory" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{'Error'}}</h4>
+            </div>
+            <form class="form-horizontal">
+                <div class="modal-body clearfix">
+                    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+
+                        <p *ngIf="showMsg==24">Please enter Entity Name</p>
+                        <p *ngIf="showMsg==25">Please enter Deal Flag</p>
+                        <p *ngIf="showMsg==26">Please enter Entity Category</p>
+                        <p *ngIf="showMsg==27">Please enter Table Name</p>
+                        <p *ngIf="showMsg==28">Please select Post Booking</p>
+                        <p *ngIf="showMsg==29">Please select Object Type</p>
+                        <p *ngIf="showMsg==30">Please select Start Date Active</p>
+                        <p *ngIf="showMsg==31">Please select Audit Flag</p>
+
+
+
+                    </div>
+
+                </div>
+                <div class="modal-footer" style="padding:3px;">
+                    <button class="btn btn-primary pull-right" data-dismiss="modal">OK</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

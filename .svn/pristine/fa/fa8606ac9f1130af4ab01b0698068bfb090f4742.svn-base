@@ -1,0 +1,2 @@
+  <canvas *ngIf="chartReady && doughnutChartLabels.length!=0" baseChart height="200" [data]="doughnutChartData" [labels]="doughnutChartLabels" [chartType]="'doughnut'" [options]="doughnutChartOptions"></canvas>
+

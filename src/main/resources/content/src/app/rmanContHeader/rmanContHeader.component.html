@@ -1,0 +1,353 @@
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card-block">
+          <h2>Manage Contingency Codes</h2>
+          <div class="pull-right icons-list">
+            <a (click)="onConfiguringColumns($event)" class="add-column">
+              <em class="fa fa-cog"></em>Columns</a>
+            <a *isAuthorized="['write','MC']" (click)="showDialogToAdd()" title="Add">
+              <em class="fa fa-plus-circle"></em>
+            </a>
+            <a *isAuthorized="['write','MC']" (click)="getContLinktemplates()" title="Assign Templates">
+              <em class="fa fa-tasks"></em>
+            </a>
+            <a (click)="showDialogToSearch()" title="Search">
+              <em class="fa fa-search"></em>
+            </a>
+            <a (click)="reset(dt)" title="Reset">
+              <em class="fa fa-refresh"></em>
+            </a>
+            <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+              <div class="user-popup">
+                <div class="content overflow">
+                  <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+                  <label for="selectall">Select All</label>
+                  <a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+                  <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                    <ng-template let-col let-index="index" pTemplate="item">
+                      <div *ngIf="col.drag">
+                        <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                          <div class="drag">
+                            <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+                            <label>{{col.header}}</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div *ngIf="!col.drag">
+                        <div class="ui-helper-clearfix">
+                          <div>
+                            <input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+                            />
+                            <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </p-listbox>
+
+                </div>
+
+                <div class="pull-right">
+                  <a class="configColBtn" (click)="saveColumns()">Save</a>
+                  <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="x-scroll">
+            <p-table class="ui-datatable arrangementMgrTbl" #dt id="contigencycode-dt" [loading]="loading" [columns]="columns" [value]="rmanContHeaderList"
+              selectionMode="single" [(selection)]="selectedRmanContHeader" (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanContHeader($event)"
+              [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements" scrollable="true" [resizableColumns]="true"
+              columnResizeMode="expand">
+
+              <ng-template pTemplate="colgroup" let-columns>
+                <colgroup>
+                  <col>
+                  <col *ngFor="let col of columns">
+                </colgroup>
+              </ng-template>
+
+              <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                <tr>
+                  <th></th>
+                  <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                    <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+                      title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                  </ng-container>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-rowData let-rmanContHeader let-columns="columns">
+                <tr [pSelectableRow]="rowData">
+                  <td>
+                    <a *isAuthorized="['write','MC']" (click)="editRow(rmanContHeader)" class="icon-edit" title="Edit"> </a>
+                    <a *isAuthorized="['write','MC']" (click)="delete(rmanContHeader)" class="icon-delete" title="Delete"> </a>
+                  </td>
+                  <ng-container *ngFor="let col of columns">
+                    <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                      {{rowData[col.field]}}
+                    </td>
+
+                    <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                      {{rowData[col.field]}}
+                    </td>
+
+                    <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                      {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                    </td>
+
+                    <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                      {{rowData[col.field] | round}}
+                    </td>
+                  </ng-container>
+
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage" let-columns>
+                <div class="no-results-data">
+                  <p>{{noData}}</p>
+                </div>
+              </ng-template>
+            </p-table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p-dialog width="750" header="Revenue Contingencies & Template Mapping Screen" [(visible)]="diaplyPickListDialog" showEffect="fade"
+  [modal]="true" [blockScroll]="true" [draggable]="true">
+  <div class="content-section implementation items-picklist">
+    <p-pickList [source]="srcRmanContTemplates" [target]="trgRmanContTemplates" sourceHeader="Available" targetHeader="Selected"
+      dragdrop="true" [sourceStyle]="{'height':'200px'}" [targetStyle]="{'height':'200px'}" [showSourceControls]="false" [showTargetControls]="false">
+      <ng-template let-contTemplate pTemplate="item">
+        <span>{{contTemplate?.templateName}}</span>
+      </ng-template>
+    </p-pickList>
+  </div>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" class="primary-btn" pButton label="Save" (click)="saveContLinktemplates()"></button>
+      <button type="button" class="secondary-btn" pButton (click)="diaplyPickListDialog=false" label="Cancel"></button>
+    </div>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" showEffect="fade" [modal]="true" [draggable]="true"
+  [blockScroll]="true" (onHide)="cancelSearch()">
+  <form>
+    <div class="ui-grid ui-grid-responsive ui-fluid">
+
+
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="selectSpan"> Rule Apply Level </span>
+          <p-dropdown [options]="rmanLookupsV1" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContHeaderSearch.ruleApplyLevel"
+            name="ruleApplyLevel" [filter]="true" appendTo="body"></p-dropdown>
+        </div>
+
+        <div class="ui-g-6 pull-right">
+          <span class="selectSpan">Rule Category </span>
+          <p-dropdown [options]="rmanLookupsV" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContHeaderSearch.ruleCategory"
+            name="ruleCategory" [filter]="true" appendTo="body"></p-dropdown>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="selectSpan">Rule Name </span>
+          <span class="md-inputfield">
+            <input pInputText class="textbox" name="ruleName" placeholder="Rule Name" id="ruleName" [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="rmanContHeaderSearch.ruleName" />
+          </span>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="selectSpan">Description </span>
+          <span class="md-inputfield">
+            <input pInputText class="textbox" name="description" placeholder="Description" id="description" required [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="rmanContHeaderSearch.description" />
+          </span>
+        </div>
+      </div>
+
+
+    </div>
+
+  </form>
+
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" class="primary-btn" pButton label="Search" (click)="search()"></button>
+      <button type="button" class="secondary-btn " pButton (click)="displaySearchDialog=false;cancelSearch()" label="Cancel"></button>
+    </div>
+  </p-footer>
+</p-dialog>
+<p-dialog header="{{(newRmanContHeader) ? 'Create New Contingency Code' : 'Edit Contingency Code'}}" width="800" [(visible)]="displayDialog"
+  showEffect="fade" [modal]="true" [draggable]="true" [blockScroll]="true" (onHide)="cancelEdit()">
+  <form [formGroup]="contHeaderForm">
+    <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanContHeader">
+
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="selectSpan"> Rule Name
+            <span class="red-color">*</span>
+          </span>
+          <p-dropdown [options]="rmanLookupsV2" [(ngModel)]="rmanContHeader.ruleName" name="ruleName" [filter]="true" formControlName="name">
+          </p-dropdown>
+          <div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+            {{ formErrors.name }}
+          </div>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="md-inputfield">
+            <span class="selectSpan"> Description </span>
+            <input class="textbox" pInputText name="Description" placeholder="Description" id="description" formControlName="description"
+              [(ngModel)]="rmanContHeader.description" />
+            <div *ngIf="formErrors.description" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.description }}
+            </div>
+          </span>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="selectSpan"> Rule Category
+            <span class="red-color">*</span>
+          </span>
+          <p-dropdown [options]="rmanLookupsV" [(ngModel)]="rmanContHeader.ruleCategory" name="ruleCategory" [filter]="true" formControlName="category">
+
+          </p-dropdown>
+          <div *ngIf="formErrors.category" class="ui-message ui-messages-error ui-corner-all">
+            {{ formErrors.category }}
+          </div>
+        </div>
+
+        <div class="ui-g-6 pull-right">
+          <span class="selectSpan"> Rule Apply Level </span>
+          <p-dropdown [options]="rmanLookupsV1" formControlName="ruleApplyLevel" [(ngModel)]="rmanContHeader.ruleApplyLevel" name="ruleApplyLevel"
+            [filter]="true"></p-dropdown>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="selectSpan">Rule Start Date
+            <span class="red-color">*</span>
+          </span>
+          <p-calendar showAnim="slideDown" inputStyleClass="textbox" name="ruleStartDate" id="ruleStartDate" [monthNavigator]="true"
+            [yearNavigator]="true" yearRange="1950:2030" [(ngModel)]="rmanContHeader.ruleStartDate" dateFormat="mm/dd/yy" placeholder="Rule Start Date"
+            formControlName="startDate" appendTo="body">
+
+          </p-calendar>
+
+
+          <div *ngIf="formErrors.startDate" class="ui-message ui-messages-error ui-corner-all">
+            {{ formErrors.startDate }}
+          </div>
+
+        </div>
+        <div class="ui-g-6  pull-right">
+          <span class="selectSpan">Rule End Date</span>
+          <p-calendar showAnim="slideDown" inputStyleClass="textbox" name="ruleEndDate" id="ruleEndDate" [monthNavigator]="true" [yearNavigator]="true"
+            yearRange="1950:2030" [(ngModel)]="rmanContHeader.ruleEndDate" dateFormat="mm/dd/yy" placeholder="Rule End Date"
+            formControlName="endDate" appendTo="body"></p-calendar>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan"> Comments </span>
+            <input pInputText class="textbox" name="comments" id="comments" formControlName="comments" [(ngModel)]="rmanContHeader.comments"
+              placeholder="Comments" />
+          </span>
+        </div>
+
+        <div class="ui-g-6 pull-right">
+          <span class="md-inputfield">
+            <span class="selectSpan"> Ranking </span>
+            <input pInputText class="textbox" name="ranking" id="ranking" formControlName="ranking" [(ngModel)]="rmanContHeader.ranking"
+              placeholder="Ranking" formControlName="ranking" />
+            <div *ngIf="formErrors.ranking" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.ranking }}
+            </div>
+          </span>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-6">
+          <span class="selectSpan">RevRec Hold Apply </span>
+          <p-dropdown [options]="rmanLookupsV3" [(ngModel)]="rmanContHeader.attribute1" name="attribute1" [filter]="true" formControlName="attribute1"
+            appendTo="body"> </p-dropdown>
+        </div>
+        <div class="ui-g-6 pull-right">
+          <span class="selectSpan">Post Billing Allocation Flag </span>
+          <p-dropdown [options]="postAllocationLookup" [(ngModel)]="rmanContHeader.attribute2" name="attribute2" [filter]="true" formControlName="attribute2"
+            appendTo="body" (onChange)="onSelectingPostAllocationFlag($event.value)"> </p-dropdown>
+        </div>
+      </div>
+      <div class="ui-g-12">
+          <div class="ui-g-6">
+              <span class="selectSpan">Include FV Flag</span>
+              <p-dropdown [options]="fvFlagLookup" [(ngModel)]="rmanContHeader.attribute3" name="attribute3" [filter]="true" formControlName="attribute3"
+                appendTo="body" [disabled]="rmanContHeader.attribute2 == 'Y'"> </p-dropdown>
+            </div>
+
+        <div class="ui-g-6 pull-right">
+          <span class="selectSpan">Components: </span>
+
+          <div class="checkbox-wrap">
+            <div class="ui-g-3">
+              <p-checkbox label="Rev Flag" name="revFlag" id="revFlag" [(ngModel)]="rmanContHeader.revFlag" formControlName="revFlag" binary="{{revFlag}}"></p-checkbox>
+            </div>
+            <div class="ui-g-3">
+              <p-checkbox label="Cogs Flag" formControlName="cogsFlag" name="cogsFlag" id="cogsFlag" [(ngModel)]="rmanContHeader.cogsFlag"
+                binary="{{cogsFlag}}"></p-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="submit" class="primary-btn" pButton label="Save" (click)="save()" [disabled]="!contHeaderForm.valid"></button>
+      <button type="button" class="secondary-btn" pButton (click)="cancelEdit()" label="Cancel"></button>
+    </div>
+  </p-footer>
+</p-dialog>
+
+
+<div class="modal fade dialogueBox" id="FieldsMandatory" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{{'Error'}}</h4>
+      </div>
+      <form class="form-horizontal">
+        <div class="modal-body clearfix">
+          <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+
+            <p *ngIf="showMsg==8">Please enter Rule Name</p>
+            <p *ngIf="showMsg==9">Please enter Rule Category</p>
+            <p *ngIf="showMsg==10">Please enter Rule Start Date</p>
+
+
+          </div>
+
+        </div>
+        <div class="modal-footer" style="padding:3px;">
+          <button class="btn btn-primary pull-right" data-dismiss="modal">OK</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

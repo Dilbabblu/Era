@@ -1,0 +1,272 @@
+<div class="content-section implementation">
+</div>
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+
+<div class="card-wrapper">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card-block">
+<p-panel header="Lookup Codes" [toggleable]="false"
+	(onBeforeToggle)="onBeforeToggle($event)">
+
+	<p-header>
+		<span class="masterData"><strong>{{masterData?.lookupTypeName}}</strong></span>
+		<div class="pull-right icons-list" *ngIf="collapsed">
+			<a (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+			<a  *isAuthorized="['write','LK']" (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+			<a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+			<a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+			<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+				<div class="user-popup">
+					<div class="content overflow">
+						<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+						<label for="selectall">Select All</label>
+						<a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+						<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+							<ng-template let-col let-index="index" pTemplate="item">
+								<div *ngIf="col.drag">
+									<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+										<div class="drag">
+											<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+											<label>{{col.header}}</label>
+										</div>
+									</div>
+								</div>
+								<div *ngIf="!col.drag">
+									<div class="ui-helper-clearfix">
+										<div>
+											<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+											/>
+											<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+										</div>
+									</div>
+								</div>
+							</ng-template>
+						</p-listbox>
+					</div>
+					<div class="pull-right">
+						<a class="configColBtn" (click)="saveColumns()">Save</a>
+						<a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</p-header>
+	<div class="x-scroll">
+	<p-table [loading]="loading" class="ui-datatable arrangementMgrTbl" #dt id="lookupCodes-dt" [value]="rmanLookupCodesList" selectionMode="single"
+		  (onRowSelect)="onRowSelect($event)"
+		(onLazyLoad)="getRmanLookupCodes($event)" [lazy]="true" [paginator]="true" [rows]="pageSize"
+		[totalRecords]="totalElements"  scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+
+		<ng-template pTemplate="colgroup" let-columns>
+			<colgroup>
+				<col>
+				<col *ngFor="let col of columns">
+			</colgroup>
+		</ng-template>
+
+
+		<ng-template pTemplate="header" class="arrangementMgrTblHead">
+			<tr>
+				<th></th>
+				<ng-container *ngFor="let col of columns">
+					<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+					<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+						title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+				</ng-container>
+			</tr>
+		</ng-template>
+
+		<ng-template pTemplate="body" let-rowData let-rmanLookupCodes let-columns="columns">
+			<tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+				<td>
+					<a  *isAuthorized="['write','LK']"  (click)="editRow(rmanLookupCodes)" class="icon-edit"> </a>
+					<a  *isAuthorized="['write','LK']"  (click)="delete(rmanLookupCodes)" class="icon-delete"> </a>
+				</td>
+				<ng-container *ngFor="let col of columns">
+					<td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field]}}
+					</td>
+
+					<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field]}}
+					</td>
+
+					<td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field] | date: 'MM/dd/yyyy'}}
+					</td>
+
+					<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+						{{rowData[col.field] | round}}
+					</td>
+				</ng-container>
+
+			</tr>
+		</ng-template>
+
+		<ng-template pTemplate="emptymessage" let-columns>
+			<tr *ngIf="!columns">
+				<td class="no-data">{{noData}}</td>
+			</tr>
+		</ng-template>
+	</p-table>
+	</div>
+</p-panel>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade"
+	[modal]="true" [blockScroll]="true">
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{lookupCodeColumns['lookupCode']}}</span>
+						<input pInputText name="lookupCode" class="textbox" placeholder="Lookup Code" id="lookupCode"
+							[ngModelOptions]="{standalone: true}"
+							[(ngModel)]="rmanLookupCodesSearch.lookupCode" />
+							</span>
+				</div>
+			</div>
+
+		</div>
+
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" (click)="search()" label="Search" [disabled]="!rmanLookupCodesSearch?.lookupCode"></button>
+			<button type="button" pButton class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+<p-dialog header="{{(newRmanLookupCodes) ? 'Create Lookup Code' : 'Edit Lookup Code'}}" width="800"
+	[(visible)]="displayDialog"  showEffect="fade" [draggable]="true" [modal]="true" [blockScroll]="true" (onHide)="cancelAddEdit();">
+	<form (ngSubmit)="save()" [formGroup]="lookupCodesForm" novalidate>
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanLookupCodes">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{lookupCodeColumns['lookupTypeCode']}}<span class="red-color">*</span></span>
+						<input pInputText name="lookupTypeCode"class="textbox" placeholder="Lookup Type Code" id="lookupTypeCode"
+							required [(ngModel)]="rmanLookupCodes.lookupTypeCode" formControlName="typeCode"/>
+						<div *ngIf="formErrors.typeCode" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.typeCode }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{lookupCodeColumns['lookupCode']}}<span class="red-color">*</span></span>
+						<input pInputText name="lookupCode" class="textbox" placeholder="Lookup Code" id="lookupCode" required
+							[(ngModel)]="rmanLookupCodes.lookupCode" formControlName="code" />
+						<div *ngIf="formErrors.code" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.code }}
+						</div>
+					</span>
+				</div>
+			</div>
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{lookupCodeColumns['description']}}</span>
+						<input pInputText name="description" class="textbox" placeholder="Description" id="description" required
+							[ngModelOptions]="{standalone: true}"
+							[(ngModel)]="rmanLookupCodes.description" />
+						</span>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan"> Enabled Flag </span>
+					<p-dropdown [options]="rmanLookupsV" [(ngModel)]="rmanLookupCodes.enabledFlag"
+						name="enabledFlag" appendTo="body" [filter]="true" formControlName="flag">
+
+					</p-dropdown>
+					<div *ngIf="formErrors.flag" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.flag }}
+					</div>
+				</div>
+			</div>
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan">Start Date</span>
+					<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="startDateActive" id="startDateActive" required
+						appendTo="body" [(ngModel)]="rmanLookupCodes.startDateActive" dateFormat="yy-mm-dd"
+						placeholder="Start Date*" formControlName="startDate">
+					</p-calendar>
+					<div *ngIf="formErrors.startDate" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.startDate }}
+					</div>
+
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="selectSpan">End Date</span>
+					<p-calendar showAnim="slideDown" inputStyleClass="textbox" name="endDateActive" id="endDateActive"
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.endDateActive"
+						dateFormat="yy-mm-dd" placeholder="End Date"></p-calendar>
+				</div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="attribute1">{{lookupCodeColumns['attribute1']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="attribute1" id="attribute1" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.attribute1" /></div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="attribute2">{{lookupCodeColumns['attribute2']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="attribute2" id="attribute2" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.attribute2" /></div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="attribute3">{{lookupCodeColumns['attribute3']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="attribute3" id="attribute3" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.attribute3" /></div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="attribute4">{{lookupCodeColumns['attribute4']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="attribute4" id="attribute4" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.attribute4" /></div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="attribute5">{{lookupCodeColumns['attribute5']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="attribute5" id="attribute5" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.attribute5" /></div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="creationDate">{{lookupCodeColumns['creationDate']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="creationDate" id="creationDate" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.creationDate" /></div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="createdBy">{{lookupCodeColumns['createdBy']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="createdBy" id="createdBy" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.createdBy" /></div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="lastUpdateDate">{{lookupCodeColumns['lastUpdateDate']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="lastUpdateDate" id="lastUpdateDate" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.lastUpdateDate" />
+				</div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="lastUpdatedBy">{{lookupCodeColumns['lastUpdatedBy']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="lastUpdatedBy" id="lastUpdatedBy" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.lastUpdatedBy" /></div>
+			</div>
+			<div class="ui-grid-row" class="d-none">
+				<div class="ui-grid-col-4"><label for="seededFlag">{{lookupCodeColumns['seededFlag']}}</label></div>
+				<div class="ui-grid-col-8"><input pInputText name="seededFlag" id="seededFlag" required
+						[ngModelOptions]="{standalone: true}" [(ngModel)]="rmanLookupCodes.seededFlag" /></div>
+			</div>
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!lookupCodesForm.valid"></button>
+			<button type="button" pButton class="secondary-btn" (click)="cancelAddEdit();" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>

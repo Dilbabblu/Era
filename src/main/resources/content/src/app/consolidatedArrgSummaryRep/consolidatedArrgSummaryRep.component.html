@@ -1,0 +1,161 @@
+<div class="ContentSideSections Implementation">
+
+  <p-panel header="Consolidated Arrangement Summary Report " [toggleable]="true" [style]="{'margin-bottom':'20px'}" (onBeforeToggle)=onBeforeToggle($event)>
+
+    <p-header>
+      <div class="pull-right" *ngIf="collapsed">
+        <a (click)="showDialogToSearch()" class="icon-search" title="Search"></a>
+        <a (click)="reset(dt)" class="icon-reset" title="Reset"></a>
+        <a (click)="exportExcel()" class="icon-export" title="Export"></a>
+      </div>
+    </p-header>
+    <p-table class="ui-datatable" [loading]="loading" #dt [value]="consolidatedArrgSummaryRepList" selectionMode="single" (onRowSelect)="onRowSelect($event)"
+      (onLazyLoad)="getConsolidatedArrgSummaryRep($event)" [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"
+      scrollable="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width:100px">{{columns['customerNumber']}}</th>
+          <th style="width:100px">{{columns['customerName']}}</th>
+          <th style="width:100px">{{columns['dealStatus']}}</th>
+          <th style="width:100px">{{columns['legalEntity']}}</th>
+          <th style="width:100px;text-align:center">{{columns['currency']}}</th>
+          <th style="width:100px">{{columns['arrangementName']}}</th>
+          <th style="width:100px">{{columns['arrangementType']}}</th>
+          <th style="width:100px">{{columns['status']}}</th>
+          <th style="width:100px">{{columns['arrangementBasis']}}</th>
+          <th style="width:100px">{{columns['arrangementSource']}}</th>
+          <th style="width:100px;text-align:center">{{columns['salesNodeLevel1']}}</th>
+          <th style="width:100px;text-align:center">{{columns['salesNodeLevel2']}}</th>
+          <th style="width:100px;text-align:center">{{columns['salesNodeLevel3']}}</th>
+          <th style="width:100px">{{columns['arrangementNumber']}}</th>
+          <th style="width:100px">{{columns['approvalStatus']}}</th>
+          <th style="width:100px">{{columns['approvalDate']}}</th>
+          <th style="width:100px">{{columns['approvedBy']}}</th>
+          <th style="width:100px">{{columns['dealNumber']}}</th>
+          <th style="width:100px">{{columns['dealName']}}</th>
+          <th style="width:100px">{{columns['agreementNumber']}}</th>
+          <th style="width:100px">{{columns['agreementCode']}}</th>
+          <th style="width:100px;text-align:center">{{columns['transactionCurrencyCode']}}</th>
+          <th style="width:100px">{{columns['priceList']}}</th>
+          <th style="width:100px">{{columns['billToCustomerName']}}</th>
+          <th style="width:100px">{{columns['billToCustomerNumber']}}</th>
+          <th style="width:100px">{{columns['lineNumber']}}</th>
+          <th style="width:100px">{{columns['productName']}}</th>
+          <th style="width:100px;text-align:right">{{columns['quantity']}}</th>
+          <th style="width:100px">{{columns['elementType']}}</th>
+          <th style="width:100px">{{columns['accountingScope']}}</th>
+          <th style="width:100px;text-align:center">{{columns['startDate']}}</th>
+          <th style="width:100px;text-align:center">{{columns['endDate']}}</th>
+          <th style="width:100px;text-align:center">{{columns['uomCode']}}</th>
+          <th style="width:100px;text-align: right">{{columns['transactionListPrice']}}</th>
+          <th style="width:100px;text-align: right">{{columns['transactionSellingPrice']}}</th>
+          <th style="width:100px;text-align: right">{{columns['listPrice']}}</th>
+          <th style="width:100px;text-align: right">{{columns['netPrice']}}</th>
+          <th style="width:100px;text-align: right">{{columns['dealLineCost']}}</th>
+          <th style="width:100px;text-align: right">{{columns['allocationAmount']}}</th>
+          <th style="width:100px;text-align: right">{{columns['cvInOutAmount']}}</th>
+          <th style="width:100px;text-align: right">{{columns['trxAllocUnitAmt']}}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-consolidatedArrgSummaryRep>
+        <tr [pSelectableRow]="rowData">
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.customerNumber}}">{{consolidatedArrgSummaryRep.customerNumber}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.customerName}}">{{consolidatedArrgSummaryRep.customerName}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.dealStatus}}">{{consolidatedArrgSummaryRep.dealStatus}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.legalEntity}}">{{consolidatedArrgSummaryRep.legalEntity}}</td>
+          <td style="width:100px;text-align:center" title="{{consolidatedArrgSummaryRep.currency}}">{{consolidatedArrgSummaryRep.currency}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.arrangementName}}">{{consolidatedArrgSummaryRep.arrangementName}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.arrangementType}}">{{consolidatedArrgSummaryRep.arrangementType}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.status}}">{{consolidatedArrgSummaryRep.status}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.arrangementBasis}}">{{consolidatedArrgSummaryRep.arrangementBasis}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.arrangementSource}}">{{consolidatedArrgSummaryRep.arrangementSource}}</td>
+          <td style="width:100px;text-align:center" title="{{consolidatedArrgSummaryRep.salesNodeLevel1}}">{{consolidatedArrgSummaryRep.salesNodeLevel1}}</td>
+          <td style="width:100px;text-align:center" title="{{consolidatedArrgSummaryRep.salesNodeLevel2}}">{{consolidatedArrgSummaryRep.salesNodeLevel2}}</td>
+          <td style="width:100px;text-align:center" title="{{consolidatedArrgSummaryRep.salesNodeLevel3}}">{{consolidatedArrgSummaryRep.salesNodeLevel3}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.arrangementNumber}}">{{consolidatedArrgSummaryRep.arrangementNumber}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.approvalStatus}}">{{consolidatedArrgSummaryRep.approvalStatus}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.approvalDate}}">{{consolidatedArrgSummaryRep.approvalDate}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.approvedBy}}">{{consolidatedArrgSummaryRep.approvedBy}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.dealNumber}}">{{consolidatedArrgSummaryRep.dealNumber}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.dealName}}">{{consolidatedArrgSummaryRep.dealName}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.agreementNumber}}">{{consolidatedArrgSummaryRep.agreementNumber}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.agreementCode}}">{{consolidatedArrgSummaryRep.agreementCode}}</td>
+          <td style="width:100px;text-align:center" title="{{consolidatedArrgSummaryRep.transactionCurrencyCode}}">{{consolidatedArrgSummaryRep.transactionCurrencyCode}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.priceList}}">{{consolidatedArrgSummaryRep.priceList}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.billToCustomerName}}">{{consolidatedArrgSummaryRep.billToCustomerName}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.billToCustomerNumber}}">{{consolidatedArrgSummaryRep.billToCustomerNumber}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.lineNumber}}">{{consolidatedArrgSummaryRep.lineNumber}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.productName}}">{{consolidatedArrgSummaryRep.productName}}</td>
+          <td style="width:100px;text-align:right" title="{{consolidatedArrgSummaryRep.quantity}}">{{consolidatedArrgSummaryRep.quantity}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.elementType}}">{{consolidatedArrgSummaryRep.elementType}}</td>
+          <td style="width:100px" title="{{consolidatedArrgSummaryRep.accountingScope}}">{{consolidatedArrgSummaryRep.accountingScope}}</td>
+          <td style="width:100px;text-align:center" title="{{consolidatedArrgSummaryRep.startDate | date: 'MM/dd/yyyy h:mm:ss a'}}">{{consolidatedArrgSummaryRep.startDate | date: 'MM/dd/yyyy h:mm:ss a'}}</td>
+          <td style="width:100px;text-align:center" title="{{consolidatedArrgSummaryRep.endDate | date: 'MM/dd/yyyy h:mm:ss a'}}">{{consolidatedArrgSummaryRep.endDate | date: 'MM/dd/yyyy h:mm:ss a'}}</td>
+          <td style="width:100px;text-align:center" title="{{consolidatedArrgSummaryRep.uomCode}}">{{consolidatedArrgSummaryRep.uomCode}}</td>
+          <td style="width:100px;text-align: right" title="{{consolidatedArrgSummaryRep.transactionListPrice  | round}}">{{consolidatedArrgSummaryRep.transactionListPrice | round}}</td>
+          <td style="width:100px;text-align: right" title="{{consolidatedArrgSummaryRep.transactionSellingPrice  | round}}">{{consolidatedArrgSummaryRep.transactionSellingPrice | round}}</td>
+          <td style="width:100px;text-align: right" title="{{consolidatedArrgSummaryRep.listPrice  | round}}">{{consolidatedArrgSummaryRep.listPrice | round}}</td>
+          <td style="width:100px;text-align: right" title="{{consolidatedArrgSummaryRep.netPrice  | round}}">{{consolidatedArrgSummaryRep.netPrice | round}}</td>
+          <td style="width:100px;text-align: right" title="{{consolidatedArrgSummaryRep.dealLineCost  | round}}">{{consolidatedArrgSummaryRep.dealLineCost | round}}</td>
+          <td style="width:100px;text-align: right" title="{{consolidatedArrgSummaryRep.allocationAmount  | round}}">{{consolidatedArrgSummaryRep.allocationAmount | round}}</td>
+          <td style="width:100px;text-align: right" title="{{consolidatedArrgSummaryRep.cvInOutAmount | round}}">{{consolidatedArrgSummaryRep.cvInOutAmount | round}}</td>
+          <td style="width:100px;text-align: right" title="{{consolidatedArrgSummaryRep.trxAllocUnitAmt  | round}}">{{consolidatedArrgSummaryRep.trxAllocUnitAmt | round}}</td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage" let-columns>
+        <tr *ngIf="!columns">
+          <td class="no-data">{{noData}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-panel>
+
+  <p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+    <form>
+      <div class="ui-grid ui-grid-responsive ui-fluid">
+        <div class="ui-g-12">
+          <div class="ui-g-5">
+            <span class="md-inputfield">
+              <input pInputText name="from" id="from" [ngModelOptions]="{standalone: true}" [(ngModel)]="searchFields.fromArrgId" />
+              <label for="from">Arrangement Number From</label>
+            </span>
+          </div>
+          <div class="ui-g-5 pull-right">
+            <span class="md-inputfield">
+              <input pInputText name="to" id="to" [ngModelOptions]="{standalone: true}" [(ngModel)]="searchFields.toArrgId" />
+              <label for="to">Arrangement Number To</label>
+            </span>
+          </div>
+        </div>
+
+
+        <div class="ui-g-12">
+          <div class="ui-g-5">
+            <span *ngIf="searchFields.fromPeriod" class="selectSpan">From Period</span>
+            <p-calendar showAnim="slideDown" name="fromPeriod" id="fromPeriod" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+              appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="searchFields.fromPeriod" dateFormat="yy-mm-dd"
+              placeholder="From Period"></p-calendar>
+          </div>
+
+          <div class="ui-g-5 pull-right">
+            <span *ngIf="searchFields.toPeriod" class="selectSpan">To Period</span>
+            <p-calendar showAnim="slideDown" name="toPeriod" id="toPeriod" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030"
+              appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="searchFields.toPeriod" dateFormat="yy-mm-dd"
+              placeholder="To Period"></p-calendar>
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </form>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="button" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+        <button type="submit" pButton label="Search" (click)="search()"></button>
+      </div>
+    </p-footer>
+  </p-dialog>
+</div>

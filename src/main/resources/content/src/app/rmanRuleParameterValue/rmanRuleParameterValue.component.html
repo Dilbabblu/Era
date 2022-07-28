@@ -1,0 +1,368 @@
+	<div class="content-section implementation">
+	</div>
+
+          
+     <div class="card-wrapper">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card-block">
+
+          <h2>Revenue Contract Results: {{masterData?.ruleName}} </h2>
+          <div class="pull-right icons-list">
+               <a  (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+               <a  *isAuthorized="['write','MAR']" (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+               <a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+               <a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+               <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                    <div class="user-popup">
+                      <div class="content overflow">
+                        <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+                        <label for="selectall">Select All</label>
+                        <a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+                        <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                          <ng-template let-col let-index="index" pTemplate="item">
+                            <div *ngIf="col.drag">
+                            <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+                             (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                              <div class="drag">
+                                <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+                                <label>{{col.header}}</label>
+                              </div>
+                            </div>
+                            </div>
+                            <div *ngIf="!col.drag">
+                            <div class="ui-helper-clearfix">
+                              <div>
+                                <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+                                <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                              </div>
+                            </div>
+                            </div>
+                          </ng-template>
+                          </p-listbox>
+                
+                      </div>
+                
+                      <div class="pull-right">
+                        <a class="configColBtn" (click)="saveColumns()">Save</a>
+                        <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                      </div>
+                
+                    </div>
+                  </div>
+           </div>
+
+     <div class="x-scroll">
+        <p-table class="ui-datatable arrangementMgrTbl" #dt id="ruleParameter-dt" [loading]= "loading" [columns]="columns" [value]="rmanRuleParameterValueList" selectionMode="single"  
+        (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanRuleParameterValue($event)" [lazy]="true" [paginator]="true"
+        [rows]="pageSize" [totalRecords]="totalElements"  scrollable="true" [resizableColumns]="true" columnResizeMode="expand">
+        
+        <ng-template pTemplate="colgroup" let-columns>
+          <colgroup>
+               <col>
+               <col *ngFor="let col of columns">
+          </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" class="arrangementMgrTblHead">
+          <tr>
+               <th></th>
+            <ng-container *ngFor="let col of columns">
+              <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+              <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+          </ng-container>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-rowData let-rmanRuleParameterValue let-columns="columns">
+          <tr [pSelectableRow]="rowData">
+               <td>
+                    <a  *isAuthorized="['write','MAR']" (click)="editRow(rmanRuleParameterValue)" class="icon-edit" title="Edit"> </a>
+                    <a  *isAuthorized="['write','MAR']" (click)="delete(rmanRuleParameterValue)" class="icon-delete" title="Delete"> </a>
+                </td>
+            <ng-container *ngFor="let col of columns" >
+               <td *ngIf="col.type == 'text' && col.field == 'parameterId'" title="{{transformRmanEntityParametersV(rmanRuleParameterValue.rmanEntityParametersV)}}" [ngStyle]="{'display': col.display}">
+               {{transformRmanEntityParametersV(rmanRuleParameterValue.rmanEntityParametersV)}}
+               </td>
+              <td *ngIf="col.type == 'text' && col.field !== 'parameterId'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                {{rowData[col.field]}}
+              </td>
+            
+              <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                {{rowData[col.field]}}
+              </td>
+            
+              <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+              </td>
+            
+              <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                {{rowData[col.field] | round}}
+              </td>
+            </ng-container>
+                  
+          </tr>                 
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <div class="no-results-data">
+                <p>{{noData}}</p>
+            </div>
+        </ng-template>
+    </p-table>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+	
+	<p-dialog header="Search" width="800" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelSearch()">
+		<form >
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+					<div class="ui-g-6">
+                              <span class="selectSpan"> Parameter Group </span>
+                         <span class="md-inputfield"><input pInputText class="textbox" name="parameterGroup"  id="parameterGroup" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValueSearch.parameterGroup" placeholder="Parameter Group"/></span>
+                    </div>
+					<div class="ui-g-6 pull-right">
+                              <span class="selectSpan"> Parameter Name </span>
+                         <span class="md-inputfield"><input pInputText class="textbox" name="parameterName"  id="parameterName" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValueSearch.parameterName" placeholder="Parameter Name"/></span>
+                    </div>
+			</div>
+			<div class="ui-g-12">
+					<div class="ui-g-6">
+						  <span class="selectSpan"> Qualifier </span>
+						  <p-dropdown [options]="rmanLookupsV" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValueSearch.qualifier" name="qualifier" [filter]="true" appendTo="body" ></p-dropdown>
+					</div>
+					<div class="ui-g-6 pull-right">
+						 <span class="selectSpan"> And/Or </span>
+						<p-dropdown [options]="rmanLookupsV1" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValueSearch.andOr" name="andOr" [filter]="true" appendTo="body" ></p-dropdown>
+					</div>
+			</div>
+			<div class="ui-g-12">
+					<div class="ui-g-6">
+                              <span class="selectSpan"> Parameter Value </span>
+                         <span class="md-inputfield"><input pInputText class="textbox" name="parameterValue"  id="parameterValue" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValueSearch.parameterValue" placeholder="Parameter Value"/></span>
+                    </div>
+			</div>
+			</div>
+
+		</form>
+		<p-footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                         <button type="submit" class="primary-btn" pButton label="Search" (click)="search()"></button>
+                         <button type="button" class="secondary-btn" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+				</div>
+			</p-footer>
+	</p-dialog>
+	<p-dialog header="{{(newRmanRuleParameterValue) ? 'Create New Rule Parameter' : 'Edit Rule Parameter'}}" width="800" [(visible)]="displayDialog" [draggable]="true" showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelEdit()">
+	<form (ngSubmit)="save()" [formGroup]="ruleParametersForm" novalidate>
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanRuleParameterValue">
+			<div class="ui-g">
+				<div class="ui-g-12">
+					<div class="ui-g-6">
+							<span class="selectSpan"> Parameter ID <span class="red-color">*</span> </span>
+							<p-dropdown [options]="rmanEntityParametersV"  [(ngModel)]="rmanRuleParameterValue.parameterId" name="parameterId" [filter]="true" formControlName="name" appendTo="body">
+
+							</p-dropdown>
+							<div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+								{{ formErrors.name }}
+							</div>
+					</div>
+
+					<div class="ui-g-6 pull-right">
+						  <span class="selectSpan"> Qualifier <span class="red-color">*</span> </span>
+						  <p-dropdown [options]="rmanLookupsV" [(ngModel)]="rmanRuleParameterValue.qualifier" name="qualifier" [filter]="true" formControlName="qualifier" appendTo="body">
+
+						  </p-dropdown>
+						  <div *ngIf="formErrors.qualifier" class="ui-message ui-messages-error ui-corner-all">
+								{{ formErrors.qualifier }}
+						   </div>
+					</div>
+				</div>
+				<div class="ui-g-12">
+                    <div class="ui-g-6">
+                         <span class="selectSpan"> Parameter Value </span>
+                         <span class="md-inputfield"><input pInputText class="textbox" name="parameterValue"  id="parameterValue" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.parameterValue" placeholder="Parameter Value"/></span>
+                    </div>
+
+
+					 <div class="ui-g-6 pull-right">
+                              <span class="selectSpan"> Parameter Group </span>
+                         <span class="md-inputfield"><input pInputText class="textbox" name="parameterGroup"  id="parameterGroup" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.parameterGroup" placeholder="Parameter Group"/></span>
+                    </div>
+				</div>
+				<div class="ui-g-12">
+
+					<div class="ui-g-6">
+						 <span class="selectSpan"> And/Or </span>
+						<p-dropdown [options]="rmanLookupsV1" [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.andOr" name="andOr" [filter]="true" appendTo="body"></p-dropdown>
+					</div>
+				</div>
+			</div>
+
+
+
+									 <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="parameterValueId">{{columns['parameterValueId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="parameterValueId"  id="parameterValueId" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.parameterValueId" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="ruleHeaderId">{{columns['ruleHeaderId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="ruleHeaderId"  id="ruleHeaderId" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.ruleHeaderId" /></div>
+                    </div>
+
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute1">{{columns['attribute1']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute1"  id="attribute1" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute1" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute2">{{columns['attribute2']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute2"  id="attribute2" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute2" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute3">{{columns['attribute3']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute3"  id="attribute3" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute3" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute4">{{columns['attribute4']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute4"  id="attribute4" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute4" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute5">{{columns['attribute5']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute5"  id="attribute5" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute5" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute6">{{columns['attribute6']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute6"  id="attribute6" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute6" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute7">{{columns['attribute7']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute7"  id="attribute7" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute7" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute8">{{columns['attribute8']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute8"  id="attribute8" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute8" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute9">{{columns['attribute9']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute9"  id="attribute9" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute9" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute10">{{columns['attribute10']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute10"  id="attribute10" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute10" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute11">{{columns['attribute11']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute11"  id="attribute11" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute11" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute12">{{columns['attribute12']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute12"  id="attribute12" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute12" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute13">{{columns['attribute13']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute13"  id="attribute13" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute13" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute14">{{columns['attribute14']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute14"  id="attribute14" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute14" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute15">{{columns['attribute15']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute15"  id="attribute15" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute15" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute16">{{columns['attribute16']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute16"  id="attribute16" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute16" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute17">{{columns['attribute17']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute17"  id="attribute17" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute17" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute18">{{columns['attribute18']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute18"  id="attribute18" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute18" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute19">{{columns['attribute19']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute19"  id="attribute19" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute19" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute20">{{columns['attribute20']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute20"  id="attribute20" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute20" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute21">{{columns['attribute21']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute21"  id="attribute21" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute21" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute22">{{columns['attribute22']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute22"  id="attribute22" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute22" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute23">{{columns['attribute23']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute23"  id="attribute23" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute23" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute24">{{columns['attribute24']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute24"  id="attribute24" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute24" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute25">{{columns['attribute25']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute25"  id="attribute25" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute25" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute26">{{columns['attribute26']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute26"  id="attribute26" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute26" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute27">{{columns['attribute27']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute27"  id="attribute27" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute27" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute28">{{columns['attribute28']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute28"  id="attribute28" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute28" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute29">{{columns['attribute29']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute29"  id="attribute29" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute29" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="attribute30">{{columns['attribute30']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="attribute30"  id="attribute30" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.attribute30" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="creationDate">{{columns['creationDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="creationDate"  id="creationDate" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.creationDate" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="createdBy">{{columns['createdBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="createdBy"  id="createdBy" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.createdBy" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="lastUpdateDate">{{columns['lastUpdateDate']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lastUpdateDate"  id="lastUpdateDate" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.lastUpdateDate" /></div>
+                    </div>
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="lastUpdatedBy">{{columns['lastUpdatedBy']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="lastUpdatedBy"  id="lastUpdatedBy" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.lastUpdatedBy" /></div>
+                    </div>
+
+                    <div class="ui-grid-row" class="d-none">
+     <div class="ui-grid-col-4"><label for="dealFlag">{{columns['dealFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="dealFlag"  id="dealFlag" required [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanRuleParameterValue.dealFlag" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="submit" pButton class="primary-btn" label="Save" (click)="save()" [disabled]="!ruleParametersForm.valid"></button>
+                <button type="button" pButton class="secondary-btn" (click)="displayDialog=false" label="Cancel"></button>
+               </div>
+		</p-footer>
+	</p-dialog>
+
+		<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

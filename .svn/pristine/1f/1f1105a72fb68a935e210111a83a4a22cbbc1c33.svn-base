@@ -1,0 +1,121 @@
+<div class="ContentSideSections Implementation">
+
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog"  showEffect="fade" [draggable]="true" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="sno">{{columns['sno']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sno"  name="sno" [(ngModel)]="rmanContReleaseEventsVSearch.sno" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="dealArrangementId">{{columns['dealArrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementId"  name="dealArrangementId" [(ngModel)]="rmanContReleaseEventsVSearch.dealArrangementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="dealArrangementNumber">{{columns['dealArrangementNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementNumber"  name="dealArrangementNumber" [(ngModel)]="rmanContReleaseEventsVSearch.dealArrangementNumber" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanContReleaseEventsV" width="500" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanContReleaseEventsV">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sno">{{columns['sno']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sno" name="sno" required [(ngModel)]="rmanContReleaseEventsV.sno" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementId">{{columns['dealArrangementId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementId" name="dealArrangementId" required [(ngModel)]="rmanContReleaseEventsV.dealArrangementId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementNumber">{{columns['dealArrangementNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementNumber" name="dealArrangementNumber" required [(ngModel)]="rmanContReleaseEventsV.dealArrangementNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealArrangementName">{{columns['dealArrangementName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealArrangementName" name="dealArrangementName" required [(ngModel)]="rmanContReleaseEventsV.dealArrangementName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="lineNum">{{columns['lineNum']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="lineNum" name="lineNum" required [(ngModel)]="rmanContReleaseEventsV.lineNum" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealNumber">{{columns['dealNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealNumber" name="dealNumber" required [(ngModel)]="rmanContReleaseEventsV.dealNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="dealLineNumber">{{columns['dealLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="dealLineNumber" name="dealLineNumber" required [(ngModel)]="rmanContReleaseEventsV.dealLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="so">{{columns['so']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="so" name="so" required [(ngModel)]="rmanContReleaseEventsV.so" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceLineId">{{columns['sourceLineId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceLineId" name="sourceLineId" required [(ngModel)]="rmanContReleaseEventsV.sourceLineId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="sourceLineNumber">{{columns['sourceLineNumber']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="sourceLineNumber" name="sourceLineNumber" required [(ngModel)]="rmanContReleaseEventsV.sourceLineNumber" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="bookedAmount">{{columns['bookedAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="bookedAmount" name="bookedAmount" required [(ngModel)]="rmanContReleaseEventsV.bookedAmount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="deliveredAmount">{{columns['deliveredAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="deliveredAmount" name="deliveredAmount" required [(ngModel)]="rmanContReleaseEventsV.deliveredAmount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="contingencyName">{{columns['contingencyName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="contingencyName" name="contingencyName" required [(ngModel)]="rmanContReleaseEventsV.contingencyName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="templateName">{{columns['templateName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="templateName" name="templateName" required [(ngModel)]="rmanContReleaseEventsV.templateName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="ranking">{{columns['ranking']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="ranking" name="ranking" required [(ngModel)]="rmanContReleaseEventsV.ranking" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="applyType">{{columns['applyType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="applyType" name="applyType" required [(ngModel)]="rmanContReleaseEventsV.applyType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="revenue">{{columns['revenue']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="revenue" name="revenue" required [(ngModel)]="rmanContReleaseEventsV.revenue" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="deferredAmount">{{columns['deferredAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="deferredAmount" name="deferredAmount" required [(ngModel)]="rmanContReleaseEventsV.deferredAmount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="deferredReleaseAmount">{{columns['deferredReleaseAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="deferredReleaseAmount" name="deferredReleaseAmount" required [(ngModel)]="rmanContReleaseEventsV.deferredReleaseAmount" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="undeferredAmount">{{columns['undeferredAmount']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText id="undeferredAmount" name="undeferredAmount" required [(ngModel)]="rmanContReleaseEventsV.undeferredAmount" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>
+</div>

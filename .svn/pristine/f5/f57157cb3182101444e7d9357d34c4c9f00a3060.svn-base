@@ -1,0 +1,184 @@
+<div class="content-section implementation">
+</div>
+
+
+    <p-panel header="Exceptions">
+        <p-header>
+             <div class="pull-right icons-list">
+                  <p-dropdown class="ml-auto ssp-books-status" [options]="allExceptionsTypes" [(ngModel)]="exceptionsType" [ngModelOptions]="{standalone: true}" (onChange)="onChange()" name="exeType" [filter]="false" appendTo="body"></p-dropdown>
+                  <a  (click)="deleteSelected(dt)" title="Delete Selected"><em class="fa fa-trash"></em></a>
+                  <a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+                  <a  (click)="reset(dt)"  title="Reset"><em class="fa fa-refresh"></em></a>
+                  <a  (click)="exportExcel()" title="Export"><em class="fa fa-external-link"></em></a>
+             </div>
+        </p-header>
+
+     <div class="x-scroll">
+    <p-table class="ui-datatable arrangementMgrTbl" [loading]="loading" #dt [value]="allExceptionsList" id="rmanOrdersInt-dt" [(selection)]="selectedLines"  
+        (onRowSelect)="onRowSelect($event)" scrollable="true"  [paginator]="true" [lazy]="true" [rows]="pageSize"
+        [totalRecords]="totalElements" (onLazyLoad)="getAllTypeExceptions($event)" >
+        <ng-template pTemplate="header" class="arrangementMgrTblHead">
+            <tr>
+                <th style="width: 50px"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                <th style="width:170px;text-align:left"><a >{{columns['documentCategory']}}</a></th>
+                <th style="width:170px;text-align:left"><a >{{columns['documentSource']}}</a></th>
+                <th *ngIf="exceptionsType === 'SHIP' || exceptionsType === 'BOOK' || exceptionsType === 'CONT_RELEASE'" style="width:150px;text-align:left"><a >{{columns['eventType']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['dealNumber']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['projectNumber']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['opportunityNumber']}}</a></th>
+                <th *ngIf="exceptionsType === 'BOOK'" style="width:170px;text-align:right"><a >{{columns['customerPo']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE'" style="width:170px;text-align:left"><a >{{columns['opportunityName']}}</a></th>
+                <th *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" style="width:170px;text-align:left"><a >{{columns['documentNumber']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE'" style="width:180px;text-align:left"><a >{{columns['documentDescription']}}</a></th>
+                <th *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" style="width:180px;text-align:left"><a >{{columns['documentHeaderId']}}</a></th>
+                <th *ngIf="exceptionsType === 'INV' || exceptionsType === 'BOOK'" style="width:170px;text-align:right"><a >{{columns['documentType']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['entityName']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:180px;text-align:left"><a >{{columns['entityId']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['customerName']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['customerNumber']}}</a></th>
+                <th *ngIf="exceptionsType !== 'CONT_RELEASE'" style="width:170px;text-align:left"><a >{{columns['documentDate']}}</a></th>
+                <th *ngIf="exceptionsType === 'BOOK'" style="width:170px;text-align:center"><a >{{columns['documentStatus']}}</a></th>
+                <th *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" style="width:170px;text-align:center"><a >{{columns['currencyCode']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:center"><a >{{columns['salesRep']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:center"><a >{{columns['salesTheater']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['region']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['salesTerritory']}}</a></th>
+                <th *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" style="width:170px;text-align:center"><a >{{columns['documentLineNumber']}}</a></th>
+                <th style="width:150px;text-align:left"><a >{{columns['documentLineId']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:150px;text-align:center"><a >{{columns['productName']}}</a></th>
+                <th *ngIf="exceptionsType !== 'CONT_RELEASE'"style="width:170px;text-align:left"><a >{{columns['quantity']}}</a></th>
+                <th *ngIf="exceptionsType === 'SHIP' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['documentLineStatus']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['uom']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:150px;text-align:right"><a >{{columns['unitListPrice']}}</a></th>
+                <th *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" style="width:170px;text-align:right"><a >{{columns['unitSellingPrice']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE'" style="width:170px;text-align:right"><a >{{columns['parentLineNumber']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:150px;text-align:left"><a >{{columns['serviceStartDate']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:right"><a >{{columns['serviceEndDate']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:right"><a >{{columns['unitCost']}}</a></th>
+                <th *ngIf="exceptionsType !== 'INV'" style="width:170px;text-align:right"><a >{{columns['contingnecyCode']}}</a></th>
+                <th *ngIf="exceptionsType === 'CONT_RELEASE'" style="width:170px;text-align:right"><a >{{columns['contReleaseType']}}</a></th>
+                <th *ngIf="exceptionsType === 'CONT_RELEASE'" style="width:170px;text-align:right"><a >{{columns['contReleaseRevenue']}}</a></th>
+                <th *ngIf="exceptionsType === 'SHIP' || exceptionsType === 'BOOK'" style="width:170px;text-align:right"><a >{{columns['contApplyType']}}</a></th>
+                <th *ngIf="exceptionsType !== 'INV' && exceptionsType !== 'CONT_RELEASE'" style="width:170px;text-align:right"><a >{{columns['contingnecyPercentage']}}</a></th>
+                <th *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" style="width:170px;text-align:right"><a >{{columns['revenueTemplateName']}}</a></th>
+                <th *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" style="width:170px;text-align:left"><a >{{columns['refDocumentNumber']}}</a></th>
+                <th *ngIf="exceptionsType === 'BOOK'" style="width:170px;text-align:right"><a >{{columns['inventoryItemId']}}</a></th>
+                <th *ngIf="exceptionsType === 'INV' || exceptionsType === 'BOOK'" style="width:170px;text-align:right"><a >{{columns['refLineId']}}</a></th>
+                <th *ngIf="exceptionsType === 'INV' || exceptionsType === 'BOOK'" style="width:170px;text-align:left"><a >{{columns['refLineNumber']}}</a></th>
+                <th *ngIf="exceptionsType === 'INV'" style="width:170px;text-align:right"><a >{{columns['amount']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['processId']}}</a></th>
+                <th style="width:170px;text-align:right"><a >{{columns['exceptionMessage']}}</a></th>
+
+            </tr>
+        </ng-template>
+        <ng-template let-allExceptions let-rowData pTemplate="body">
+            <tr [pSelectableRow]="rowData">
+                <td style="width:50px">
+                    <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                </td>
+                <td title="{{allExceptions.documentCategory}}" style="width:170px;text-align:left">{{allExceptions.documentCategory}}</td>
+                <td title="{{allExceptions.documentSource}}" style="width:170px;text-align:left">{{allExceptions.documentSource}}</td>
+                <td *ngIf="exceptionsType === 'SHIP' || exceptionsType === 'BOOK' || exceptionsType === 'CONT_RELEASE'" title="{{allExceptions.eventType}}" style="width:150px;text-align:left">{{allExceptions.eventType}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.dealNumber}}" style="width:170px;text-align:left">{{allExceptions.dealNumber}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.projectNumber}}" style="width:170px;text-align:left">{{allExceptions.projectNumber}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.opportunityNumber}}" style="width:170px;text-align:left">{{allExceptions.opportunityNumber}}</td>
+                <td *ngIf="exceptionsType === 'BOOK'" title="{{allExceptions.customerPo}}" style="width:170px;text-align:right">{{allExceptions.customerPo}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE'" title="{{allExceptions.opportunityName}}" style="width:170px;text-align:left">{{allExceptions.opportunityName}}</td>
+                <td *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" title="{{allExceptions.documentNumber}}" style="width:170px;text-align:left">{{allExceptions.documentNumber}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE'" title="{{allExceptions.documentDescription}}" style="width:180px;text-align:left">{{allExceptions.documentDescription}}</td>
+                <td *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" title="{{allExceptions.documentHeaderId}}" style="width:180px;text-align:left">{{allExceptions.documentHeaderId}}</td>
+                <td *ngIf="exceptionsType === 'INV' || exceptionsType === 'BOOK'" title="{{allExceptions.documentType}}" style="width:170px;text-align:right">{{allExceptions.documentType}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.entityName}}" style="width:170px;text-align:left">{{allExceptions.entityName}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.entityId}}" style="width:180px;text-align:left">{{allExceptions.entityId}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.customerName}}" style="width:170px;text-align:left">{{allExceptions.customerName}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.customerNumber}}" style="width:170px;text-align:left">{{allExceptions.customerNumber}}</td>
+                <td *ngIf="exceptionsType !== 'CONT_RELEASE'" title="{{allExceptions.documentDate}}" style="width:170px;text-align:left">{{allExceptions.documentDate | date: 'MM/dd/yyyy'}}</td>
+                <td *ngIf="exceptionsType === 'BOOK'" title="{{allExceptions.documentStatus}}" style="width:170px;text-align:center">{{allExceptions.documentStatus}}</td>
+                <td *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" title="{{allExceptions.currencyCode}}" style="width:170px;text-align:center">{{allExceptions.currencyCode}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.salesRep}}" style="width:170px;text-align:center">{{allExceptions.salesRep}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.salesTheater}}" style="width:170px;text-align:center">{{allExceptions.salesTheater}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.region}}" style="width:170px;text-align:left">{{allExceptions.region}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.salesTerritory}}" style="width:170px;text-align:left">{{allExceptions.salesTerritory}}</td>
+                <td *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" title="{{allExceptions.documentLineNumber}}" style="width:170px;text-align:center">{{allExceptions.documentLineNumber}}</td>
+                <td title="{{allExceptions.documentLineId}}" style="width:150px;text-align:left">{{allExceptions.documentLineId}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.productName}}" style="width:150px;text-align:center">{{allExceptions.productName}}</td>
+                <td *ngIf="exceptionsType !== 'CONT_RELEASE'" title="{{allExceptions.quantity}}" style="width:170px;text-align:left">{{allExceptions.quantity}}</td>
+                <td *ngIf="exceptionsType === 'SHIP' || exceptionsType === 'BOOK'" title="{{allExceptions.documentLineStatus}}" style="width:170px;text-align:left">{{allExceptions.documentLineStatus}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.uom}}" style="width:170px;text-align:left">{{allExceptions.uom}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.unitListPrice}}" style="width:150px;text-align:right">{{allExceptions.unitListPrice}}</td>
+                <td *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" title="{{allExceptions.unitSellingPrice}}" style="width:170px;text-align:right">{{allExceptions.unitSellingPrice}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE'" title="{{allExceptions.parentLineNumber}}" style="width:170px;text-align:right">{{allExceptions.parentLineNumber}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.serviceStartDate}}" style="width:150px;text-align:left">{{allExceptions.serviceStartDate | date: 'MM/dd/yyyy'}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.serviceEndDate}}" style="width:170px;text-align:right">{{allExceptions.serviceEndDate | date: 'MM/dd/yyyy'}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.unitCost}}" style="width:170px;text-align:right">{{allExceptions.unitCost | round}}</td>
+                <td *ngIf="exceptionsType !== 'INV'" title="{{allExceptions.contingnecyCode}}" style="width:170px;text-align:right">{{allExceptions.contingnecyCode}}</td>
+                <td *ngIf="exceptionsType === 'CONT_RELEASE'" title="{{allExceptions.contReleaseType}}" style="width:170px;text-align:right">{{allExceptions.contReleaseType}}</td>
+                <td *ngIf="exceptionsType === 'CONT_RELEASE'" title="{{allExceptions.contReleaseRevenue}}" style="width:170px;text-align:right">{{allExceptions.contReleaseRevenue}}</td>
+                <td *ngIf="exceptionsType === 'SHIP' || exceptionsType === 'BOOK'" title="{{allExceptions.contApplyType}}" style="width:170px;text-align:right">{{allExceptions.contApplyType}}</td>
+                <td *ngIf="exceptionsType !== 'INV' && exceptionsType !== 'CONT_RELEASE'" title="{{allExceptions.contingnecyPercentage}}" style="width:170px;text-align:right">{{allExceptions.contingnecyPercentage}}</td>
+                <td *ngIf="exceptionsType === 'QUOTE' || exceptionsType === 'BOOK'" title="{{allExceptions.revenueTemplateName}}" style="width:170px;text-align:right">{{allExceptions.revenueTemplateName}}</td>
+                <td *ngIf="exceptionsType !== 'SHIP' && exceptionsType !== 'CONT_RELEASE'" title="{{allExceptions.refDocumentNumber}}" style="width:170px;text-align:left">{{allExceptions.refDocumentNumber}}</td>
+                <td *ngIf="exceptionsType === 'BOOK'" title="{{allExceptions.inventoryItemId}}" style="width:170px;text-align:right">{{allExceptions.inventoryItemId}}</td>
+                <td *ngIf="exceptionsType === 'INV' || exceptionsType === 'BOOK'" title="{{allExceptions.refLineId}}" style="width:170px;text-align:right">{{allExceptions.refLineId}}</td>
+                <td *ngIf="exceptionsType === 'INV' || exceptionsType === 'BOOK'" title="{{allExceptions.refLineNumber}}" style="width:170px;text-align:right">{{allExceptions.refLineNumber}}</td>
+                <td *ngIf="exceptionsType === 'INV'" title="{{allExceptions.amount}}" style="width:170px;text-align:left">{{allExceptions.amount | round}}</td>
+                <td title="{{allExceptions.processId}}" style="width:170px;text-align:left">{{allExceptions.processId}}</td>
+                <td title="{{allExceptions.exceptionMessage}}" style="width:170px;text-align:left">{{allExceptions.exceptionMessage}}</td>
+                
+                </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr *ngIf="!columns">
+                <td class="no-data">{{noData}}</td>
+            </tr>
+        </ng-template>
+        
+    </p-table>
+    </div>
+    </p-panel>
+ 
+
+    <p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog"  showEffect="fade"
+    [modal]="true" [blockScroll]="true" [draggable]="true">
+          <form>
+               <div class="ui-grid ui-grid-responsive ui-fluid">
+                    <div class="ui-g-12">
+                         <div class="ui-g-6">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">{{columns['documentSource']}}</span>
+                                   <input pInputText name="documentSource" class="textbox" placeholder="Document Source" id="documentSource"
+                                        [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="allExceptionsSearch.documentSource" />
+                              </span>
+                         </div>
+                         <div class="ui-g-6 pull-right">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">{{columns['documentLineId']}}</span>
+                                   <input pInputText name="documentLineId" id="documentLineId" class="textbox" placeholder="Document Line Id"
+                                        [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="allExceptionsSearch.documentLineId" />
+                              </span>
+                         </div>
+                    </div>
+                    <div class="ui-g-12">
+                         <div class="ui-g-6">
+                              <span class="md-inputfield">
+                                   <span class="selectSpan">{{columns['processId']}}</span>
+                                   <input pInputText name="processId" class="textbox" placeholder="Process id" id="processId"
+                                        [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="allExceptionsSearch.processId" />
+                              </span>
+                         </div>
+                    </div>
+               </div>
+          </form>
+          <p-footer>
+               <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+                    <button type="button" pButton class="secondary-btn" (click)="displaySearchDialog=false" label="Cancel"></button>
+               </div>
+          </p-footer>
+
+     </p-dialog>
+
+     <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

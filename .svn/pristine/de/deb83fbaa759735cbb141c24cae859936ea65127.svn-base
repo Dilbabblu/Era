@@ -1,0 +1,89 @@
+interface ILabels {
+         [index: string]: string;
+}
+
+export class RmanContReleaseLinesLabels {
+
+        fieldLabels: ILabels;
+
+    constructor() {
+
+    this.fieldLabels = {};
+
+        this.fieldLabels["attribute30"] = "ATTRIBUTE30";
+        this.fieldLabels["invoiceHold"] = "Invoice Hold";
+        this.fieldLabels["sourceLineId"] = "Source Line ID";
+        this.fieldLabels["ruleHeaderId"] = "Rule Header ID";
+        this.fieldLabels["releaseCogs"] = "Release COGS";
+        this.fieldLabels["applyType"] = "Apply Type";
+        this.fieldLabels["sourceHeaderId"] = "Source Header ID";
+        this.fieldLabels["lastUpdateDate"] = "Last Update Date";
+        this.fieldLabels["event"] = "Event";
+        this.fieldLabels["ranking"] = "Ranking";
+        this.fieldLabels["status"] = "Status";
+        this.fieldLabels["attribute29"] = "ATTRIBUTE29";
+        this.fieldLabels["attribute28"] = "ATTRIBUTE28";
+        this.fieldLabels["attribute27"] = "ATTRIBUTE27";
+        this.fieldLabels["avgContAcceptDur"] = "Avg Cont Accept Dur";
+        this.fieldLabels["attribute26"] = "ATTRIBUTE26";
+        this.fieldLabels["attribute3"] = "ATTRIBUTE3";
+        this.fieldLabels["createdBy"] = "Created By";
+        this.fieldLabels["transHeaderId"] = "Trans Header ID";
+        this.fieldLabels["maxDuration"] = "Max Duration";
+        this.fieldLabels["attribute2"] = "ATTRIBUTE2";
+        this.fieldLabels["lastUpdatedBy"] = "Last Updated By";
+        this.fieldLabels["attribute1"] = "ATTRIBUTE1";
+        this.fieldLabels["applicationLevel"] = "Application Level";
+        this.fieldLabels["soHeaderId"] = "SO Header ID";
+        this.fieldLabels["revenue"] = "Revenue";
+        this.fieldLabels["creationDate"] = "CREATION DATE";
+        this.fieldLabels["attribute9"] = "ATTRIBUTE9";
+        this.fieldLabels["attribute8"] = "ATTRIBUTE8";
+        this.fieldLabels["attribute7"] = "ATTRIBUTE7";
+        this.fieldLabels["productName"] = "Product Name";
+        this.fieldLabels["attribute6"] = "ATTRIBUTE6";
+        this.fieldLabels["attribute5"] = "ATTRIBUTE5";
+        this.fieldLabels["releaseType"] = "Release Type";
+        this.fieldLabels["attribute4"] = "ATTRIBUTE4";
+        this.fieldLabels["completeFlag"] = "Complete Flag";
+        this.fieldLabels["dealNum"] = "Deal Num";
+        this.fieldLabels["soLineId"] = "SO Line ID";
+        this.fieldLabels["releaseRevenue"] = "Release Revenue";
+        this.fieldLabels["attribute10"] = "ATTRIBUTE10";
+        this.fieldLabels["attribute14"] = "ATTRIBUTE14";
+        this.fieldLabels["attribute13"] = "ATTRIBUTE13";
+        this.fieldLabels["attribute12"] = "ATTRIBUTE12";
+        this.fieldLabels["contEventType"] = "Cont Event Type";
+        this.fieldLabels["application"] = "Application";
+        this.fieldLabels["attribute11"] = "ATTRIBUTE11";
+        this.fieldLabels["cogs"] = "COGS";
+        this.fieldLabels["comments"] = "Comments";
+        this.fieldLabels["templateId"] = "Template ID";
+        this.fieldLabels["deferredRelease"] = "Deferred Release";
+        this.fieldLabels["ruleCategory"] = "Rule Category";
+        this.fieldLabels["description"] = "Description";
+        this.fieldLabels["deferredMethod"] = "Deferred Method";
+        this.fieldLabels["attribute21"] = "ATTRIBUTE21";
+        this.fieldLabels["attribute20"] = "ATTRIBUTE20";
+        this.fieldLabels["transLineId"] = "Trans Line ID";
+        this.fieldLabels["attribute25"] = "ATTRIBUTE25";
+        this.fieldLabels["attribute24"] = "ATTRIBUTE24";
+        this.fieldLabels["attribute23"] = "ATTRIBUTE23";
+        this.fieldLabels["attribute22"] = "ATTRIBUTE22";
+        this.fieldLabels["autoReleaseDays"] = "Auto Release Days";
+        this.fieldLabels["percentage"] = "Percentage";
+        this.fieldLabels["dealArrangementId"] = "Deal Arrangement ID";
+        this.fieldLabels["element"] = "Element";
+        this.fieldLabels["poHeaderId"] = "PO Header ID";
+        this.fieldLabels["attribute18"] = "ATTRIBUTE18";
+        this.fieldLabels["attribute17"] = "ATTRIBUTE17";
+        this.fieldLabels["attribute16"] = "ATTRIBUTE16";
+        this.fieldLabels["attribute15"] = "ATTRIBUTE15";
+        this.fieldLabels["rebate"] = "Rebate";
+        this.fieldLabels["releaseLineId"] = "Release Line ID";
+        this.fieldLabels["poLineId"] = "PO Line ID";
+        this.fieldLabels["attribute19"] = "ATTRIBUTE19";
+        this.fieldLabels["customerPayment"] = "Customer Payment";
+    }
+
+}

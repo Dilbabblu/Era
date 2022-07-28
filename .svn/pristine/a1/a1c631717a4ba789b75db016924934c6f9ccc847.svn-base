@@ -1,0 +1,474 @@
+<div class="content-section implementation">
+</div>
+
+        <div class="card-wrapper">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-block">
+                  
+                    <h2>Manage Contingency Templates</h2>
+        
+             <div class="pull-right icons-list">
+                <a  (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>
+                <a  *isAuthorized="['write','MT']" (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+                <a  (click)="showDialogToSearch()" title="Search"><em class="fa fa-search"></em></a>
+                <a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+                <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+                    <div class="user-popup">
+                      <div class="content overflow">
+                        <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+                        <label for="selectall">Select All</label>
+                        <a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+                        <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+                          <ng-template let-col let-index="index" pTemplate="item">
+                            <div *ngIf="col.drag">
+                            <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+                             (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                              <div class="drag">
+                                <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+                                <label>{{col.header}}</label>
+                              </div>
+                            </div>
+                            </div>
+                            <div *ngIf="!col.drag">
+                            <div class="ui-helper-clearfix">
+                              <div>
+                                <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+                                <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                              </div>
+                            </div>
+                            </div>
+                          </ng-template>
+                          </p-listbox>
+                
+                      </div>
+                
+                      <div class="pull-right">
+                        <a class="configColBtn" (click)="saveColumns()">Save</a>
+                        <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+                      </div>
+                
+                    </div>
+                  </div>
+            </div>
+
+        <div class="x-scroll">
+        <p-table class="ui-datatable arrangementMgrTbl" #dt id="rmanContTemplate-dt" [loading]="loading" [columns]="columns" [value]="rmanContTemplateList" selectionMode="single"  
+            (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanContTemplate($event)" [lazy]="true" [paginator]="true" [rows]="pageSize"
+            [totalRecords]="totalElements"  scrollable="true" [resizableColumns]="true" columnResizeMode="expand">
+            <ng-template pTemplate="colgroup" let-columns>
+                <colgroup>
+                    <col>
+                     <col *ngFor="let col of columns">
+                </colgroup>
+            </ng-template>
+
+            <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                <tr>
+                    <th></th>
+                  <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                    <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+                </ng-container>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-rmanContTemplate let-columns="columns">
+                <tr [pSelectableRow]="rowData">
+                    <td>
+                        <a  *isAuthorized="['write','MT']" (click)="editRow(rmanContTemplate)" class="icon-edit" title="Edit"></a>
+                        <a  *isAuthorized="['write','MT']" (click)="delete(rmanContTemplate)" class="icon-delete" title="Delete"> </a>
+                    </td>
+                  <ng-container *ngFor="let col of columns" >
+                    <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                      {{rowData[col.field]}}
+                    </td>
+                  
+                    <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                      {{rowData[col.field]}}
+                    </td>
+                  
+                    <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                      {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+                    </td>
+                  
+                    <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                      {{rowData[col.field] | round}}
+                    </td>
+                  </ng-container>
+                        
+                </tr>                 
+              </ng-template>
+              <ng-template pTemplate="emptymessage" let-columns>
+                  <div class="no-results-data">
+                      <p>{{noData}}</p>
+                  </div>
+              </ng-template>
+        </p-table>
+    </div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+    <p-dialog header="Search" width="800" [(visible)]="displaySearchDialog"  showEffect="fade" [modal]="true" [draggable]="true" [blockScroll]="true" (onHide)="cancelSearch()">
+        <form>
+            <div class="ui-grid ui-grid-responsive ui-fluid">
+                <div class="ui-g-12">
+                    <div class="ui-g-6">
+                        <span class="md-inputfield">
+                            <span class="selectSpan">Template Name</span>
+                            <input pInputText class="textbox" placeholder="Template Name" name="templateName" id="templateName" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplateSearch.templateName"
+                            />
+                        </span>
+                    </div>
+                    <div class="ui-g-6 pull-right">
+                        <span class="md-inputfield">
+                            <span class="selectSpan">Description</span>
+                            <input pInputText class="textbox" placeholder="Description" name="description" id="description" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplateSearch.description"
+                            />
+                        </span>
+                    </div>
+                </div>
+                <div class="ui-g-12">
+                    <div class="ui-g-6">
+                        <span class="selectSpan"> Apply Type </span>
+                        <p-dropdown [options]="rmanLookupsV1" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplateSearch.applyType"
+                            name="applyType" [filter]="true" appendTo="body"></p-dropdown>
+                    </div>
+                    <div class="ui-g-6 pull-right">
+                        <span class="selectSpan"> Invoice Hold </span>
+                        <p-dropdown [options]="rmanLookupsV" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplateSearch.invoiceHold"
+                            name="invoiceHold" [filter]="true" appendTo="body"></p-dropdown>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="submit" class="primary-btn" pButton label="Search" (click)="search()"></button>
+                <button type="button" class="secondary-btn" pButton (click)="cancelSearch()" label="Cancel"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
+    <p-dialog header="{{(newRmanContTemplate) ? 'Create New Contingency Template Code' : 'Edit Contingency Template Code'}}"
+        width="800" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true" [blockScroll]="true" (onHide)="cancelEdit()">
+        <form (ngSubmit)="save()" [formGroup]="contTemplateForm" novalidate>
+            <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanContTemplate">
+
+                <div class="ui-g-12">
+                    <div class="ui-g-6">
+                        <span class="md-inputfield">
+                            <span class="selectSpan">Template Name<span class="red-color">*</span></span>
+                            <input pInputText class="textbox" placeholder="Template Name" name="templateName" id="templateName" [(ngModel)]="rmanContTemplate.templateName"
+                                formControlName="name" />
+                            <div *ngIf="formErrors.name" class="ui-message ui-messages-error ui-corner-all">
+                                {{ formErrors.name }}
+                            </div>
+                        </span>
+                    </div>
+                    <div class="ui-g-6 pull-right">
+                        <span class="md-inputfield">
+                            <span class="selectSpan">Description</span>
+                            <input pInputText class="textbox" placeholder="Description" name="description" id="description" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.description"
+                            />
+                        </span>
+                    </div>
+                </div>
+                <div class="ui-g-12">
+                    <div class="ui-g-6">
+                        <span class="selectSpan"> Apply Type<span class="red-color">*</span></span>
+                        <p-dropdown [options]="rmanLookupsV1" required [(ngModel)]="rmanContTemplate.applyType" name="applyType" [filter]="true"
+                            formControlName="type" appendTo="body">
+
+                        </p-dropdown>
+                        <div *ngIf="formErrors.type" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.type }}
+                        </div>
+                    </div>
+                    <div class="ui-g-6 pull-right">
+                        <span class="selectSpan"> Invoice Hold </span>
+                        <p-dropdown [options]="rmanLookupsV" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.invoiceHold" name="invoiceHold"
+                            [filter]="true" appendTo="body"></p-dropdown>
+                    </div>
+
+                </div>
+                <div class="ui-g-12">
+                    <div class="ui-g-6">
+                        <span class="md-inputfield">
+                            <span class="selectSpan">Cogs</span>
+                            <input pInputText class="textbox" placeholder="Cogs" name="cogs" id="cogs" [(ngModel)]="rmanContTemplate.cogs"
+                            formControlName="cogs"/>
+                            <div *ngIf="formErrors.cogs" class="ui-message ui-messages-error ui-corner-all">
+                                {{ formErrors.cogs }}
+                            </div>
+                        </span>
+                    </div>
+                    <div class="ui-g-6 pull-right">
+                        <span class="md-inputfield">
+                            <span class="selectSpan">Revenue</span>
+                            <input pInputText class="textbox" placeholder="Revenue" name="revenue" id="revenue" [(ngModel)]="rmanContTemplate.revenue"
+                            formControlName="revenue"/>
+                            <div *ngIf="formErrors.revenue" class="ui-message ui-messages-error ui-corner-all">
+                                {{ formErrors.revenue }}
+                            </div>
+                        </span>
+                    </div>
+                </div>
+                <div class="ui-g-12">
+                    <div class="ui-g-6">
+                        <span class="selectSpan">Effective Start Date<span class="red-color">*</span></span>
+                        <p-calendar inputStyleClass="textbox" showAnim="slideDown" name="effectiveStartDate" id="effectiveStartDate" [monthNavigator]="true" [yearNavigator]="true"
+                            yearRange="1950:2030" [(ngModel)]="rmanContTemplate.effectiveStartDate" dateFormat="yy-mm-dd" placeholder="Effective Start Date"
+                            formControlName="startDate" appendTo="body">
+
+                        </p-calendar>
+                        <div *ngIf="formErrors.startDate" class="ui-message ui-messages-error ui-corner-all">
+                            {{ formErrors.startDate }}
+                        </div>
+                    </div>
+                    <div class="ui-g-6 pull-right">
+                        <span class="selectSpan">Effective End Date</span>
+                        <p-calendar inputStyleClass="textbox" showAnim="slideDown" name="effectiveEndDate" id="effectiveEndDate" [monthNavigator]="true" [yearNavigator]="true"
+                            yearRange="1950:2030" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.effectiveEndDate"
+                            dateFormat="yy-mm-dd" placeholder="Effective End Date" appendTo="body"></p-calendar>
+                    </div>
+                </div>
+
+
+
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="templateId">{{columns['templateId']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="templateId" id="templateId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.templateId"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute1">{{columns['attribute1']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute1" id="attribute1" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.attribute1"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute2">{{columns['attribute2']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute2" id="attribute2" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.attribute2"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute3">{{columns['attribute3']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute3" id="attribute3" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.attribute3"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute4">{{columns['attribute4']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute4" id="attribute4" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.attribute4"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute5">{{columns['attribute5']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute5" id="attribute5" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.attribute5"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute6">{{columns['attribute6']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute6" id="attribute6" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.attribute6"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute7">{{columns['attribute7']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute7" id="attribute7" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.attribute7"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute8">{{columns['attribute8']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute8" id="attribute8" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.attribute8"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute9">{{columns['attribute9']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute9" id="attribute9" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.attribute9"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute10">{{columns['attribute10']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute10" id="attribute10" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.attribute10" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute11">{{columns['attribute11']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute11" id="attribute11" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.attribute11" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute12">{{columns['attribute12']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute12" id="attribute12" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.attribute12" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute13">{{columns['attribute13']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute13" id="attribute13" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.attribute13" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute14">{{columns['attribute14']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute14" id="attribute14" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.attribute14" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="attribute15">{{columns['attribute15']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="attribute15" id="attribute15" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.attribute15" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="creationDate">{{columns['creationDate']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="creationDate" id="creationDate" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.creationDate" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="createdBy">{{columns['createdBy']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="createdBy" id="createdBy" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanContTemplate.createdBy"
+                        />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="lastUpdateDate">{{columns['lastUpdateDate']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="lastUpdateDate" id="lastUpdateDate" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.lastUpdateDate" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="lastUpdatedBy">{{columns['lastUpdatedBy']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="lastUpdatedBy" id="lastUpdatedBy" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.lastUpdatedBy" />
+                    </div>
+                </div>
+                <div class="ui-grid-row" class="d-none">
+                    <div class="ui-grid-col-4">
+                        <label for="defaultDays">{{columns['defaultDays']}}</label>
+                    </div>
+                    <div class="ui-grid-col-8">
+                        <input pInputText name="defaultDays" id="defaultDays" required [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="rmanContTemplate.defaultDays" />
+                    </div>
+                </div>
+
+
+            </div>
+        </form>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="submit" class="primary-btn" pButton label="Save" (click)="save()" [disabled]="!contTemplateForm.valid"></button>
+                <button type="button" class="secondary-btn" pButton (click)="cancelEdit()"  label="Cancel"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+
+<div class="modal fade dialogueBox" id="FieldsMandatory" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{'Error'}}</h4>
+            </div>
+            <form class="form-horizontal">
+                <div class="modal-body clearfix">
+                    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+
+                        <p *ngIf="showMsg==11">Please enter Template name</p>
+                        <p *ngIf="showMsg==12">Please enter Apply Type</p>
+                        <p *ngIf="showMsg==13">Please enter Effective Start Date</p>
+
+
+                    </div>
+
+                </div>
+                <div class="modal-footer" style="padding:3px;">
+                    <button class="btn btn-primary pull-right" data-dismiss="modal">OK</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

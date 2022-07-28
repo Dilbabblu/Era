@@ -1,0 +1,100 @@
+<div class="content-section implementation">
+</div>
+
+<div class="card-wrapper waterfall-detail-report">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card-block">
+
+					<p-panel header="Forecast Actual Details Report By Product" [toggleable]="false" (onBeforeToggle)=onBeforeToggle($event)>
+						<p-header>
+							<div class="pull-right icons-list">
+								<a (click)="goToOperationReports()" class="add-column">
+									<em class="fa fa-reply"></em>Back</a>
+								<a (click)="showDialogToSearch()" title="Search">
+									<em class="fa fa-search"></em>
+								</a>
+								<a (click)="reset(dt)" title="Reset">
+									<em class="fa fa-refresh"></em>
+								</a>
+								<a (click)="exportCSVfile()" title="Export" *ngIf="!disableExport">
+									<em class="fa fa-external-link"></em>
+								</a>
+
+							</div>
+						</p-header>
+
+						<div class="x-scroll mb-2">
+							
+							<p-table class="ui-datatable arrangementMgrTbl" [loading]="loading" #dt id="ayaraForecastActualsRep-dt" [value]="ayaraForecastActualRepList"
+							 selectionMode="single" (onRowSelect)="onRowSelect($event)" [lazy]="true" [paginator]="false" [rows]="rowCount" [totalRecords]="totalRecords"
+							 scrollable="true" [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+
+								<ng-template pTemplate="colgroup" let-columns>
+									<colgroup>
+										<col *ngFor="let col of columns">
+									</colgroup>
+								</ng-template>
+
+								<ng-template pTemplate="header" class="arrangementMgrTblHead">
+									<tr>
+										<th style="width:100px" *ngFor="let col of columns" pResizableColumn [ngStyle]="{'display': col.display, 'text-align':col.text}">
+											{{col.header}}
+										</th>
+
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-ayaraForecastActualsRep>
+									<tr [pSelectableRow]="rowData">
+										<td style="width:100px" *ngFor="let col of columns" [ngStyle]="{'display': col.display, 'text-align': col.text}">
+											<span title="{{ayaraForecastActualsRep[col.field]}}">{{isDateField(col.field) ? (ayaraForecastActualsRep[col.field]|date:'MM/dd/yyyy') : (fieldType(ayaraForecastActualsRep[col.field])==
+												'number' ? (ayaraForecastActualsRep[col.field]|number:'1.2-2') : ayaraForecastActualsRep[col.field])}}</span>
+										</td>
+
+
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage">
+									<tr>
+										<td class="no-data">{{noData}}</td>
+									</tr>
+								</ng-template>
+
+
+
+
+
+							</p-table>
+						</div>
+
+						<p-paginator [rows]="9" id="paginator-c" [totalRecords]="totalRecords" (onPageChange)="paginate($event)">
+						</p-paginator>
+
+					</p-panel>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<p-dialog header="Search" width="800" [visible]="displayDialog" [closable]="false" [draggable]="true" showEffect="fade"
+ [modal]="true">
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="selectSpan">Period Type</span>
+					<p-dropdown [options]="rmanLookupsV" name="periodType" id="periodType" [(ngModel)]="periodType" appendTo="body"></p-dropdown>
+				</div>
+			</div>
+		</div>	
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="submit" pButton class="primary-btn" label="Search" (click)="search()"></button>
+			<button type="reset" pButton class="secondary-btn" (click)="reset(dt)" label="Cancel"></button>
+		</div>
+	</p-footer>
+</p-dialog>

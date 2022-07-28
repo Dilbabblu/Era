@@ -1,0 +1,839 @@
+  <div class="content-section implementation">
+  </div>
+   
+              <p-panel header="Arrangement Forecasting" (onBeforeToggle)="onBeforeToggle($event)">
+
+                <p-header>
+                  <div class="pull-right icons-list" *ngIf="collapsed">
+                    <a  (click)="showDialogToAdd()" title="Add"><em class="fa fa-plus-circle"></em></a>
+                    <a  (click)="updateFCSTD(rmanForecastingDetailsList)" title="Save Forecast Info"><em class="fa fa-save"></em></a>
+                    <a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+                    <a  (click)="exportExcel()" title="Export"><em class="fa fa-external-link"></em></a>
+                  </div>
+
+                </p-header>
+                <div class="x-scroll">
+                <p-table class="ui-datatable arrangementMgrTbl" #dt id="forecasting-dt" [value]="rmanForecastingDetailsList" selectionMode="single"
+                (onRowSelect)="onRowSelect($event)" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"
+                 scrollable="true" >
+                      <ng-template pTemplate="header" class="arrangementMgrTblHead">
+                        <tr>
+                          <th><a >{{columns['fcMethodId']}}</a></th>
+                          <th><a >{{columns['arrangementName']}}</a></th>
+                          <th><a >{{columns['amount']}}</a></th>
+                          <th><a >{{columns['level1Name']}}</a></th>
+                          <th><a >{{columns['level2Name']}}</a></th>
+                          <th><a >{{columns['level3Name']}}</a></th>
+                          <th><a >{{columns['level4Name']}}</a></th>
+                          <th><a >{{columns['level5Name']}}</a></th>
+                          <th *ngIf="b1period != null"><a >{{b1period}}</a></th>
+                          <th *ngIf="b2period != null"><a >{{b2period}}</a></th>
+                          <th *ngIf="b3period != null"><a >{{b3period}}</a></th>
+                          <th *ngIf="b4period != null"><a >{{b4period}}</a></th>
+                          <th *ngIf="b5period != null"><a >{{b5period}}</a></th>
+                          <th *ngIf="b6period != null"><a >{{b6period}}</a></th>
+                          <th *ngIf="b7period != null"><a >{{b7period}}</a></th>
+                          <th *ngIf="b8period != null"><a >{{b8period}}</a></th>
+                          <th *ngIf="b9period != null"><a >{{b9period}}</a></th>
+                          <th *ngIf="b10period != null"><a >{{b10period}}</a></th>
+                          <th *ngIf="b11period != null"><a >{{b11period}}</a></th>
+                          <th *ngIf="b12period != null"><a >{{b12period}}</a></th>
+                          <th *ngIf="b13period != null"><a >{{b13period}}</a></th>
+                          <th *ngIf="b14period != null"><a >{{b14period}}</a></th>
+                          <th *ngIf="b15period != null"><a >{{b15period}}</a></th>
+                          <th *ngIf="b16period != null"><a >{{b16period}}</a></th>
+                          <th *ngIf="b17period != null"><a >{{b17period}}</a></th>
+                          <th *ngIf="b18period != null"><a >{{b18period}}</a></th>
+                          <th *ngIf="b19period != null"><a >{{b19period}}</a></th>
+                          <th *ngIf="b20period != null"><a >{{b20period}}</a></th>
+                          <th *ngIf="b21period != null"><a >{{b21period}}</a></th>
+                          <th *ngIf="b22period != null"><a >{{b22period}}</a></th>
+                          <th *ngIf="b23period != null"><a >{{b23period}}</a></th>
+                          <th *ngIf="b24period != null"><a >{{b24period}}</a></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-rowData let-rmanForecasting>
+                        <tr [pSelectableRow]="rowData">
+                          <td title="{{transformRmanFcMethods(rmanForecasting.rmanFcMethods)}}">{{transformRmanFcMethods(rmanForecasting.rmanFcMethods)}}</td>
+                          <td title="{{rmanForecasting.arrangementName}}">{{rmanForecasting.arrangementName}}</td>
+                          
+                          <td title="{{rmanForecasting.amount}}">{{rmanForecasting.amount}}</td>
+                          <td title="{{rmanForecasting.level1Name}}">{{rmanForecasting.level1Name}}</td>
+                          <td title="{{rmanForecasting.level2Name}}">{{rmanForecasting.level2Name}}</td>
+                          <td title="{{rmanForecasting.level3Name}}">{{rmanForecasting.level3Name}}</td>
+                          <td title="{{rmanForecasting.level4Name}}">{{rmanForecasting.level4Name}}</td>
+                          <td title="{{rmanForecasting.level5Name}}">{{rmanForecasting.level5Name}}</td>
+                            
+                          <td title="{{rmanForecasting.bucket1}}" *ngIf="b1period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket1">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket1}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          
+                          
+                          </td>
+                          <td title="{{rmanForecasting.bucket2}}" *ngIf="b2period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket2">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket2}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket3}}" *ngIf="b3period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket3">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket3}}
+                                  </ng-template>
+                              </p-cellEditor>
+                            </td>
+                          <td title="{{rmanForecasting.bucket4}}" *ngIf="b4period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket4">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket4}}
+                                  </ng-template>
+                              </p-cellEditor>
+                            </td>
+                          <td title="{{rmanForecasting.bucket5}}" *ngIf="b5period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket5">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket5}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket6}}" *ngIf="b6period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket6">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket6}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket7}}" *ngIf="b7period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket7">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket7}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket8}}" *ngIf="b8period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket8">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket8}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket9}}" *ngIf="b9period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket9">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket9}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket10}}" *ngIf="b10period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket10">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket10}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket11}}" *ngIf="b11period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket11">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket11}}
+                                  </ng-template>
+                              </p-cellEditor></td>
+                          <td title="{{rmanForecasting.bucket12}}" *ngIf="b12period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket12">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket12}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket13}}" *ngIf="b13period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket13">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket13}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket14}}" *ngIf="b14period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket14">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket14}}
+                                  </ng-template>
+                              </p-cellEditor>
+                            </td>
+                          <td title="{{rmanForecasting.bucket15}}" *ngIf="b15period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket15">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket15}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket16}}" *ngIf="b16period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket16">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket16}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket17}}" *ngIf="b17period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket17">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket17}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket18}}" *ngIf="b18period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket18">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket18}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket19}}" *ngIf="b19period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket19">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket19}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket20}}" *ngIf="b20period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket20">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket20}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket21}}" *ngIf="b21period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket21">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket21}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket22}}" *ngIf="b22period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket22">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket22}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          
+                          <td title="{{rmanForecasting.bucket23}}" *ngIf="b23period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket23">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket23}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          <td title="{{rmanForecasting.bucket24}}" *ngIf="b24period != null" pEditableColumn>
+                              <p-cellEditor class="prospective-editable-cell">
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="rmanForecasting.bucket24">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{rmanForecasting.bucket24}}
+                                  </ng-template>
+                              </p-cellEditor>
+                          </td>
+                          
+                          
+                          </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage" let-columns>
+                          <div class="no-results-data">
+                              <p>{{noData}}</p>
+                          </div>
+                      </ng-template>
+                    </p-table>
+                  </div>
+              </p-panel>
+           
+
+  <p-dialog header="{{(newRmanForecastingDetails)?'Add Forecasting Detail':'Edit Forecasting Detail'}}" width="1000" [(visible)]="displayAddDialog" [draggable]="true"  showEffect="fade" [modal]="true"
+  (onHide)="onHide($event)">
+    <form [formGroup]="forecastingDetailsForm">
+      <div class="ui-g ui-responsive ui-fluid">
+        <div class="ui-g-12">
+          <div class="ui-g-6">
+          <span class="md-inputfield">
+            <span class="selectSpan">Arrangement ID</span>
+            <input pInputText class="textbox" placeholder="Arrangement ID" name="arrangementId" id="arrangementId"  [(ngModel)]="rmanForecastingDetails.arrangementId"  formControlName="arrId"/>
+              <div *ngIf="formErrors.arrId" class="ui-message ui-messages-error ui-corner-all">
+                {{ formErrors.arrId }}
+              </div>
+            </span>
+          </div>
+
+          <div class="ui-g-6 pull-right">
+            <span class="md-inputfield">
+              <span class="selectSpan">Currency</span>
+              <input pInputText class="textbox" placeholder="Currency" name="fcCurrency" id="fcCurrency"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanForecastingDetails.fcCurrency" [disabled]="true" />
+            </span>
+          </div>
+        </div>
+        <div class="ui-g-12">
+
+          <div class="ui-g-6">
+            <span class="selectSpan"> Apply Allocations </span>
+            <p-dropdown [options]="rmanLookupsV" name="applyAllocations" id="applyAllocations"  [(ngModel)]="rmanForecastingDetails.applyAllocations" formControlName="allocation"></p-dropdown>
+            <div *ngIf="formErrors.allocation" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.allocation }}
+            </div>
+          </div>
+
+          <div class="ui-g-6 pull-right">
+            <span class="md-inputfield">
+              <span class="selectSpan">Arrangement Name</span>
+              <input pInputText class="textbox" placeholder="Arrangement Name" name="arrangementName" id="arrangementName" [(ngModel)]="rmanForecastingDetails.arrangementName" [readOnly]="true" formControlName="arrName"/>
+                      <div *ngIf="formErrors.arrName" class="ui-message ui-messages-error ui-corner-all">
+                        {{ formErrors.arrName }}
+                      </div>
+            </span>
+
+          </div>
+        </div>
+
+      <div class="ui-g-12">
+
+          <div class="ui-g-6">
+            <span class="selectSpan"> FC Conversion Type </span>
+            <p-dropdown [options]="rmanFcConversionTypes"  name="fcConversionType" id="fcConversionType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.fcConversionType"></p-dropdown>
+          </div>
+          <div class="ui-g-6  pull-right">
+            <span class="md-inputfield">
+              <span class="selectSpan"> Customer Name </span>
+              <input pInputText class="textbox" placeholder="Customer Name" name="customerName"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanForecastingDetails.customerName" id="customerName" [disabled]="true" />
+            </span>
+          </div>
+        </div>
+
+        <div class="ui-g-12">
+          <div class="ui-g-6">
+            <span class="selectSpan"> FC Bucket ID </span>
+            <p-dropdown [options]="rmanFcBuckets"  [(ngModel)]="rmanForecastingDetails.fcBucketId" name="fcBucketId" id="fcBucketId" formControlName="bucketId"></p-dropdown>
+            <div *ngIf="formErrors.bucketId" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.bucketId }}
+            </div>
+          </div>
+          <div class="ui-g-6 pull-right">
+            <span class="selectSpan"> FC Method ID </span>
+            <p-dropdown [options]="rmanFcMethods" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.fcMethodId" name="fcMethodId" id="fcMethodId"></p-dropdown>
+          </div>
+        </div>
+
+        <div class="ui-g-12">
+        
+          <div class="ui-g-6">
+            <span class="md-inputfield">
+              <span class="selectSpan"> Master Arrangement Id </span>
+              <input pInputText class="textbox" placeholder="Master Arrangement Id" name="masterArrangementId"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanForecastingDetails.masterArrangementId"  id="masterArrangementId" [disabled]="true" />
+            </span>
+          </div>
+
+          <div class="ui-g-6 pull-right">
+            <span class="selectSpan"> FC Level Name </span>
+            <p-dropdown [options]="rmanFcLevel"  [(ngModel)]="rmanForecastingDetails.fcLevelName" name="fcLevelName" id="fcLevelName" formControlName="levelName"></p-dropdown>
+            <div *ngIf="formErrors.levelName" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.levelName }}
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-g-12">
+        
+
+          <div class="ui-g-6">
+            <span class="selectSpan">Start Date</span>
+              <p-calendar showAnim="slideDown" inputStyleClass="textbox" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2030" appendTo="body" dateFormat="yy-mm-dd" placeholder="Select Start Date" [(ngModel)]="rmanForecastingDetails.fcStartDate" name="fcStartDate"  id="fcStartDate" formControlName="startDate" >
+              </p-calendar>
+            <div *ngIf="formErrors.startDate" class="ui-message ui-messages-error ui-corner-all">
+              {{ formErrors.startDate }}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </form>
+
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="submit" class="primary-btn" pButton (click)="showFCD(rmanForecastingDetails)" label="Save" [disabled]="!forecastingDetailsForm.valid"></button>
+        <button type="button" class="secondary-btn" pButton label="Cancel" (click)="displayAddDialog=false"></button>
+        
+      </div>
+    </p-footer>
+  </p-dialog>
+
+  <p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true"  showEffect="fade" [modal]="true">
+    <form (ngSubmit)="search()">
+      <div class="ui-grid ui-grid-responsive ui-fluid">
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4"><label for="arrangementId">{{columns['arrangementId']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="arrangementId" id="arrangementId" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetailsSearch.arrangementId" /></div>
+        </div>
+
+      </div>
+      <footer>
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+          <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+          <button type="submit" pButton icon="fa-check" label="Search"></button>
+        </div>
+      </footer>
+    </form>
+  </p-dialog>
+  <p-dialog header="Edit Arrangement Forecasting" width="800" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+    <form (ngSubmit)="save()">
+      <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanForecastingDetails">
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="arrangementId">{{columns['arrangementId']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="arrangementId" id="arrangementId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.arrangementId" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="arrangementName">{{columns['arrangementName']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="arrangementName" id="arrangementName" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.arrangementName" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="customerName">{{columns['customerName']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="customerName" id="customerName" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.customerName" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="masterArrangementId">{{columns['masterArrangementId']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="masterArrangementId" id="masterArrangementId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.masterArrangementId" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="fcCurrency">{{columns['fcCurrency']}}</label></div>
+          <div class="ui-grid-col-8">
+            <p-dropdown [options]="rmanCurrency" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.fcCurrency" name="fcCurrency" [filter]="true"></p-dropdown>
+          </div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="fcConversionType">{{columns['fcConversionType']}}</label></div>
+          <div class="ui-grid-col-8">
+            <p-dropdown [options]="rmanFcConversionTypes" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.fcConversionType" name="fcConversionType" [filter]="true"></p-dropdown>
+          </div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="fcBucketId">{{columns['fcBucketId']}}</label></div>
+          <div class="ui-grid-col-8">
+            <p-dropdown [options]="rmanFcBuckets" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.fcBucketId" name="fcBucketId" [filter]="true"></p-dropdown>
+          </div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="fcLevelName">{{columns['fcLevelName']}}</label></div>
+          <div class="ui-grid-col-8">
+            <p-dropdown [options]="rmanFcLevel" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.fcLevelName" name="fcLevelName" [filter]="true"></p-dropdown>
+          </div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="applyAllocations">{{columns['applyAllocations']}}</label></div>
+          <div class="ui-grid-col-8">
+            <p-dropdown [options]="rmanLookupsV1" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.applyAllocations" name="applyAllocations" [filter]="true"></p-dropdown>
+          </div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="applyContingencies">{{columns['applyContingencies']}}</label></div>
+          <div class="ui-grid-col-8">
+            <p-dropdown [options]="rmanLookupsV" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.applyContingencies" name="applyContingencies" [filter]="true"></p-dropdown>
+          </div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="fcMethodId">{{columns['fcMethodId']}}</label></div>
+          <div class="ui-grid-col-8">
+            <p-dropdown [options]="rmanFcMethods" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.fcMethodId" name="fcMethodId" [filter]="true"></p-dropdown>
+          </div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level1Name">{{columns['level1Name']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level1Name" id="level1Name" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level1Name" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level1Value">{{columns['level1Value']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level1Value" id="level1Value" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level1Value" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level2Name">{{columns['level2Name']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level2Name" id="level2Name" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level2Name" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level2Value">{{columns['level2Value']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level2Value" id="level2Value" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level2Value" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level3Name">{{columns['level3Name']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level3Name" id="level3Name" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level3Name" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level3Value">{{columns['level3Value']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level3Value" id="level3Value" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level3Value" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level4Name">{{columns['level4Name']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level4Name" id="level4Name" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level4Name" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level4Value">{{columns['level4Value']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level4Value" id="level4Value" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level4Value" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level5Name">{{columns['level5Name']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level5Name" id="level5Name" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level5Name" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="level5Value">{{columns['level5Value']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="level5Value" id="level5Value" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.level5Value" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="type">{{columns['type']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="type" id="type" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.type" /></div>
+        </div>
+        <div class="ui-g-12">
+          <div class="ui-g-5" *ngIf="b1period!=null">
+            <span class="md-inputfield"><input pInputText name="bucket1" id="bucket1"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanForecastingDetails.bucket1"/><label for="bucket1">{{b1period}}</label></span>
+          </div>
+          <div class="ui-g-5 pull-right" *ngIf="b2period!=null">
+            <span class="md-inputfield"><input pInputText name="bucket2" id="bucket2"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanForecastingDetails.bucket2"/><label for="bucket1">{{b2period}}</label></span>
+          </div>
+        </div>
+        <div class="ui-g-12">
+          <div class="ui-g-5" *ngIf="b3period!=null">
+            <span class="md-inputfield"><input pInputText name="bucket3" id="bucket3"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanForecastingDetails.bucket3"/><label for="bucket3">{{b3period}}</label></span>
+          </div>
+          <div class="ui-g-5 pull-right" *ngIf="b4period!=null">
+            <span class="md-inputfield"><input pInputText name="bucket4" id="bucket4"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanForecastingDetails.bucket4"/><label for="bucket4">{{b4period}}</label></span>
+          </div>
+        </div>
+        <div class="ui-g-12">
+          <div class="ui-g-5" *ngIf="b5period!=null">
+            <span class="md-inputfield"><input pInputText name="bucket5" id="bucket5"   [ngModelOptions]="{standalone: true}"  [(ngModel)]="rmanForecastingDetails.bucket5"/><label for="bucket5">{{b5period}}</label></span>
+          </div>
+
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket1Period">{{columns['bucket1Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket1Period" id="bucket1Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket1Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket2Period">{{columns['bucket2Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket2Period" id="bucket2Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket2Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket3Period">{{columns['bucket3Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket3Period" id="bucket3Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket3Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket4Period">{{columns['bucket4Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket4Period" id="bucket4Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket4Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket5Period">{{columns['bucket5Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket5Period" id="bucket5Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket5Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b6period!=null">
+          <div class="ui-grid-col-4"><label for="bucket6">{{b6period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket6" id="bucket6" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket6" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket6Period">{{columns['bucket6Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket6Period" id="bucket6Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket6Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b7period!=null">
+          <div class="ui-grid-col-4"><label for="bucket7">{{b7period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket7" id="bucket7" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket7" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket7Period">{{columns['bucket7Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket7Period" id="bucket7Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket7Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b8period!=null">
+          <div class="ui-grid-col-4"><label for="bucket8">{{b8period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket8" id="bucket8" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket8" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket8Period">{{columns['bucket8Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket8Period" id="bucket8Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket8Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b9period!=null">
+          <div class="ui-grid-col-4"><label for="bucket9">{{b9period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket9" id="bucket9" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket9" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket9Period">{{columns['bucket9Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket9Period" id="bucket9Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket9Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b10period!=null">
+          <div class="ui-grid-col-4"><label for="bucket10">{{b10period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket10" id="bucket10" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket10" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket10Period">{{columns['bucket10Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket10Period" id="bucket10Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket10Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b11period!=null">
+          <div class="ui-grid-col-4"><label for="bucket11">{{b11period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket11" id="bucket11" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket11" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket11Period">{{columns['bucket11Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket11Period" id="bucket11Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket11Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b12period!=null">
+          <div class="ui-grid-col-4"><label for="bucket12">{{b12period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket12" id="bucket12" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket12" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket12Period">{{columns['bucket12Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket12Period" id="bucket12Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket12Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b13period!=null">
+          <div class="ui-grid-col-4"><label for="bucket13">{{b13period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket13" id="bucket13" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket13" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket13Period">{{columns['bucket13Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket13Period" id="bucket13Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket13Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b14period!=null">
+          <div class="ui-grid-col-4"><label for="bucket14">{{b14period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket14" id="bucket14" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket14" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket14Period">{{columns['bucket14Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket14Period" id="bucket14Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket14Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b15period!=null">
+          <div class="ui-grid-col-4"><label for="bucket15">{{b15period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket15" id="bucket15" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket15" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket15Period">{{columns['bucket15Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket15Period" id="bucket15Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket15Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b16period!=null">
+          <div class="ui-grid-col-4"><label for="bucket16">{{b16period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket16" id="bucket16" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket16" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket16Period">{{columns['bucket16Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket16Period" id="bucket16Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket16Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b17period!=null">
+          <div class="ui-grid-col-4"><label for="bucket17">{{b17period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket17" id="bucket17" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket17" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket17Period">{{columns['bucket17Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket17Period" id="bucket17Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket17Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b18period!=null">
+          <div class="ui-grid-col-4"><label for="bucket18">{{b18period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket18" id="bucket18" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket18" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket18Period">{{columns['bucket18Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket18Period" id="bucket18Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket18Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b19period!=null">
+          <div class="ui-grid-col-4"><label for="bucket19">{{b19period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket19" id="bucket19" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket19" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket19Period">{{columns['bucket19Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket19Period" id="bucket19Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket19Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b20period!=null">
+          <div class="ui-grid-col-4"><label for="bucket20">{{b20period!=null}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket20" id="bucket20" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket20" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket20Period">{{columns['bucket20Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket20Period" id="bucket20Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket20Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b21period!=null">
+          <div class="ui-grid-col-4"><label for="bucket21">{{b21period!=null}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket21" id="bucket21" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket21" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket21Period">{{columns['bucket21Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket21Period" id="bucket21Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket21Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b22period!=null">
+          <div class="ui-grid-col-4"><label for="bucket22">{{b24period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket22" id="bucket22" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket22" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket22Period">{{columns['bucket22Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket22Period" id="bucket22Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket22Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b23period!=null">
+          <div class="ui-grid-col-4"><label for="bucket23">{{b23period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket23" id="bucket23" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket23" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket23Period">{{columns['bucket23Period']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket23Period" id="bucket23Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket23Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="b24period!=null">
+          <div class="ui-grid-col-4"><label for="bucket24">{{b24period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket24" id="bucket24" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket24" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucket24Period">{{b24period}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucket24Period" id="bucket24Period" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucket24Period" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="future">{{columns['future']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="future" id="future" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.future" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="expectedStartDate">{{columns['expectedStartDate']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="expectedStartDate" id="expectedStartDate" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.expectedStartDate" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="expectedEndDate">{{columns['expectedEndDate']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="expectedEndDate" id="expectedEndDate" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.expectedEndDate" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="expectedSplit">{{columns['expectedSplit']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="expectedSplit" id="expectedSplit" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.expectedSplit" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="expectedDuration">{{columns['expectedDuration']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="expectedDuration" id="expectedDuration" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.expectedDuration" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bucketType">{{columns['bucketType']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bucketType" id="bucketType" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bucketType" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="remainingAmount">{{columns['remainingAmount']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="remainingAmount" id="remainingAmount" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.remainingAmount" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="remainingFutureFlag">{{columns['remainingFutureFlag']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="remainingFutureFlag" id="remainingFutureFlag" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.remainingFutureFlag" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="productOrgId">{{columns['productOrgId']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="productOrgId" id="productOrgId" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.productOrgId" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="createdDate">{{columns['createdDate']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="createdDate" id="createdDate" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.createdDate" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="createdBy">{{columns['createdBy']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="createdBy" id="createdBy" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.createdBy" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="lastUpdatedDate">{{columns['lastUpdatedDate']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="lastUpdatedDate" id="lastUpdatedDate" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.lastUpdatedDate" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="lastUpdatedBy">{{columns['lastUpdatedBy']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="lastUpdatedBy" id="lastUpdatedBy" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.lastUpdatedBy" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="amount">{{columns['amount']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="amount" id="amount" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.amount" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="bookingDelay">{{columns['bookingDelay']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="bookingDelay" id="bookingDelay" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.bookingDelay" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="shipmentDelay">{{columns['shipmentDelay']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="shipmentDelay" id="shipmentDelay" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.shipmentDelay" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="inoviceDelay">{{columns['inoviceDelay']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="inoviceDelay" id="inoviceDelay" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.inoviceDelay" /></div>
+        </div>
+        <div class="ui-grid-row" *ngIf="false">
+          <div class="ui-grid-col-4"><label for="fcStartDate">{{columns['fcStartDate']}}</label></div>
+          <div class="ui-grid-col-8"><input pInputText name="fcStartDate" id="fcStartDate" required [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanForecastingDetails.fcStartDate" /></div>
+        </div>
+
+      </div>
+    </form>
+
+
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="button" pButton (click)="displayDialog=false" label="Cancel"></button>
+        <button type="submit" pButton label="Save" (click)="save()"></button>
+      </div>
+    </p-footer>
+  </p-dialog>
+

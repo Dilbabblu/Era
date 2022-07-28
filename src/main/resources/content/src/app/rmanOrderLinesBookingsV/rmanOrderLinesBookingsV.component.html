@@ -1,0 +1,297 @@
+<div class="content-section implementation">
+</div>
+
+<p-panel header="Booking Lines"  class="row-active"  class="mb-1em" (onBeforeToggle)=onBeforeToggle($event)>
+	<p-header>	 
+      <span class="masterData"><strong>{{masterData?.so}}</strong></span> 
+      
+      <div class="pull-right icons-list">
+      
+      <a  (click)="onConfiguringColumns($event)" class="add-column"><em class="fa fa-cog"></em>Columns</a>	
+      <a  (click)="getHistory()" title="History"><em class="fa fa-history"></em></a>
+      <a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+      <a  (click)="exportExcel()" title="Export" *ngIf="!disableExport"><em class="fa fa-external-link"></em></a>
+      <div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+        <div class="user-popup">
+          <div class="content overflow">
+            <input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()"/>
+            <label for="selectall">Select All</label>
+            <a class="close" title="Close" (click)="closeConfigureColumns($event)" >&times;</a>
+            <p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+              <ng-template let-col let-index="index" pTemplate="item">
+                <div *ngIf="col.drag">
+                <div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" 
+                 (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+                  <div class="drag">
+                    <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)"/>
+                    <label>{{col.header}}</label>
+                  </div>
+                </div>
+                </div>
+                <div *ngIf="!col.drag">
+                <div class="ui-helper-clearfix">
+                  <div>
+                    <input type="checkbox"  [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"/>
+                    <label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+                  </div>
+                </div>
+                </div>
+              </ng-template>
+              </p-listbox>
+          </div>
+          <div class="pull-right">
+            <a class="configColBtn" (click)="saveColumns()">Save</a>
+            <a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    </p-header>
+    <div class="x-scroll">
+  <p-table class="ui-datatable arrangementMgrTbl" #dt id="rmanOrderLinesBooking-dt" [loading]="loadingOrderLines" [value]="rmanOrderLinesBookingsVList" selectionMode="single" [(selection)]="selectedRmanOrderLinesBookingsV"  [lazy]="true" 
+  (onRowSelect)="onRowSelect($event)" (onLazyLoad)="getRmanOrderLinesBookingsV($event)" [paginator]="showPaginator" [rows]="pageSize" [totalRecords]="totalOrderElements"
+	 scrollable="true"  [columns]="columns" [resizableColumns]="true" columnResizeMode="expand">
+  <ng-template pTemplate="colgroup" let-columns>
+    <colgroup>
+      <col *ngFor="let col of columns">
+    </colgroup>
+  </ng-template>  
+  
+      <ng-template pTemplate="header" class="arrangementMgrTblHead">
+					<tr>
+            <ng-container *ngFor="let col of columns">
+              <th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+              <th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+         </ng-container>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-rowData let-rmanOrderLinesBooking>
+					<tr [pSelectableRow]="rowData">
+            <ng-container *ngFor="let col of columns" >
+              <td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+                {{rowData[col.field]}}
+              </td>
+            
+              <td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+                {{rowData[col.field]}}
+              </td>
+            
+              <td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+                {{rowData[col.field] | date: 'MM/dd/yyyy'}}
+              </td>
+            
+              <td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+                {{rowData[col.field] | round}}
+              </td>
+            </ng-container>
+          
+          </tr>
+        </ng-template>
+       <ng-template pTemplate="emptymessage" let-columns>
+          <div class="no-results-data">
+              <p>{{noData}}</p>
+          </div>
+      </ng-template>
+			</p-table>
+		</div>
+</p-panel>
+
+<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+  <form (ngSubmit)="search()">
+    <div class="ui-grid ui-grid-responsive ui-fluid">
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="so">{{columns['so']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="so" id="so" [(ngModel)]="rmanOrderLinesBookingsVSearch.so" /></div>
+      </div>
+
+    </div>
+    <footer>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+        <button type="submit" pButton icon="fa-check" label="Search"></button>
+      </div>
+    </footer>
+  </form>
+</p-dialog>
+<p-dialog header="RmanOrderLinesBookingsV" width="500" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+  <form (ngSubmit)="save()">
+    <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanOrderLinesBookingsV">
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="arrangementId">{{columns['arrangementId']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="arrangementId" id="arrangementId" required [(ngModel)]="rmanOrderLinesBookingsV.arrangementId" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="rmanLineId">{{columns['rmanLineId']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="rmanLineId" id="rmanLineId" required [(ngModel)]="rmanOrderLinesBookingsV.rmanLineId" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="so">{{columns['so']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="so" id="so" required [(ngModel)]="rmanOrderLinesBookingsV.so" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="ouName">{{columns['ouName']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="ouName" id="ouName" required [(ngModel)]="rmanOrderLinesBookingsV.ouName" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="endCustomer">{{columns['endCustomer']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="endCustomer" id="endCustomer" required [(ngModel)]="rmanOrderLinesBookingsV.endCustomer" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="orderBookedDate">{{columns['orderBookedDate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="orderBookedDate" id="orderBookedDate" required [(ngModel)]="rmanOrderLinesBookingsV.orderBookedDate" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="priceList">{{columns['priceList']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="priceList" id="priceList" required [(ngModel)]="rmanOrderLinesBookingsV.priceList" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="customerPoNum">{{columns['customerPoNum']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="customerPoNum" id="customerPoNum" required [(ngModel)]="rmanOrderLinesBookingsV.customerPoNum" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="bookingCurrency">{{columns['bookingCurrency']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="bookingCurrency" id="bookingCurrency" required [(ngModel)]="rmanOrderLinesBookingsV.bookingCurrency" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="funcCurrencyCode">{{columns['funcCurrencyCode']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="funcCurrencyCode" id="funcCurrencyCode" required [(ngModel)]="rmanOrderLinesBookingsV.funcCurrencyCode" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="productName">{{columns['productName']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="productName" id="productName" required [(ngModel)]="rmanOrderLinesBookingsV.productName" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="listPrice">{{columns['listPrice']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="listPrice" id="listPrice" required [(ngModel)]="rmanOrderLinesBookingsV.listPrice" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="netPrice">{{columns['netPrice']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="netPrice" id="netPrice" required [(ngModel)]="rmanOrderLinesBookingsV.netPrice" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="lineStatus">{{columns['lineStatus']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="lineStatus" id="lineStatus" required [(ngModel)]="rmanOrderLinesBookingsV.lineStatus" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="shipeedDate">{{columns['shipeedDate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="shipeedDate" id="shipeedDate" required [(ngModel)]="rmanOrderLinesBookingsV.shipeedDate" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="accountingRuleName">{{columns['accountingRuleName']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="accountingRuleName" id="accountingRuleName" required [(ngModel)]="rmanOrderLinesBookingsV.accountingRuleName" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="contractStartDate">{{columns['contractStartDate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="contractStartDate" id="contractStartDate" required [(ngModel)]="rmanOrderLinesBookingsV.contractStartDate" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="contractEndDate">{{columns['contractEndDate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="contractEndDate" id="contractEndDate" required [(ngModel)]="rmanOrderLinesBookingsV.contractEndDate" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="elementType">{{columns['elementType']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="elementType" id="elementType" required [(ngModel)]="rmanOrderLinesBookingsV.elementType" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="productCategory">{{columns['productCategory']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="productCategory" id="productCategory" required [(ngModel)]="rmanOrderLinesBookingsV.productCategory" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="productFamily">{{columns['productFamily']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="productFamily" id="productFamily" required [(ngModel)]="rmanOrderLinesBookingsV.productFamily" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="accountingScope">{{columns['accountingScope']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="accountingScope" id="accountingScope" required [(ngModel)]="rmanOrderLinesBookingsV.accountingScope" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="revrecAcctRule">{{columns['revrecAcctRule']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="revrecAcctRule" id="revrecAcctRule" required [(ngModel)]="rmanOrderLinesBookingsV.revrecAcctRule" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="revrecStDate">{{columns['revrecStDate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="revrecStDate" id="revrecStDate" required [(ngModel)]="rmanOrderLinesBookingsV.revrecStDate" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="revrecEndDate">{{columns['revrecEndDate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="revrecEndDate" id="revrecEndDate" required [(ngModel)]="rmanOrderLinesBookingsV.revrecEndDate" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="revrecAcctScope">{{columns['revrecAcctScope']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="revrecAcctScope" id="revrecAcctScope" required [(ngModel)]="rmanOrderLinesBookingsV.revrecAcctScope" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="revrecDelay">{{columns['revrecDelay']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="revrecDelay" id="revrecDelay" required [(ngModel)]="rmanOrderLinesBookingsV.revrecDelay" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="revrecAccount">{{columns['revrecAccount']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="revrecAccount" id="revrecAccount" required [(ngModel)]="rmanOrderLinesBookingsV.revrecAccount" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="orderedQuantity">{{columns['orderedQuantity']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="orderedQuantity" id="orderedQuantity" required [(ngModel)]="rmanOrderLinesBookingsV.orderedQuantity" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="shippedQuantity">{{columns['shippedQuantity']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="shippedQuantity" id="shippedQuantity" required [(ngModel)]="rmanOrderLinesBookingsV.shippedQuantity" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="da">{{columns['da']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="da" id="da" required [(ngModel)]="rmanOrderLinesBookingsV.da" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="bundleFlag">{{columns['bundleFlag']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="bundleFlag" id="bundleFlag" required [(ngModel)]="rmanOrderLinesBookingsV.bundleFlag" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="parentLineId">{{columns['parentLineId']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="parentLineId" id="parentLineId" required [(ngModel)]="rmanOrderLinesBookingsV.parentLineId" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="uom">{{columns['uom']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="uom" id="uom" required [(ngModel)]="rmanOrderLinesBookingsV.uom" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="lineAmount">{{columns['lineAmount']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="lineAmount" id="lineAmount" required [(ngModel)]="rmanOrderLinesBookingsV.lineAmount" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="bookedDate">{{columns['bookedDate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="bookedDate" id="bookedDate" required [(ngModel)]="rmanOrderLinesBookingsV.bookedDate" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="shipDate">{{columns['shipDate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="shipDate" id="shipDate" required [(ngModel)]="rmanOrderLinesBookingsV.shipDate" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="billedDate">{{columns['billedDate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="billedDate" id="billedDate" required [(ngModel)]="rmanOrderLinesBookingsV.billedDate" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="milestone">{{columns['milestone']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="milestone" id="milestone" required [(ngModel)]="rmanOrderLinesBookingsV.milestone" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="pobGrouping">{{columns['pobGrouping']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="pobGrouping" id="pobGrouping" required [(ngModel)]="rmanOrderLinesBookingsV.pobGrouping" /></div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-4"><label for="pobTemplate">{{columns['pobTemplate']}}</label></div>
+        <div class="ui-grid-col-8"><input pInputText name="pobTemplate" id="pobTemplate" required [(ngModel)]="rmanOrderLinesBookingsV.pobTemplate" /></div>
+      </div>
+
+    </div>
+  </form>
+  <footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+      <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+    </div>
+  </footer>
+</p-dialog>
+
+<p-dialog header="History" width="900" [(visible)]="historyDialog" [draggable]="true" showEffect="fade" [modal]="true">
+  <rmanOrdersAuditV-data [sourceLineId]="sourceLineId"></rmanOrdersAuditV-data>
+</p-dialog>
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>

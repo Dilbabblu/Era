@@ -1,0 +1,254 @@
+import {Injectable} from '@angular/core';
+import { HttpClient,HttpHeaders} from '@angular/common/http';
+declare var require:any;
+const appSettings = require('../appsettings');
+
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type':  'application/json',
+  })
+};
+
+
+
+@Injectable()
+export class RmanDealHeadersService {
+
+    constructor(private http: HttpClient) {}
+    
+    getAllRmanDealHeaders(paginationOptions:any,rmanDealHeadersSearchObject:any): Promise<any[]> {
+        ////console.log(paginationOptions);
+
+        let serviceUrl=appSettings.apiUrl+'/rmanDealHeadersSearch?';
+        
+        let searchString='';
+
+        if (rmanDealHeadersSearchObject.dealHeaderId!=undefined && rmanDealHeadersSearchObject.dealHeaderId!="") {
+            searchString=searchString+'dealHeaderId:'+rmanDealHeadersSearchObject.dealHeaderId+',';
+        }
+
+        if (rmanDealHeadersSearchObject.dealNumber!=undefined && rmanDealHeadersSearchObject.dealNumber!="") {
+            searchString=searchString+'dealNumber:'+rmanDealHeadersSearchObject.dealNumber+',';
+        }
+
+        if (rmanDealHeadersSearchObject.dealName!=undefined && rmanDealHeadersSearchObject.dealName!="") {
+            searchString=searchString+'dealName:'+rmanDealHeadersSearchObject.dealName+',';
+        }
+
+        if (rmanDealHeadersSearchObject.dealType!=undefined && rmanDealHeadersSearchObject.dealType!="") {
+            searchString=searchString+'dealType:'+rmanDealHeadersSearchObject.dealType+',';
+        }
+
+        if (rmanDealHeadersSearchObject.legalEntityId!=undefined && rmanDealHeadersSearchObject.legalEntityId!="") {
+            searchString=searchString+'legalEntityId:'+rmanDealHeadersSearchObject.legalEntityId+',';
+        }
+
+        if (rmanDealHeadersSearchObject.dealStatus!=undefined && rmanDealHeadersSearchObject.dealStatus!="") {
+            searchString=searchString+'dealStatus:'+rmanDealHeadersSearchObject.dealStatus+',';
+        }
+
+        if (rmanDealHeadersSearchObject.endCustomerName!=undefined && rmanDealHeadersSearchObject.endCustomerName!="") {
+            searchString=searchString+'endCustomerName:'+rmanDealHeadersSearchObject.endCustomerName+',';
+        }
+
+        if (rmanDealHeadersSearchObject.customerType!=undefined && rmanDealHeadersSearchObject.customerType!="") {
+            searchString=searchString+'customerType:'+rmanDealHeadersSearchObject.customerType+',';
+        }
+
+        if (rmanDealHeadersSearchObject.endCustomerNum!=undefined && rmanDealHeadersSearchObject.endCustomerNum!="") {
+            searchString=searchString+'endCustomerNum:'+rmanDealHeadersSearchObject.endCustomerNum+',';
+        }
+
+        if (rmanDealHeadersSearchObject.billToCustomerName!=undefined && rmanDealHeadersSearchObject.billToCustomerName!="") {
+            searchString=searchString+'billToCustomerName:'+rmanDealHeadersSearchObject.billToCustomerName+',';
+        }
+
+        if (rmanDealHeadersSearchObject.billToCustomerNum!=undefined && rmanDealHeadersSearchObject.billToCustomerNum!="") {
+            searchString=searchString+'billToCustomerNum:'+rmanDealHeadersSearchObject.billToCustomerNum+',';
+        }
+
+        if (rmanDealHeadersSearchObject.billToCountry!=undefined && rmanDealHeadersSearchObject.billToCountry!="") {
+            searchString=searchString+'billToCountry:'+rmanDealHeadersSearchObject.billToCountry+',';
+        }
+
+        if (rmanDealHeadersSearchObject.shipToCountry!=undefined && rmanDealHeadersSearchObject.shipToCountry!="") {
+            searchString=searchString+'shipToCountry:'+rmanDealHeadersSearchObject.shipToCountry+',';
+        }
+
+        if (rmanDealHeadersSearchObject.opportunityName!=undefined && rmanDealHeadersSearchObject.opportunityName!="") {
+            searchString=searchString+'opportunityName:'+rmanDealHeadersSearchObject.opportunityName+',';
+        }
+
+        if (rmanDealHeadersSearchObject.opportunityNum!=undefined && rmanDealHeadersSearchObject.opportunityNum!="") {
+            searchString=searchString+'opportunityNum:'+rmanDealHeadersSearchObject.opportunityNum+',';
+        }
+
+        if (rmanDealHeadersSearchObject.priceList!=undefined && rmanDealHeadersSearchObject.priceList!="") {
+            searchString=searchString+'priceList:'+rmanDealHeadersSearchObject.priceList+',';
+        }
+
+        if (rmanDealHeadersSearchObject.forecastCode!=undefined && rmanDealHeadersSearchObject.forecastCode!="") {
+            searchString=searchString+'forecastCode:'+rmanDealHeadersSearchObject.forecastCode+',';
+        }
+
+        if (rmanDealHeadersSearchObject.agreementCode!=undefined && rmanDealHeadersSearchObject.agreementCode!="") {
+            searchString=searchString+'agreementCode:'+rmanDealHeadersSearchObject.agreementCode+',';
+        }
+
+        if (rmanDealHeadersSearchObject.agreementName!=undefined && rmanDealHeadersSearchObject.agreementName!="") {
+            searchString=searchString+'agreementName:'+rmanDealHeadersSearchObject.agreementName+',';
+        }
+
+        if (rmanDealHeadersSearchObject.agreementNumber!=undefined && rmanDealHeadersSearchObject.agreementNumber!="") {
+            searchString=searchString+'agreementNumber:'+rmanDealHeadersSearchObject.agreementNumber+',';
+        }
+
+        if (rmanDealHeadersSearchObject.dealCurrencyCode!=undefined && rmanDealHeadersSearchObject.dealCurrencyCode!="") {
+            searchString=searchString+'dealCurrencyCode:'+rmanDealHeadersSearchObject.dealCurrencyCode+',';
+        }
+
+        if (rmanDealHeadersSearchObject.conversionRate!=undefined && rmanDealHeadersSearchObject.conversionRate!="") {
+            searchString=searchString+'conversionRate:'+rmanDealHeadersSearchObject.conversionRate+',';
+        }
+
+        if (rmanDealHeadersSearchObject.paymentTerms!=undefined && rmanDealHeadersSearchObject.paymentTerms!="") {
+            searchString=searchString+'paymentTerms:'+rmanDealHeadersSearchObject.paymentTerms+',';
+        }
+
+        if (rmanDealHeadersSearchObject.conversionType!=undefined && rmanDealHeadersSearchObject.conversionType!="") {
+            searchString=searchString+'conversionType:'+rmanDealHeadersSearchObject.conversionType+',';
+        }
+
+        if (rmanDealHeadersSearchObject.conversionDate!=undefined && rmanDealHeadersSearchObject.conversionDate!="") {
+            searchString=searchString+'conversionDate:'+rmanDealHeadersSearchObject.conversionDate+',';
+        }
+
+        if (rmanDealHeadersSearchObject.partnerName!=undefined && rmanDealHeadersSearchObject.partnerName!="") {
+            searchString=searchString+'partnerName:'+rmanDealHeadersSearchObject.partnerName+',';
+        }
+
+        if (rmanDealHeadersSearchObject.salesrepName!=undefined && rmanDealHeadersSearchObject.salesrepName!="") {
+            searchString=searchString+'salesrepName:'+rmanDealHeadersSearchObject.salesrepName+',';
+        }
+
+        if (rmanDealHeadersSearchObject.salesTeritory!=undefined && rmanDealHeadersSearchObject.salesTeritory!="") {
+            searchString=searchString+'salesTeritory:'+rmanDealHeadersSearchObject.salesTeritory+',';
+        }
+
+        if (rmanDealHeadersSearchObject.salesChannel!=undefined && rmanDealHeadersSearchObject.salesChannel!="") {
+            searchString=searchString+'salesChannel:'+rmanDealHeadersSearchObject.salesChannel+',';
+        }
+
+        if (rmanDealHeadersSearchObject.financeContact!=undefined && rmanDealHeadersSearchObject.financeContact!="") {
+            searchString=searchString+'financeContact:'+rmanDealHeadersSearchObject.financeContact+',';
+        }
+
+        if (rmanDealHeadersSearchObject.financeContactId!=undefined && rmanDealHeadersSearchObject.financeContactId!="") {
+            searchString=searchString+'financeContactId:'+rmanDealHeadersSearchObject.financeContactId+',';
+        }
+
+        if (rmanDealHeadersSearchObject.salesOpsName!=undefined && rmanDealHeadersSearchObject.salesOpsName!="") {
+            searchString=searchString+'salesOpsName:'+rmanDealHeadersSearchObject.salesOpsName+',';
+        }
+
+        if (rmanDealHeadersSearchObject.dealArrangementId!=undefined && rmanDealHeadersSearchObject.dealArrangementId!="") {
+            searchString=searchString+'dealArrangementId:'+rmanDealHeadersSearchObject.dealArrangementId+',';
+        }
+
+        if (rmanDealHeadersSearchObject.analystId!=undefined && rmanDealHeadersSearchObject.analystId!="") {
+            searchString=searchString+'analystId:'+rmanDealHeadersSearchObject.analystId+',';
+        }
+
+        if (rmanDealHeadersSearchObject.approverId!=undefined && rmanDealHeadersSearchObject.approverId!="") {
+            searchString=searchString+'approverId:'+rmanDealHeadersSearchObject.approverId+',';
+        }
+
+        if (rmanDealHeadersSearchObject.contractStartDate!=undefined && rmanDealHeadersSearchObject.contractStartDate!="") {
+            searchString=searchString+'contractStartDate:'+rmanDealHeadersSearchObject.contractStartDate+',';
+        }
+
+        if (rmanDealHeadersSearchObject.contractEndDate!=undefined && rmanDealHeadersSearchObject.contractEndDate!="") {
+            searchString=searchString+'contractEndDate:'+rmanDealHeadersSearchObject.contractEndDate+',';
+        }
+
+        if (rmanDealHeadersSearchObject.createdDate!=undefined && rmanDealHeadersSearchObject.createdDate!="") {
+            searchString=searchString+'createdDate:'+rmanDealHeadersSearchObject.createdDate+',';
+        }
+
+        if (rmanDealHeadersSearchObject.createdBy!=undefined && rmanDealHeadersSearchObject.createdBy!="") {
+            searchString=searchString+'createdBy:'+rmanDealHeadersSearchObject.createdBy+',';
+        }
+
+        if (rmanDealHeadersSearchObject.lastUpdatedDate!=undefined && rmanDealHeadersSearchObject.lastUpdatedDate!="") {
+            searchString=searchString+'lastUpdatedDate:'+rmanDealHeadersSearchObject.lastUpdatedDate+',';
+        }
+
+        if (rmanDealHeadersSearchObject.lastUpdatedBy!=undefined && rmanDealHeadersSearchObject.lastUpdatedBy!="") {
+            searchString=searchString+'lastUpdatedBy:'+rmanDealHeadersSearchObject.lastUpdatedBy+',';
+        }
+
+        if (rmanDealHeadersSearchObject.attribute1!=undefined && rmanDealHeadersSearchObject.attribute1!="") {
+            searchString=searchString+'attribute1:'+rmanDealHeadersSearchObject.attribute1+',';
+        }
+
+        if (rmanDealHeadersSearchObject.attribute2!=undefined && rmanDealHeadersSearchObject.attribute2!="") {
+            searchString=searchString+'attribute2:'+rmanDealHeadersSearchObject.attribute2+',';
+        }
+
+        if (rmanDealHeadersSearchObject.attribute3!=undefined && rmanDealHeadersSearchObject.attribute3!="") {
+            searchString=searchString+'attribute3:'+rmanDealHeadersSearchObject.attribute3+',';
+        }
+
+        if (rmanDealHeadersSearchObject.attribute4!=undefined && rmanDealHeadersSearchObject.attribute4!="") {
+            searchString=searchString+'attribute4:'+rmanDealHeadersSearchObject.attribute4+',';
+        }
+
+        if (rmanDealHeadersSearchObject.attribute5!=undefined && rmanDealHeadersSearchObject.attribute5!="") {
+            searchString=searchString+'attribute5:'+rmanDealHeadersSearchObject.attribute5;
+        }
+
+
+        
+        if (searchString == '') {
+            serviceUrl=serviceUrl+'search=%25';
+        }
+        else {
+            serviceUrl=serviceUrl+'search='+searchString;
+        }
+        
+        if (paginationOptions.pageNumber!=undefined && paginationOptions.pageNumber!="" && !isNaN(paginationOptions.pageNumber) && paginationOptions.pageNumber!=0) {
+           serviceUrl=serviceUrl+'&page='+paginationOptions.pageNumber+'&size='+paginationOptions.pageSize;
+        }
+                
+        return this.http.get(serviceUrl).toPromise().then((data:any) => {
+            return data;
+			});
+    }
+    
+    saveRmanDealHeaders(rmanDealHeaders:any): Promise<any[]> {
+        let body = JSON.stringify(rmanDealHeaders);
+        return this.http.post<any[]>(appSettings.apiUrl+'/RMAN_DEAL_HEADERS',body,httpOptions).toPromise().then(data => {
+            return data;
+        });
+    }
+    
+    updateRmanDealHeaders(rmanDealHeaders:any): Promise<any[]> {
+        
+        delete rmanDealHeaders._links;
+        delete rmanDealHeaders.interests;
+        let body = JSON.stringify(rmanDealHeaders);
+        return this.http.put<any[]>(appSettings.apiUrl+'/RMAN_DEAL_HEADERS/'+rmanDealHeaders.dealHeaderId,body,httpOptions).toPromise().then(data => {
+            return data;
+        });
+        
+    }
+    
+    deleteRmanDealHeaders(rmanDealHeaders:any): Promise<any[]> {
+        let deleteUrl=appSettings.apiUrl+'/RMAN_DEAL_HEADERS/'+rmanDealHeaders.dealHeaderId;
+        return this.http.delete(deleteUrl,httpOptions).toPromise().then((data:any) => {
+            return data;
+        });
+    }
+
+}

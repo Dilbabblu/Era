@@ -1,0 +1,383 @@
+import { Component, Input, SimpleChange } from '@angular/core';
+import { RmanContReleaseLines } from './rmanContReleaseLines';
+import { RmanContReleaseLinesService } from './rmanContReleaseLinesservice';
+import { RmanContReleaseLinesLabels } from './rmanContReleaseLinesLabels';
+import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+import { Table } from 'primeng/table';
+
+
+declare var $: any;
+
+@Component({
+  templateUrl: './rmanContReleaseLines.component.html',
+  selector: 'rmanContReleaseLines-data',
+  providers: [RmanContReleaseLinesService]
+})
+
+export class RmanContReleaseLinesComponent {
+
+  displayDialog: boolean;
+
+  displaySearchDialog: boolean;
+
+  rmanContReleaseLines: RmanContReleaseLines = new RmanContReleaseLinesImpl();
+
+  rmanContReleaseLinesSearch: RmanContReleaseLines = new RmanContReleaseLinesImpl();
+
+  isSerached: number = 0;
+
+  //   @Input() arrId:string;
+  @Input() pTransHeaderId: number;
+
+  @Input() pTransLineId: number;
+
+  arrIdK: any;
+
+  selectedRmanContReleaseLines: RmanContReleaseLines;
+
+  newRmanContReleaseLines: boolean;
+
+  rmanContReleaseLinesList: RmanContReleaseLines[];
+
+  cols: any[];
+  columns: ILabels;
+
+  columnOptions: any[];
+
+  paginationOptions = {};
+
+  pages: {};
+
+  private items: MenuItem[];
+
+  datasource: any[];
+  pageSize: number;
+  totalElements: number;
+
+  collapsed: boolean = true;
+
+  //departmentsList:any[];
+  //departments:any[];
+
+
+
+  constructor(private rmanContReleaseLinesService: RmanContReleaseLinesService, private router: Router, private route: ActivatedRoute) {
+
+    // generate list code
+    this.paginationOptions = { 'pageNumber': 0, 'pageSize': '10000' };
+    this.paginationOptions = { 'pageNumber': 0, 'pageSize': '10000' };
+
+
+    // this.route.params.subscribe((params: any) => {
+    //   this.arrIdK = params['id'];
+    // });
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd ) {
+        this.arrIdK = event.url.split('/')[3];
+      }
+    });
+
+
+
+
+  }
+
+  ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
+
+    //console.log(changes['pTransHeaderId'].currentValue);
+    this.pTransHeaderId = changes['pTransHeaderId'].currentValue;
+    this.getAllRmanContReleaseLines();
+  }
+
+  ngOnInit() {
+
+    this.getAllRmanContReleaseLines();
+
+    this.cols = [];
+    let cols: any = [];
+    cols["attribute30"] = "attribute30";
+    cols["invoiceHold"] = "invoiceHold";
+    cols["sourceLineId"] = "sourceLineId";
+    cols["ruleHeaderId"] = "ruleHeaderId";
+    cols["releaseCogs"] = "releaseCogs";
+    cols["applyType"] = "applyType";
+    cols["sourceHeaderId"] = "sourceHeaderId";
+    cols["lastUpdateDate"] = "lastUpdateDate";
+    cols["event"] = "event";
+    cols["ranking"] = "ranking";
+    cols["status"] = "status";
+    cols["attribute29"] = "attribute29";
+    cols["attribute28"] = "attribute28";
+    cols["attribute27"] = "attribute27";
+    cols["avgContAcceptDur"] = "avgContAcceptDur";
+    cols["attribute26"] = "attribute26";
+    cols["attribute3"] = "attribute3";
+    cols["createdBy"] = "createdBy";
+    cols["transHeaderId"] = "transHeaderId";
+    cols["maxDuration"] = "maxDuration";
+    cols["attribute2"] = "attribute2";
+    cols["lastUpdatedBy"] = "lastUpdatedBy";
+    cols["attribute1"] = "attribute1";
+    cols["applicationLevel"] = "applicationLevel";
+    cols["soHeaderId"] = "soHeaderId";
+    cols["revenue"] = "revenue";
+    cols["creationDate"] = "creationDate";
+    cols["attribute9"] = "attribute9";
+    cols["attribute8"] = "attribute8";
+    cols["attribute7"] = "attribute7";
+    cols["productName"] = "productName";
+    cols["attribute6"] = "attribute6";
+    cols["attribute5"] = "attribute5";
+    cols["releaseType"] = "releaseType";
+    cols["attribute4"] = "attribute4";
+    cols["completeFlag"] = "completeFlag";
+    cols["dealNum"] = "dealNum";
+    cols["soLineId"] = "soLineId";
+    cols["releaseRevenue"] = "releaseRevenue";
+    cols["attribute10"] = "attribute10";
+    cols["attribute14"] = "attribute14";
+    cols["attribute13"] = "attribute13";
+    cols["attribute12"] = "attribute12";
+    cols["contEventType"] = "contEventType";
+    cols["application"] = "application";
+    cols["attribute11"] = "attribute11";
+    cols["cogs"] = "cogs";
+    cols["comments"] = "comments";
+    cols["templateId"] = "templateId";
+    cols["deferredRelease"] = "deferredRelease";
+    cols["ruleCategory"] = "ruleCategory";
+    cols["description"] = "description";
+    cols["deferredMethod"] = "deferredMethod";
+    cols["attribute21"] = "attribute21";
+    cols["attribute20"] = "attribute20";
+    cols["transLineId"] = "transLineId";
+    cols["attribute25"] = "attribute25";
+    cols["attribute24"] = "attribute24";
+    cols["attribute23"] = "attribute23";
+    cols["attribute22"] = "attribute22";
+    cols["autoReleaseDays"] = "autoReleaseDays";
+    cols["percentage"] = "percentage";
+    cols["dealArrangementId"] = "dealArrangementId";
+    cols["element"] = "element";
+    cols["poHeaderId"] = "poHeaderId";
+    cols["attribute18"] = "attribute18";
+    cols["attribute17"] = "attribute17";
+    cols["attribute16"] = "attribute16";
+    cols["attribute15"] = "attribute15";
+    cols["rebate"] = "rebate";
+    cols["releaseLineId"] = "releaseLineId";
+    cols["poLineId"] = "poLineId";
+    cols["attribute19"] = "attribute19";
+	cols["customerPayment"] = "customerPayment";
+
+
+    //this.columns=cols;
+    let rmanContReleaseLinesLabels = new RmanContReleaseLinesLabels();
+
+    this.columns = rmanContReleaseLinesLabels.fieldLabels;
+
+    this.columnOptions = [];
+
+    this.cols = [];
+
+    //for (let prop in cols) {
+    for (let prop in this.columns) {
+      this.cols.push({ field: prop, header: this.columns[prop] });
+      this.columnOptions.push({ label: this.columns[prop], value: prop });
+    }
+
+
+  }
+
+  exportExcel() {
+
+    let serviceUrl = this.rmanContReleaseLinesService.getServiceUrl(this.paginationOptions, { 'dealArrangementId': this.arrIdK }, 1);
+    //console.log('serviceUrl', serviceUrl);
+    window.location.href = serviceUrl;
+
+  }
+
+  reset(dt: Table) {
+    dt.reset();
+    this.paginationOptions = {};
+    this.rmanContReleaseLines = new RmanContReleaseLinesImpl();
+    this.getAllRmanContReleaseLines();
+  }
+
+
+  getAllRmanContReleaseLines() {
+    this.rmanContReleaseLines.transHeaderId = this.pTransHeaderId;
+    this.rmanContReleaseLines.transLineId = this.pTransLineId;
+    this.rmanContReleaseLinesService.getAllRmanContReleaseLines(this.paginationOptions, { 'dealArrangementId': this.arrIdK }).then((rmanContReleaseLinesList: any) => {
+      //console.log(rmanContReleaseLinesList);
+      this.datasource = rmanContReleaseLinesList.content;
+      if (this.isSerached == 0) {
+        this.rmanContReleaseLinesList = rmanContReleaseLinesList.content.filter((item: any) => item.transHeaderId == this.pTransHeaderId);
+        //console.log('Initial Cond');
+      } else {
+        //console.log('Second cond');
+        this.rmanContReleaseLinesList = rmanContReleaseLinesList.content;
+        this.isSerached = 0;
+      }
+      this.rmanContReleaseLinesList = rmanContReleaseLinesList.content;
+      this.totalElements = rmanContReleaseLinesList.totalElements;
+      this.pageSize = rmanContReleaseLinesList.size;
+      this.displaySearchDialog = false;
+    });
+  }
+
+
+  getRmanContReleaseLines(event: any) {
+
+    let first: number = event.first;
+    let rows: number = event.rows;
+    let pageNumber: number = first / rows;
+    this.paginationOptions = { 'pageNumber': pageNumber, 'pageSize': this.pageSize, 'sortField': event.sortField, 'sortOrder': event.sortOrder };
+    this.rmanContReleaseLinesService.getAllRmanContReleaseLines(this.paginationOptions, { 'dealArrangementId': this.arrIdK }).then((rmanContReleaseLinesList: any) => {
+      this.datasource = rmanContReleaseLinesList.content;
+      if (this.pTransHeaderId != null) {
+        this.rmanContReleaseLinesList = rmanContReleaseLinesList.content.filter((item: any) => item.transHeaderId == this.pTransHeaderId);
+      } else {
+        this.rmanContReleaseLinesList = rmanContReleaseLinesList.content;
+      }
+      this.rmanContReleaseLinesList = rmanContReleaseLinesList.content;
+      this.totalElements = rmanContReleaseLinesList.totalElements;
+      this.pageSize = rmanContReleaseLinesList.size;
+    });
+
+  }
+
+
+  showDialogToAdd() {
+
+    this.newRmanContReleaseLines = true;
+    this.rmanContReleaseLines = new RmanContReleaseLinesImpl();
+    this.displayDialog = true;
+
+  }
+
+
+  save() {
+
+    if (this.newRmanContReleaseLines) {
+      this.rmanContReleaseLinesSearch.transHeaderId = this.pTransHeaderId;
+      this.rmanContReleaseLinesSearch.transLineId = this.pTransLineId;
+      this.rmanContReleaseLinesService.saveRmanContReleaseLines(this.rmanContReleaseLines).then((response: any) => {
+        this.getAllRmanContReleaseLines();
+      });
+    }
+    else {
+      this.rmanContReleaseLinesService.updateRmanContReleaseLines(this.rmanContReleaseLines).then((response: any) => {
+        this.getAllRmanContReleaseLines();
+      });
+    }
+
+    this.rmanContReleaseLines = new RmanContReleaseLinesImpl();
+
+    this.displayDialog = false;
+
+  }
+
+
+  delete(rmanContReleaseLines: any) {
+    this.rmanContReleaseLines = rmanContReleaseLines;
+
+    //this.rmanContReleaseLines = null;
+    this.displayDialog = false;
+
+    if (window.confirm('Are you sure you want to delete this record?')) {
+      this.rmanContReleaseLinesList.splice(this.findSelectedRmanContReleaseLinesIndex(), 1);
+      this.rmanContReleaseLinesService.deleteRmanContReleaseLines(this.rmanContReleaseLines).then(response => {
+        this.rmanContReleaseLines = new RmanContReleaseLinesImpl();
+        this.getAllRmanContReleaseLines();
+        //this.rmanContReleaseLinesList.splice(this.findSelectedRmanContReleaseLinesIndex(), 1);
+        //this.rmanContReleaseLines = null;
+        // this.displayDialog = false;
+      });
+    }
+
+  }
+
+  editRow(rmanContReleaseLines: any) {
+    this.newRmanContReleaseLines = false;
+    this.rmanContReleaseLines = this.cloneRmanContReleaseLines(rmanContReleaseLines);
+    this.displayDialog = true;
+
+  }
+
+
+  findSelectedRmanContReleaseLinesIndex(): number {
+    return this.rmanContReleaseLinesList.indexOf(this.selectedRmanContReleaseLines);
+  }
+
+  onRowSelect(event: any) {
+
+  }
+
+  cloneRmanContReleaseLines(c: RmanContReleaseLines): RmanContReleaseLines {
+    let rmanContReleaseLines = new RmanContReleaseLinesImpl();
+    for (let prop in c) {
+      rmanContReleaseLines[prop] = c[prop];
+    }
+    return rmanContReleaseLines;
+  }
+
+  hideColumnMenu: boolean = true;
+
+  toggleColumnMenu() {
+    if (this.hideColumnMenu) {
+      this.hideColumnMenu = false;
+    } else {
+      this.hideColumnMenu = true;
+    }
+  }
+
+  showFilter: boolean = false;
+
+  toggleFilterBox() {
+    if (this.showFilter) {
+      this.showFilter = false;
+    } else {
+      this.showFilter = true;
+    }
+  }
+
+  showDialogToSearch() {
+
+    this.rmanContReleaseLinesSearch = new RmanContReleaseLinesImpl();
+
+    if (this.isSerached == 0) {
+      this.rmanContReleaseLinesSearch = new RmanContReleaseLinesImpl();
+    }
+    this.displaySearchDialog = true;
+
+  }
+
+  search() {
+
+    this.isSerached = 1;
+    this.rmanContReleaseLinesSearch.transHeaderId = this.pTransHeaderId;
+    this.rmanContReleaseLinesSearch.transLineId = this.pTransLineId;
+    this.rmanContReleaseLines = this.rmanContReleaseLinesSearch;
+    this.getAllRmanContReleaseLines();
+  }
+
+  onBeforeToggle(evt: any) {
+    //console.log('event test', evt);
+    this.collapsed = evt.collapsed;
+  }
+
+
+
+
+}
+
+
+export class RmanContReleaseLinesImpl implements RmanContReleaseLines {
+  constructor(public attribute30?: any, public invoiceHold?: any, public sourceLineId?: any, public ruleHeaderId?: any, public releaseCogs?: any, public applyType?: any, public sourceHeaderId?: any, public lastUpdateDate?: any, public event?: any, public ranking?: any, public status?: any, public attribute29?: any, public attribute28?: any, public attribute27?: any, public avgContAcceptDur?: any, public attribute26?: any, public attribute3?: any, public createdBy?: any, public transHeaderId?: any, public maxDuration?: any, public attribute2?: any, public lastUpdatedBy?: any, public attribute1?: any, public applicationLevel?: any, public soHeaderId?: any, public revenue?: any, public creationDate?: any, public attribute9?: any, public attribute8?: any, public attribute7?: any, public productName?: any, public attribute6?: any, public attribute5?: any, public releaseType?: any, public attribute4?: any, public completeFlag?: any, public dealNum?: any, public soLineId?: any, public releaseRevenue?: any, public attribute10?: any, public attribute14?: any, public attribute13?: any, public attribute12?: any, public contEventType?: any, public application?: any, public attribute11?: any, public cogs?: any, public comments?: any, public templateId?: any, public deferredRelease?: any, public ruleCategory?: any, public description?: any, public deferredMethod?: any, public attribute21?: any, public attribute20?: any, public transLineId?: any, public attribute25?: any, public attribute24?: any, public attribute23?: any, public attribute22?: any, public autoReleaseDays?: any, public percentage?: any, public dealArrangementId?: any, public element?: any, public poHeaderId?: any, public attribute18?: any, public attribute17?: any, public attribute16?: any, public attribute15?: any, public rebate?: any, public releaseLineId?: any, public poLineId?: any, public attribute19?: any,public customerPayment?: any) { }
+}
+
+interface ILabels {
+  [index: string]: string;
+}

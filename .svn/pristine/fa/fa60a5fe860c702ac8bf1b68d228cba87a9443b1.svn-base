@@ -1,0 +1,528 @@
+<div class="content-section implementation">
+</div>
+
+<p-panel header="Contract Lines" class="row-active" (onBeforeToggle)="onBeforeToggle($event)">
+	<p-header>
+		<span class="masterData">
+			<strong>{{masterData?.dealNumber}}</strong>
+		</span>
+
+		<div class="pull-right icons-list" *ngIf="collapsed">
+			<a (click)="onConfiguringColumns($event)" class="add-column">
+				<em class="fa fa-cog"></em>Columns</a>
+			<a (click)="resetDealDetails(dt)" title="Reset">
+				<em class="fa fa-refresh"></em>
+			</a>
+			<ng-container *ngIf="!disableExport">
+				<a (click)="exportExcel()" title="Export">
+					<em class="fa fa-external-link"></em>
+				</a>
+			</ng-container>
+			<div id="add-column-popup" class="contracts_add_column" *ngIf="!showAddColumns">
+				<div class="user-popup">
+					<div class="content overflow">
+						<input type="checkbox" [checked]="isSelectAllChecked" id="selectall" name="selectall" (click)="onSelectAll()" />
+						<label for="selectall">Select All</label>
+						<a class="close" title="Close" (click)="closeConfigureColumns($event)">&times;</a>
+						<p-listbox [options]="globalCols" [style]="{ width: '100%', height: '100%' }">
+							<ng-template let-col let-index="index" pTemplate="item">
+								<div *ngIf="col.drag">
+									<div class="ui-helper-clearfix" pDraggable="gens" pDroppable="gens" (onDragStart)="onDragStart(index)" (onDrop)="onDrop(index)">
+										<div class="drag">
+											<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" />
+											<label>{{col.header}}</label>
+										</div>
+									</div>
+								</div>
+								<div *ngIf="!col.drag">
+									<div class="ui-helper-clearfix">
+										<div>
+											<input type="checkbox" [checked]="col.showField" [(ngModel)]="col.showField" (change)="selectColumns(col)" [disabled]="!col.drag"
+											/>
+											<label [ngStyle]="{'color': 'grey'}">{{col.header}}</label>
+										</div>
+									</div>
+								</div>
+							</ng-template>
+						</p-listbox>
+
+					</div>
+					<div class="pull-right">
+						<a class="configColBtn" (click)="saveColumns()">Save</a>
+						<a class="configColBtn conf-cancel" (click)="closeConfigureColumns($event)">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</p-header>
+
+
+
+	<div class="x-scroll">
+		<p-table class="ui-datatable arrangementMgrTbl" #dt id="rmanDealDetails-dt" [loading]="loading" [value]="rmanDealDetailsList"
+		 [(selection)]="selectedDeals" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" (onLazyLoad)="getRmanDealDetails($event)"
+		 [lazy]="true" [paginator]="showPaginator" [rows]="pageSize" [totalRecords]="totalElements" [columns]="columns" [resizableColumns]="true"
+		 columnResizeMode="expand" scrollable="true">
+
+			<ng-template pTemplate="colgroup" let-columns>
+				<colgroup>
+					
+					<col *ngFor="let col of columns">
+				</colgroup>
+			</ng-template>
+
+
+			<ng-template pTemplate="header" class="arrangementMgrTblHead">
+				<tr>
+					<ng-container *ngFor="let col of columns">
+						<th *ngIf="col.type=='text' ||col.type=='date' " [ngStyle]="{'display': col.display}" title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+						<th *ngIf="col.type=='number' ||col.type=='round' ||col.type=='link'" class="number" [ngStyle]="{'display': col.display}"
+						 title="{{col.header}}" pResizableColumn>{{col.header}}</th>
+					</ng-container>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-rowData let-rmanDealDetails let-rowIndex="rowIndex">
+				<tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+					<ng-container *ngFor="let col of columns">
+						<div *ngIf="col.innerfields==0; then normal_content"></div>
+						<div *ngIf="col.innerfields==1; then one_sub_field"></div>
+						<div *ngIf="col.innerfields==2; then two_sub_field"></div>
+						<div *ngIf="col.innerfields==3; then three_sub_field"></div>
+						<ng-template #normal_content>
+							<td *ngIf="col.type == 'text'" title="{{rowData[col.field]}}" [ngStyle]="{'display': col.display}">
+								{{rowData[col.field]}}
+							</td>
+
+							<td *ngIf="col.type == 'number'" title="{{rowData[col.field]}}" class="number" [ngStyle]="{'display': col.display}">
+								{{rowData[col.field]}}
+							</td>
+
+							<td *ngIf="col.type == 'date'" title="{{rowData[col.field] | date: 'MM/dd/yyyy'}}" [ngStyle]="{'display': col.display}">
+								{{rowData[col.field] | date: 'MM/dd/yyyy'}}
+							</td>
+
+							<td *ngIf="col.type == 'round'" title="{{rowData[col.field] | round}}" class="number" [ngStyle]="{'display': col.display}">
+								{{rowData[col.field] | round}}
+							</td>
+						</ng-template>
+						<ng-template #one_sub_field>
+							<td title="{{rowData[col.field][col.subfield]}}" [ngStyle]="{'display': col.display}">
+								{{rowData[col.field][col.subfield]}}
+							</td>
+						</ng-template>
+						<ng-template #two_sub_field>
+							<td [ngStyle]="{'display': col.display}">
+								<span *ngIf="rmanDealDetails.acctRevRuleName !== null" title="{{rmanDealDetails.acctRevRuleName}}">{{rmanDealDetails.acctRevRuleName}}</span>
+								<span *ngIf="rmanDealDetails.acctRevRuleName === null" class="red-color" title="No Revenue Template Attached to this product">No Revenue Template Attached to this product</span>
+							</td>
+						</ng-template>
+						<ng-template #three_sub_field>
+							<td [ngStyle]="{'display': col.display}">
+								<span *ngIf="rmanDealDetails.amortRevRuleName !== null"
+								 title="{{rmanDealDetails.amortRevRuleName}}">{{rmanDealDetails.amortRevRuleName}}</span>
+
+							</td>
+						</ng-template>
+
+					</ng-container>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="emptymessage" let-columns>
+				<div class="no-results-data">
+					<p>{{noData}}</p>
+				</div>
+			</ng-template>
+		</p-table>
+	</div>
+</p-panel>
+
+
+
+<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+	<form (ngSubmit)="search()">
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<label for="dealLineId">{{columns['dealLineId']}}</label>
+				</div>
+				<div class="ui-grid-col-8">
+					<input pInputText name="dealLineId" id="dealLineId" [(ngModel)]="rmanDealDetailsSearch.dealLineId" />
+				</div>
+			</div>
+
+		</div>
+		<p-footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="button" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+				<button type="submit" pButton label="Search"></button>
+			</div>
+		</p-footer>
+	</form>
+</p-dialog>
+
+<p-dialog header="{{(newRmanDealDetails)?'Add Contract Line':'Edit Contract Line'}}" width="800" [(visible)]="displayDialog"
+ [draggable]="true" showEffect="fade" [modal]="true">
+	<form [formGroup]="dealDetailsForm">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanDealDetails">
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield">
+						<input pInputText id="dealLineNumber" name="dealLineNumber" [(ngModel)]="rmanDealDetails.dealLineNumber" formControlName="dealLineNumber"
+						/>
+						<div *ngIf="formErrors.dealLineNumber" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.dealLineNumber }}
+						</div>
+						<label for="dealLineNumber">{{columns['dealLineNumber']}}&nbsp;
+							<span class="red-color">*</span>
+						</label>
+					</span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield">
+						<input pInputText id="productName" name="productName" [(ngModel)]="rmanDealDetails.productName" formControlName="productName"
+						/>
+						<div *ngIf="formErrors.productName" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.productName }}
+						</div>
+						<label for="productName">{{columns['productName']}}&nbsp;
+							<span class="red-color">*</span>
+						</label>
+						<a class="icon-search searchinput" (click)="productSearchDialog(productstable)"></a>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield">
+						<input pInputText id="dealType" name="dealType" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealDetails.dealType"
+						/>
+						<label for="dealType">{{columns['dealType']}}&nbsp;
+							<span class="red-color">*</span>
+						</label>
+					</span>
+				</div>
+
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield">
+						<input pInputText id="quantity" name="quantity" [(ngModel)]="rmanDealDetails.quantity" formControlName="quantity" />
+						<div *ngIf="formErrors.quantity" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.quantity }}
+						</div>
+						<label for="quantity">{{columns['quantity']}}&nbsp;
+							<span class="red-color">*</span>
+						</label>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span class="md-inputfield">
+						<input pInputText id="uomCode" name="uomCode" [(ngModel)]="rmanDealDetails.uomCode" formControlName="uomCode" />
+						<div *ngIf="formErrors.uomCode" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.uomCode }}
+						</div>
+						<label for="uomCode">{{columns['uomCode']}}&nbsp;
+							<span class="red-color">*</span>
+						</label>
+					</span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield">
+						<input pInputText id="attribute9" name="attribute9" [(ngModel)]="rmanDealDetails.attribute9" formControlName="attribute9"
+						/>
+						<div *ngIf="formErrors.attribute9" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.attribute9 }}
+						</div>
+						<label for="attribute9">{{columns['attribute9']}}&nbsp;
+							<span class="red-color">*</span>
+						</label>
+					</span>
+				</div>
+			</div>
+
+
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield">
+						<input pInputText id="unitListPrice" name="unitListPrice" [(ngModel)]="rmanDealDetails.unitListPrice" formControlName="unitListPrice"
+						/>
+						<div *ngIf="formErrors.unitListPrice" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.unitListPrice }}
+						</div>
+						<label for="unitListPrice">{{columns['unitListPrice']}}&nbsp;
+							<span class="red-color">*</span>
+						</label>
+					</span>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield">
+						<input pInputText id="unitSellingPrice" name="unitSellingPrice" [(ngModel)]="rmanDealDetails.unitSellingPrice" formControlName="unitSellingPrice"
+						/>
+						<div *ngIf="formErrors.unitSellingPrice" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrors.unitSellingPrice }}
+						</div>
+						<label for="unitSellingPrice">{{columns['unitSellingPrice']}}&nbsp;
+							<span class="red-color">*</span>
+						</label>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span *ngIf="rmanDealDetails.serviceStartDate" class="selectSpan">Start Date</span>
+					<p-calendar showAnim="slideDown" name="serviceStartDate" id="serviceStartDate" [monthNavigator]="true" [yearNavigator]="true"
+					 yearRange="1950:2030" appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealDetails.serviceStartDate"
+					 dateFormat="yy-mm-dd" placeholder="Service Start Date"></p-calendar>
+				</div>
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanDealDetails.serviceEndDate" class="selectSpan">End Date</span>
+					<p-calendar showAnim="slideDown" name="serviceEndDate" id="serviceEndDate" [monthNavigator]="true" [yearNavigator]="true"
+					 yearRange="1950:2030" appendTo="body" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealDetails.serviceEndDate"
+					 dateFormat="yy-mm-dd" placeholder="Service End Date"></p-calendar>
+				</div>
+
+			</div>
+
+
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span class="md-inputfield">
+						<input pInputText id="serviceDurationUom" name="serviceDurationUom" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealDetails.serviceDurationUom"
+						/>
+						<label for="serviceDurationUom">{{columns['serviceDurationUom']}}</label>
+					</span>
+				</div>
+
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield">
+						<input pInputText id="dealLineCost" name="dealLineCost" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealDetails.dealLineCost"
+						/>
+						<label for="dealLineCost">{{columns['dealLineCost']}}</label>
+					</span>
+				</div>
+
+			</div>
+
+
+			<div class="ui-g-12">
+
+				<div class="ui-g-5">
+					<span class="md-inputfield">
+						<input pInputText id="parentLineId" name="parentLineId" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealDetails.parentLineId"
+						/>
+						<label for="parentLineId">{{columns['parentLineId']}}</label>
+					</span>
+				</div>
+
+				<div class="ui-g-5 pull-right">
+					<span *ngIf="rmanDealDetails.bundleFlag" class="selectSpan"> Bundled Flag</span>
+					<p-dropdown [options]="rmanLookupsV1" name="bundleFlag" [(ngModel)]="rmanDealDetails.bundleFlag" [filter]="true" formControlName="bundleFlag"></p-dropdown>
+					<div *ngIf="formErrors.bundleFlag" class="ui-message ui-messages-error ui-corner-all">
+						{{ formErrors.bundleFlag }}
+					</div>
+
+				</div>
+
+
+			</div>
+
+
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton (click)="cancel()" label="Cancel"></button>
+			<button type="submit" pButton label="Save" (click)="save()" [disabled]="!dealDetailsForm.valid"></button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+
+<p-dialog header="Merge Deals" width="800" [draggable]="true" [(visible)]="displayMergeDialog" showEffect="fade" [modal]="true">
+	<form>
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{arrangementColumns['dealArrangementNumber']}}</span>
+						<input pInputText class="textbox" placeholder="{{arrangementColumns['dealArrangementNumber']}}" name="dealArrangementNumber"
+						 id="dealArrangementNumber" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealArrangementsSearch.dealArrangementNumber"
+						/>
+					</span>
+				</div>
+
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">{{arrangementColumns['dealArrangementName']}}</span>
+						<input pInputText class="textbox" placeholder="{{arrangementColumns['dealArrangementName']}}" name="dealArrangementName"
+						 id="dealArrangementName" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDealArrangementsSearch.dealArrangementName"
+						/>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+				<button type="submit" class="primary-btn" pButton label="Search" (click)="searchArrangements()"></button>
+				<button type="button" class="secondary-btn" pButton label="Reset" (click)="resetArrangements()"></button>
+			</div>
+		</div>
+
+		<div>
+			<div class="x-scroll">
+				<p-table class="ui-datatable arrangementMgrTbl" #da [loading]="loading" [value]="rmanDealArrangementsList" selectionMode="single"
+				 [(selection)]="selectedArrangement" (onRowSelect)="onRowArrgSelect($event)" (onLazyLoad)="getRmanDealArrangements($event)"
+				 [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalArrgElements" scrollable="true" scrollHeight="200px">
+					<ng-template pTemplate="header" class="arrangementMgrTblHead">
+						<tr>
+							<th></th>
+							<th>{{arrangementColumns['dealArrangementName']}}</th>
+							<th>{{arrangementColumns['dealArrangementNumber']}}</th>
+
+						</tr>
+					</ng-template>
+					<ng-template pTemplate="body" let-rowData let-rmanDealArrangements>
+						<tr [pSelectableRow]="rowData">
+							<td>
+								<p-tableRadioButton [value]="rowData" name="groupname"></p-tableRadioButton>
+							</td>
+							<td title="{{rmanDealArrangements.dealArrangementName}}">{{rmanDealArrangements.dealArrangementName}}</td>
+							<td title="{{rmanDealArrangements.dealArrangementNumber}}">{{rmanDealArrangements.dealArrangementNumber}}</td>
+						</tr>
+					</ng-template>
+					<ng-template pTemplate="emptymessage" let-columns>
+						<tr *ngIf="!columns">
+							<td class="no-data">{{noData}}</td>
+						</tr>
+					</ng-template>
+				</p-table>
+			</div>
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" class="primary-btn" pButton (click)="getAllRmanMergeDeals(targetDealArrangementId)" label="Submit"></button>
+			<button type="button" class="secondary-btn" pButton (click)="displayMergeDialog=false" label="Cancel"></button>
+
+		</div>
+	</p-footer>
+
+</p-dialog>
+
+
+
+<p-dialog header="Split Deals" width="500" [(visible)]="displaySplitDialog" [draggable]="true" showEffect="fade" [modal]="true">
+	<form [formGroup]="contractLinesSplitForm">
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-6">
+					<span class="md-inputfield">
+						<span class="selectSpan">Revenue Contract Number</span>
+						<input pInputText class="textbox" placeholder="Revenue Contract Number" name="arrgNumber" id="arrgNumber" required [(ngModel)]="arrgNumber"
+						 formControlName="splitArrgNumber" />
+						<div *ngIf="formErrorsSplit.splitArrgNumber" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrorsSplit.splitArrgNumber }}
+						</div>
+					</span>
+				</div>
+				<div class="ui-g-6 pull-right">
+					<span class="md-inputfield">
+						<span class="selectSpan">Revenue Contract Name</span>
+						<input pInputText class="textbox" placeholder="Revenue Contract Name" name="arrgName" id="arrgName" required [(ngModel)]="arrgName"
+						 formControlName="splitArrgName" />
+						<div *ngIf="formErrorsSplit.splitArrgName" class="ui-message ui-messages-error ui-corner-all">
+							{{ formErrorsSplit.splitArrgName }}
+						</div>
+					</span>
+				</div>
+			</div>
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" class="primary-btn" pButton (click)="getAllRmanSplitDeals(arrgNumber,arrgName)" label="Split" [disabled]="!contractLinesSplitForm.valid"></button>
+			<button type="button" class="secondary-btn" pButton (click)="displaySplitDialog=false" label="Cancel"></button>
+
+		</div>
+	</p-footer>
+
+</p-dialog>
+
+
+<p-dialog header="Product Search" width="800" [draggable]="true" [(visible)]="displayItemSearchDialog" showEffect="fade" [modal]="true" (onHide)="cancelProductSearchDialog()">
+	<form class="formClass">
+		<div class="ui-grid ui-grid-responsive ui-fluid">
+			<div class="ui-g-12">
+				<div class="ui-g-5">
+					<span class="md-inputfield">
+						<input pInputText name="productName" id="productName" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanProductsSearch.productName"
+						/>
+						<label for="productName">{{productColumns['productName']}}&nbsp;</label>
+					</span>
+				</div>
+
+				<div class="ui-g-5 pull-right">
+					<span class="md-inputfield">
+						<input pInputText name="productDescription" id="productDescription" [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanProductsSearch.productDescription"
+						/>
+						<label for="productDescription">{{productColumns['productDescription']}}&nbsp;</label>
+					</span>
+				</div>
+			</div>
+
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+				<button type="button" pButton label="Reset" (click)="resetProducts()"></button>
+				<button type="submit" pButton label="Search" (click)="searchProduct()"></button>
+			</div>
+
+
+		</div>
+		<div class="row-active">
+			<p-table class="ui-datatable" [value]="rmanProductsList" selectionMode="single" [(selection)]="selectedProduct" (onRowSelect)="onRowItemSelect($event)"
+			 #productstable (onLazyLoad)="getRmanProducts($event)" [lazy]="true" [paginator]="true" [rows]="itemPageSize" [totalRecords]="itemTotalElements"
+			 scrollable="true" scrollHeight="200px">
+				<ng-template pTemplate="header">
+					<tr>
+						<th>{{productColumns['productName']}}</th>
+						<th>{{productColumns['productDescription']}}</th>
+						<th>{{productColumns['productId']}}</th>
+						<th>{{productColumns['allowRevrecWoInvoice']}}</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-rowData let-rmanProduct>
+					<tr [pSelectableRow]="rowData">
+						<td title="{{rmanProduct.productName}}">{{rmanProduct.productName}}</td>
+						<td title="{{rmanProduct.productDescription}}">{{rmanProduct.productDescription}}</td>
+
+						<td title="{{rmanProduct.productId}}">{{rmanProduct.productId}}</td>
+						<td title="{{rmanProduct.allowRevrecWoInvoice}}">{{rmanProduct.allowRevrecWoInvoice}}</td>
+
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="emptymessage" let-columns>
+					<tr *ngIf="!columns">
+						<td class="no-data">{{noData}}</td>
+					</tr>
+				</ng-template>
+			</p-table>
+
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" pButton (click)="cancelProductSearchDialog()" label="Cancel"></button>
+			<button type="button" pButton [disabled]="!(selectedProduct | keyvalue)?.length" (click)="populate()" label="Ok"></button>
+		</div>
+	</p-footer>
+
+</p-dialog>

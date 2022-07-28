@@ -1,0 +1,120 @@
+
+	<div class="content-section implementation">
+	</div>
+
+	
+				<p-panel header="Gross Margin" (onBeforeToggle)=onBeforeToggle($event)>
+					<p-header>
+						<div class="pull-right icons-list" *ngIf="collapsed">
+							<a  (click)="reset(dt)" title="Reset"><em class="fa fa-refresh"></em></a>
+							<a  (click)="exportExcel()" title="Export"><em class="fa fa-external-link"></em></a>
+
+						</div>
+					</p-header>
+					<div class="x-scroll">
+					<p-table class="ui-datatable arrangementMgrTbl" #dt id="rmanDealgmAsv-dt" [loading]="loading" [value]="rmanDealGmAsvList" selectionMode="single"   (onRowSelect)="onRowSelect($event)"
+					(onLazyLoad)="getRmanDealGmAsv($event)" [lazy]="true" [paginator]="true" [rows]="pageSize" [totalRecords]="totalElements"
+					 scrollable="true" >
+					<ng-template pTemplate="header" class="arrangementMgrTblHead">
+						<tr>
+							<th class="text-right"><span><a >{{columns['arrgLineNumber']}}</a></span></th>
+							<th><a >{{columns['sku']}}</a></th>
+							<th class="text-right"><span><a >{{columns['shippedQty']}}</a></span></th>
+							<th class="text-right"><span><a >{{columns['shippedAllocation']}}</a></span></th>
+							<th class="text-right"><span><a >{{columns['lineShipmentAmount']}}</a></span></th>
+							<th class="text-right"><span><a >{{columns['lineShipmentCost']}}</a></span></th>
+							<th class="text-right"><span><a >{{columns['shipmentGrossMargin']}}</a></span></th>
+					</tr>
+					</ng-template>
+					<ng-template pTemplate="body" let-rowData let-rmanDealGmAsv>
+						<tr [pSelectableRow]="rowData">
+							<td title="{{rmanDealGmAsv.arrgLineNumber}}" class="number">{{rmanDealGmAsv.arrgLineNumber}}</td>
+							<td title="{{rmanDealGmAsv.sku}}">{{rmanDealGmAsv.sku}}</td>
+							<td title="{{rmanDealGmAsv.shippedQty}}" class="number">{{rmanDealGmAsv.shippedQty}}</td>
+							<td title="{{rmanDealGmAsv.shippedAllocation | number:'1.2-2'}}" class="number">{{rmanDealGmAsv.shippedAllocation | number:'1.2-2'}}</td>
+							<td title="{{rmanDealGmAsv.lineShipmentAmount | number:'1.2-2'}}" class="number">{{rmanDealGmAsv.lineShipmentAmount | number:'1.2-2'}}</td>
+							<td title="{{rmanDealGmAsv.lineShipmentCost | number:'1.2-2'}}" class="number">{{rmanDealGmAsv.lineShipmentCost | number:'1.2-2'}}</td>
+							<td title="{{rmanDealGmAsv.shipmentGrossMargin | number:'1.2-2'}}" class="number">{{rmanDealGmAsv.shipmentGrossMargin | number:'1.2-2'}}</td>
+							
+					</tr>
+					</ng-template>
+					<ng-template pTemplate="emptymessage" let-columns>
+							<div class="no-results-data">
+									<p>{{noData}}</p>
+							</div>
+					</ng-template>
+					</p-table>
+				</div>
+				</p-panel>
+		
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="sno">{{columns['sno']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="sno" id="sno" [(ngModel)]="rmanDealGmAsvSearch.sno" /></div>
+				</div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+					<button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+					<button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanDealGmAsv" width="500" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+		<form (ngSubmit)="save()">
+			<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanDealGmAsv">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="sno">{{columns['sno']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="sno" id="sno" required [(ngModel)]="rmanDealGmAsv.sno" /></div>
+				</div>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="arrangementId">{{columns['arrangementId']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="arrangementId" id="arrangementId" required [(ngModel)]="rmanDealGmAsv.arrangementId" /></div>
+				</div>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="arrangementName">{{columns['arrangementName']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="arrangementName" id="arrangementName" required [(ngModel)]="rmanDealGmAsv.arrangementName" /></div>
+				</div>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="sku">{{columns['sku']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="sku" id="sku" required [(ngModel)]="rmanDealGmAsv.sku" /></div>
+				</div>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="elementType">{{columns['elementType']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="elementType" id="elementType" required [(ngModel)]="rmanDealGmAsv.elementType" /></div>
+				</div>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="qty">{{columns['qty']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="qty" id="qty" required [(ngModel)]="rmanDealGmAsv.qty" /></div>
+				</div>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="netPrice">{{columns['netPrice']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="netPrice" id="netPrice" required [(ngModel)]="rmanDealGmAsv.netPrice" /></div>
+				</div>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="totalExpectedBookings">{{columns['totalExpectedBookings']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="totalExpectedBookings" id="totalExpectedBookings" required [(ngModel)]="rmanDealGmAsv.totalExpectedBookings" /></div>
+				</div>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="lineCost">{{columns['lineCost']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="lineCost" id="lineCost" required [(ngModel)]="rmanDealGmAsv.lineCost" /></div>
+				</div>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"><label for="grossMargin">{{columns['grossMargin']}}</label></div>
+					<div class="ui-grid-col-8"><input pInputText name="grossMargin" id="grossMargin" required [(ngModel)]="rmanDealGmAsv.grossMargin" /></div>
+				</div>
+
+			</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+				<button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+				<button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>
+

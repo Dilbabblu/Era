@@ -1,0 +1,109 @@
+<div class="ContentSideSections Implementation">
+<div class="ui-datatable ui-widget ui-datatable-reflow">
+<div class="ui-datatable-header ui-widget-header">
+<header>RmanEntityParametersV</header>
+</div>
+</div>
+
+	<p-menubar [model]="items"></p-menubar>
+	<div class="ui-widget-header ui-helper-clearfix" [hidden]='!showFilter'  style="padding:4px 10px;border-bottom: 0 none">
+    <em class="fa fa-search" style="float:left;margin:4px 4px 0 0"></em>
+		<input #gb type="text" pInputText size="50" style="float:left" placeholder="Global Filter">
+	</div>
+
+	
+	<p-dialog header="Search" width="auto" [(visible)]="displaySearchDialog" [draggable]="true" showEffect="fade" [modal]="true">
+		<form (ngSubmit)="search()">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+                                                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="entityName">{{columns['entityName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText name="entityName"  id="entityName" [(ngModel)]="rmanEntityParametersVSearch.entityName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+                         <div class="ui-grid-col-4"><label for="entityCategory">{{columns['entityCategory']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText name="entityCategory"  id="entityCategory" [(ngModel)]="rmanEntityParametersVSearch.entityCategory" /></div>
+                    </div>
+
+			</div>
+			<footer>
+				<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-close" (click)="displaySearchDialog=false" label="Cancel"></button>
+                    <button type="submit" pButton icon="fa-check" label="Search"></button>
+				</div>
+			</footer>
+		</form>
+	</p-dialog>
+	<p-dialog header="RmanEntityParametersV" width="500" [draggable]="true" [(visible)]="displayDialog"  showEffect="fade" [modal]="true">
+	<form (ngSubmit)="save()">
+		<div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="rmanEntityParametersV">
+                                          <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="entityId">{{columns['entityId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="entityId"  id="entityId" required [(ngModel)]="rmanEntityParametersV.entityId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="entityName">{{columns['entityName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="entityName"  id="entityName" required [(ngModel)]="rmanEntityParametersV.entityName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="entityCategory">{{columns['entityCategory']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="entityCategory"  id="entityCategory" required [(ngModel)]="rmanEntityParametersV.entityCategory" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="entityDescription">{{columns['entityDescription']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="entityDescription"  id="entityDescription" required [(ngModel)]="rmanEntityParametersV.entityDescription" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="tableName">{{columns['tableName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="tableName"  id="tableName" required [(ngModel)]="rmanEntityParametersV.tableName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="startDateActive">{{columns['startDateActive']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="startDateActive"  id="startDateActive" required [(ngModel)]="rmanEntityParametersV.startDateActive" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="endDateActive">{{columns['endDateActive']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="endDateActive"  id="endDateActive" required [(ngModel)]="rmanEntityParametersV.endDateActive" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="entityParameterId">{{columns['entityParameterId']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="entityParameterId"  id="entityParameterId" required [(ngModel)]="rmanEntityParametersV.entityParameterId" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="parameterName">{{columns['parameterName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="parameterName"  id="parameterName" required [(ngModel)]="rmanEntityParametersV.parameterName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="parameterDescription">{{columns['parameterDescription']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="parameterDescription"  id="parameterDescription" required [(ngModel)]="rmanEntityParametersV.parameterDescription" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="columnName">{{columns['columnName']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="columnName"  id="columnName" required [(ngModel)]="rmanEntityParametersV.columnName" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="columnType">{{columns['columnType']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="columnType"  id="columnType" required [(ngModel)]="rmanEntityParametersV.columnType" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="columnSize">{{columns['columnSize']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="columnSize"  id="columnSize" required [(ngModel)]="rmanEntityParametersV.columnSize" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="columnSequence">{{columns['columnSequence']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="columnSequence"  id="columnSequence" required [(ngModel)]="rmanEntityParametersV.columnSequence" /></div>
+                    </div>
+                    <div class="ui-grid-row">
+     <div class="ui-grid-col-4"><label for="enabledFlag">{{columns['enabledFlag']}}</label></div>
+                         <div class="ui-grid-col-8"><input pInputText  name="enabledFlag"  id="enabledFlag" required [(ngModel)]="rmanEntityParametersV.enabledFlag" /></div>
+                    </div>
+
+		</div>
+		</form>
+		<footer>
+			<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <button type="button" pButton icon="fa-close" (click)="displayDialog=false" label="Cancel"></button>
+                <button type="submit" pButton icon="fa-check" label="Save" (click)="save()"></button>
+			</div>
+		</footer>
+	</p-dialog>
+</div>

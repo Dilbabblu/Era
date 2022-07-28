@@ -1,0 +1,152 @@
+<div class="ContentSideSections Implementation">
+
+     <p-panel header="DZS Account Analysis Report" [toggleable]="true" (onBeforeToggle)=onBeforeToggle($event)>
+
+
+          <p-header>
+               <div class="pull-right" *ngIf="collapsed">
+                    <a  (click)="showDialogToSearch()" class="icon-search" title="Search"></a>
+                    <a  (click)="reset(dt)" class="icon-reset" title="Reset"></a>
+                    <a  (click)="exportExcel()" class="icon-export" title="Export"></a>
+               </div>
+          </p-header>
+          <p-table class="ui-datatable" #dt [loading]="loading"  [value]="rmanDzsGlAccountingVList" selectionMode="single"
+                 (onRowSelect)="onRowSelect($event)" scrollable="true"
+                [paginator]="true" [lazy]="true" [rows]="pageSize" [totalRecords]="totalElements"
+               (onLazyLoad)="getRmanDzsGlAccountingV($event)" >
+               <ng-template pTemplate="header">
+                    <tr>
+                         <th style="width: 150px">{{columns['note']}}</th>
+                         <th style="width: 130px">{{columns['contName']}}</th>
+                         <th style="width: 120px">{{columns['elementType']}}</th>
+                         <th style="width: 100px">{{columns['cust']}}</th>
+                         <th style="width: 150px">{{columns['customer']}}</th>
+                         <th style="width: 120px">{{columns['po']}}</th>
+                         <th style="width: 100px">{{columns['so']}}</th>
+                         <th style="width: 100px">{{columns['sourceLineId']}}</th>
+                         <th style="width: 100px">{{columns['soLine']}}</th>
+                         <th style="width: 130px">{{columns['productName']}}</th>
+                         <th style="width: 100px">{{columns['productLine']}}</th>
+                         <th style="width: 100px">{{columns['division']}}</th>
+                         <th style="width: 100px">{{columns['invoice']}}</th>
+                         <th style="width: 100px;text-align:center;">{{columns['deliveredDate']}}</th>
+                         <th style="width: 100px">{{columns['dealArrangementNumber']}}</th>
+                         <th style="width: 100px">{{columns['dealLineNumber']}}</th>
+                         <th style="width: 100px">{{columns['dealArrangementName']}}</th>
+                         <th style="width: 100px">{{columns['accountClass']}}</th>
+                         <th style="width: 100px"> {{columns['lineStatus']}}</th>
+                         <th style="width: 100px;text-align:center;"> {{columns['glDate']}}</th>
+                         <th style="width: 100px"> {{columns['periodName']}}</th>
+                         <th style="width: 100px;text-align:center">{{columns['drCr']}}</th>
+                         <th style="width: 150px;"> {{columns['account']}}</th>
+                         <th style="width: 150px;">{{columns['accountDescription']}}</th>
+                         <th style="width: 100px;text-align:center"> {{columns['tcur']}}</th>
+                         <th style="width: 100px;text-align:center"> {{columns['fcur']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['amountTc']}}</th>
+                         <th style="width: 100px;text-align:right">{{columns['amountFc']}}</th>
+                         <th style="width: 100px;text-align:center"> {{columns['postedFlag']}}</th>
+                         <th style="width: 100px;text-align:left"> {{columns['entryType']}}</th>
+                    </tr>
+               </ng-template>
+               <ng-template pTemplate="body" let-rowData let-revmantra>
+                    <tr [pSelectableRow]="rowData">
+                         <td style="width: 150px" title="{{revmantra.note}}">{{revmantra.note}}</td>
+                         <td style="width: 130px" title="{{revmantra.contName}}">{{revmantra.contName}}</td>
+                         <td style="width: 120px" title="{{revmantra.elementType}}">{{revmantra.elementType}}</td>
+                         <td style="width: 100px" title="{{revmantra.cust}}">{{revmantra.cust}}</td>
+                         <td style="width: 150px" title="{{revmantra.customer}}">{{revmantra.customer}}</td>
+                         <td style="width: 120px" title="{{revmantra.po}}">{{revmantra.po}}</td>
+                         <td style="width: 100px" title="{{revmantra.so}}">{{revmantra.so}}</td>
+                         <td style="width: 100px" title="{{revmantra.sourceLineId}}">{{revmantra.sourceLineId}}</td>
+                         <td style="width: 100px" title="{{revmantra.soLine}}">{{revmantra.soLine}}</td>
+                         <td style="width: 130px" title="{{revmantra.productName}}">{{revmantra.productName}}</td>
+                         <td style="width: 100px" title="{{revmantra.productLine}}">{{revmantra.productLine}}</td>
+                         <td style="width: 100px" title="{{revmantra.division}}">{{revmantra.division}}</td>
+                         <td style="width: 100px" title="{{revmantra.invoice}}">{{revmantra.invoice}}</td>
+                         <td style="width: 100px;text-align:center;" title="{{revmantra.deliveredDate | date: 'MM/dd/yyyy'}}">{{revmantra.deliveredDate| date: 'MM/dd/yyyy'}}</td>
+                         <td style="width: 100px" title="{{revmantra.dealArrangementNumber}}">{{revmantra.dealArrangementNumber}}</td>
+                         <td style="width: 100px" title="{{revmantra.dealLineNumber}}">{{revmantra.dealLineNumber}}</td>
+                         <td style="width: 100px" title="{{revmantra.dealArrangementName}}">{{revmantra.dealArrangementName}}</td>
+                         <td style="width: 100px" title="{{revmantra.accountClass}}">{{revmantra.accountClass}}</td>
+                         <td style="width: 100px" title="{{revmantra.lineStatus}}">{{revmantra.lineStatus}}</td>
+                         <td style="width: 100px;text-align:center;" title="{{revmantra.glDate | date: 'MM/dd/yyyy'}}">{{revmantra.glDate | date: 'MM/dd/yyyy'}}</td>
+                         <td style="width: 100px" title="{{revmantra.periodName}}">{{revmantra.periodName}}</td>
+                         <td style="width: 100px;text-align:center" title="{{revmantra.drCr}}">{{revmantra.drCr}}</td>
+                         <td style="width: 150px;" title=" {{revmantra.account}}">{{revmantra.account}}</td>
+                         <td style="width: 150px;" title=" {{revmantra.accountDescription}}">{{revmantra.accountDescription}}</td>
+                         <td style="width: 100px;text-align:center" title="{{revmantra.tcur}}">{{revmantra.tcur}}</td>
+						 <td style="width: 100px;text-align:center" title="{{revmantra.fcur}}">{{revmantra.fcur}}</td>
+                         <td style="width: 100px;text-align:right" title="{{rowData.amountTc | round}}">{{rowData.amountTc | round}}</td>
+                         <td style="width: 100px;text-align:right" title="{{rowData.amountFc | round}}">{{rowData.amountFc | round}}</td>
+                         <td style="width: 100px;text-align:center" title="{{revmantra.postedFlag}}">{{revmantra.postedFlag}}</td>
+                         <td style="width: 100px;text-align:left" title="{{revmantra.entryType}}">{{revmantra.entryType}}</td>
+                    </tr>
+               </ng-template>
+
+               <ng-template pTemplate="emptymessage" let-columns>
+                    <tr *ngIf="!columns">
+                         <td class="no-data">{{noData}}</td>
+                    </tr>
+               </ng-template>
+          </p-table>
+
+     </p-panel>
+     <p-dialog header="Search" width="800" [draggable]="true" [(visible)]="displaySearchDialog"  showEffect="fade"
+          [modal]="true">
+          <form (ngSubmit)="search()">
+               <div class="ui-grid ui-grid-responsive ui-fluid">
+                    <div class="ui-g-12">
+                         <div class="ui-g-5">
+                              <span class="md-inputfield">
+                                   <input pInputText name="from" id="from" [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanDzsGlAccountingVSearch.fromArrgId" />
+                                   <label for="from">Arrangement Number From</label>
+                              </span>
+                         </div>
+                         <div class="ui-g-5 pull-right">
+                              <span class="md-inputfield">
+                                   <input pInputText name="to" id="to" [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanDzsGlAccountingVSearch.toArrgId" />
+                                   <label for="to">Arrangement Number To</label>
+                              </span>
+                         </div>
+                    </div>
+                    <div class="ui-g-12">
+                         <div class="ui-g-5">
+                              <span *ngIf="rmanDzsGlAccountingVSearch.fromPeriod" class="selectSpan">GL Period From</span>
+                              <p-calendar showAnim="slideDown" name="fromPeriod" id="fromPeriod" [monthNavigator]="true"
+                                   [yearNavigator]="true" yearRange="1950:2030" appendTo="body"
+                                   [ngModelOptions]="{standalone: true}"
+                                   [(ngModel)]="rmanDzsGlAccountingVSearch.fromPeriod" dateFormat="yy-mm-dd"
+                                   placeholder="From Period"></p-calendar>
+                         </div>
+
+                         <div class="ui-g-5 pull-right">
+                              <span *ngIf="rmanDzsGlAccountingVSearch.toPeriod" class="selectSpan">GL Period To</span>
+                              <p-calendar showAnim="slideDown" name="toPeriod" id="toPeriod" [monthNavigator]="true"
+                                   [yearNavigator]="true" yearRange="1950:2030" appendTo="body"
+                                   [ngModelOptions]="{standalone: true}" [(ngModel)]="rmanDzsGlAccountingVSearch.toPeriod"
+                                   dateFormat="yy-mm-dd" placeholder="To Period"></p-calendar>
+                         </div>
+
+                    </div>
+                    <div class="ui-g-12">
+                         <div class="ui-g-5">
+                              <span class="md-inputfield">
+                                   <input pInputText name="account" id="account" [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="rmanDzsGlAccountingVSearch.account" />
+                                   <label for="from">GL Account</label>
+                              </span>
+                         </div>
+                    </div>
+
+               </div>
+               <p-footer>
+                    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix pull-right">
+                         <button type="button" pButton (click)="displaySearchDialog=false" label="Cancel"></button>
+                         <button type="button" pButton (click)="search()" label="Search"></button>
+                    </div>
+               </p-footer>
+          </form>
+     </p-dialog>
+</div>

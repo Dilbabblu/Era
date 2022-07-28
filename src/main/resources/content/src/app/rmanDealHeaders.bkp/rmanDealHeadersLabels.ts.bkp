@@ -1,0 +1,61 @@
+interface ILabels {
+         [index: string]: string;
+}
+
+export class RmanDealHeadersLabels {
+
+        fieldLabels: ILabels;
+
+    constructor() {
+
+    this.fieldLabels = {};
+
+        this.fieldLabels["endCustomerName"] = "End Customer Name";
+        this.fieldLabels["financeContactId"] = "Finance Contact ID";
+        this.fieldLabels["createdDate"] = "Created Date";
+        this.fieldLabels["priceList"] = "Price List";
+        this.fieldLabels["analystId"] = "Analyst ID";
+        this.fieldLabels["customerType"] = "Customer Type";
+        this.fieldLabels["partnerName"] = "Partner Name";
+        this.fieldLabels["billToCustomerNum"] = "Bill To Customer Num";
+        this.fieldLabels["dealType"] = "Deal Type";
+        this.fieldLabels["salesChannel"] = "Sales Channel";
+        this.fieldLabels["salesTeritory"] = "Sales Territory";
+        this.fieldLabels["billToCountry"] = "Bill To Country";
+        this.fieldLabels["opportunityNum"] = "Opportunity Num";
+        this.fieldLabels["dealCurrencyCode"] = "Deal Currency Code";
+        this.fieldLabels["approverId"] = "Approver ID";
+        this.fieldLabels["conversionType"] = "Conversion Type";
+        this.fieldLabels["financeContact"] = "Finance Contact";
+        this.fieldLabels["paymentTerms"] = "Payment Terms";
+        this.fieldLabels["opportunityName"] = "Opportunity Name";
+        this.fieldLabels["endCustomerNum"] = "End Customer Name";
+        this.fieldLabels["dealNumber"] = "Deal Number";
+        this.fieldLabels["billToCustomerName"] = "Bill To Customer Name";
+        this.fieldLabels["dealName"] = "Deal Name";
+        this.fieldLabels["agreementName"] = "Agreement Name";
+        this.fieldLabels["createdBy"] = "Created By";
+        this.fieldLabels["attribute3"] = "Attribute3";
+        this.fieldLabels["lastUpdatedBy"] = "Last Updated By";
+        this.fieldLabels["attribute2"] = "Attribute2";
+        this.fieldLabels["attribute1"] = "Attribute1";
+        this.fieldLabels["legalEntityId"] = "Legal Entiy ID";
+        this.fieldLabels["conversionRate"] = "Conversion Rate";
+        this.fieldLabels["dealHeaderId"] = "Deal Header ID";
+        this.fieldLabels["dealArrangementId"] = "Deal Arrangement ID";
+        this.fieldLabels["attribute5"] = "Attribute5";
+        this.fieldLabels["forecastCode"] = "Forecast Code";
+        this.fieldLabels["attribute4"] = "Attribute4";
+        this.fieldLabels["dealStatus"] = "Deal Status";
+        this.fieldLabels["agreementNumber"] = "Agreement Number";
+        this.fieldLabels["lastUpdatedDate"] = "Last Updated Date";
+        this.fieldLabels["salesOpsName"] = "Sales Ops Name";
+        this.fieldLabels["shipToCountry"] = "Ship To Country";
+        this.fieldLabels["agreementCode"] = "Agreement Code";
+        this.fieldLabels["salesrepName"] = "SalesRep Name";
+        this.fieldLabels["conversionDate"] = "Conversion Date";
+        this.fieldLabels["contractStartDate"] = "Contract Start Date";
+        this.fieldLabels["contractEndDate"] = "Contract End Date";
+    }
+
+}

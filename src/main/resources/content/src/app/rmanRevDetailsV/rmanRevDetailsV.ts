@@ -1,0 +1,47 @@
+export interface RmanRevDetailsV {
+  dealLineId: any;
+  deliveredAllocRsp: any;
+  totalGaapRevenueCurrentMon: any;
+  dealArrangementName: any;
+  postBillingContAmount: any;
+  cumGaapEndingBalance: any;
+  arrgLineAmount: any;
+  totalGaapRevenueEndingBal: any;
+  cumGaapBegBalance: any;
+  bookedAmount: any;
+  preBillingContAmount: any;
+  dealLineNumber: any;
+  productGroup: any;
+  cogsBegiBalCogs: any;
+  productName: any;
+  dealArrangementId: any;
+  accountingRuleName: any;
+  shippedAmount: any;
+  billedAmount: any;
+  productType: any;
+  netGappCurrMonth: any;
+  element: any;
+  postBillingAllocationAmount: any;
+  currentMonthCogs: any;
+  gaapUnamortized: any;
+  totalGaapRevneueBegBal: any;
+  arrgLineCost: any;
+  endingBalance: any;
+  totalAllocation: any;
+  duration: any;
+  postBillingDeferrals: any;
+  attributedNetPrice: any;
+  deliveredAttributedNetPrice: any;
+  pobGroup: any;
+  arrgLineNumber: any;
+  amortRuleRevenue: any;
+  amortMethodRevenue: any;
+  totalAllocationFc: any;
+  deliveredAllocFcRsp: any;
+  pbDeferralFc: any;
+  orderNumber: any;
+  sourceLineNumber: any;
+  customerPoNum: any;
+  sourceLineId: any;
+
+}
